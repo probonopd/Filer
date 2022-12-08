@@ -10,7 +10,7 @@ task:
   name: freebsd-12-1-release-amd64
   stateful: false
   setup_script:
-    - pkg install -y git-lite curl wget zip cmake pkgconf qt5-core qt5-x11extras qt5-widgets qt5-qmake qt5-buildtools qt5-linguisttools qt5-multimedia
+    - pkg install -y git-lite curl wget zip cmake pkgconf qt5-core qt5-widgets
   test_script:
     - git submodule update --init --recursive
     - mkdir build ; cd build
