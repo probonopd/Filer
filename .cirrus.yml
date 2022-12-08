@@ -4,6 +4,10 @@ freebsd_instance:
 env:
   CIRRUS_CLONE_DEPTH: 1
   GITHUB_TOKEN: ENCRYPTED[6b1650a5965578230a926b9aa73b08644ea65e436ee302b1e7b793a55249d8fcbc2c16f7e0e61317233f2080ec2c5a72]
+ccache_cache:
+  folder: ${CCACHE_DIR}
+pkg_cache:
+  folder: /var/cache/pkg/
   
 task:
   # This name gets reported as a build status in GitHub
@@ -11,6 +15,10 @@ task:
   stateful: false
   setup_script:
     - pkg install -y git-lite curl wget zip cmake pkgconf qt5-core qt5-widgets
+  ccache_setup_script:
+    - env IGNORE_OSVERSION=yes pkg install -y ccache-static
+    - ccache --max-size=${CCACHE_SIZE}
+    - echo "WITH_CCACHE_BUILD=yes" >> /etc/make.conf
   test_script:
     - git submodule update --init --recursive
     - mkdir build ; cd build
