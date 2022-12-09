@@ -32,6 +32,6 @@ task:
     - cmake .. -DCMAKE_BUILD_TYPE=Release
     - make DESTDIR=. -j$(sysctl -n hw.ncpu) install
     - find Filer.app/
-    - ( cd ./ ; zip --symlinks -r ../Filer_FreeBSD.zip Filer.app/ )
+    - ( zip --symlinks -r ./Filer_FreeBSD.zip Filer.app/ )
     - case "$CIRRUS_BRANCH" in *pull/*) echo skipping since PR ;; * ) wget https://github.com/tcnksm/ghr/files/5247714/ghr.zip ; unzip ghr.zip ; rm ghr.zip ; ./ghr -replace -t "${GITHUB_TOKEN}" -u "${CIRRUS_REPO_OWNER}" -r "${CIRRUS_REPO_NAME}" -c "${CIRRUS_CHANGE_IN_REPO}" continuous "${CIRRUS_WORKING_DIR}"/build/*zip ; esac
   only_if: $CIRRUS_TAG != 'continuous'
