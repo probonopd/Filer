@@ -143,9 +143,23 @@ FileManagerMainWindow::FileManagerMainWindow(QWidget *parent, const QString &ini
     // Set the icon for the window
     setWindowIcon(QIcon::fromTheme("folder"));
 
+    // Initialize m_stackedWidget
+    m_stackedWidget = new QStackedWidget(this);
+
     // Create the tree view and list view
     m_treeView = new QTreeView(this);
     m_iconView = new QListView(this);
+
+    // Add the tree view and list view to the stacked widget
+    m_stackedWidget->addWidget(m_treeView);
+    m_stackedWidget->addWidget(m_iconView);
+
+    // Set the stacked widget as the central widget
+    setCentralWidget(m_stackedWidget);
+
+    // No frame around the views
+    m_treeView->setFrameStyle(QFrame::NoFrame);
+    m_iconView->setFrameStyle(QFrame::NoFrame);
 
     m_fileSystemModel = new QFileSystemModel(this);
 
@@ -360,8 +374,9 @@ void FileManagerMainWindow::saveWindowGeometry()
     // Write the window positionAndGeometry to an extended attribute
     ea.write("positionAndGeometry", positionAndGeometryByteArray);
 
-    // Write the type of the view to an extended attribute
-    if (this->centralWidget()->objectName() == "QTreeView")
+    // If "Tree View" is checked in the "View" menu, write "1" to the extended attribute,
+    // otherwise write "2" to the extended attribute
+    if (m_treeViewAction->isChecked())
     {
         ea.write("WindowView", "1");
     }
@@ -369,6 +384,7 @@ void FileManagerMainWindow::saveWindowGeometry()
     {
         ea.write("WindowView", "2");
     }
+
 }
 
 // Callback function for when the user moves the window
@@ -388,15 +404,12 @@ void FileManagerMainWindow::resizeEvent(QResizeEvent *event)
 {
     qDebug() << "resizeEvent";
 
-    // Why does the TreeView crash when we arrive here?
-
     // Call the base class implementation
     QMainWindow::resizeEvent(event);
 
-    if (this->centralWidget()->objectName() != "QTreeView") {
-        // Re-layout the items in the view to reflect the new grid layout
-        QListView *itemView = qobject_cast<QListView *>(this->centralWidget());
-        itemView->doItemsLayout();
+    // Re-layout the items in the view to reflect the new grid layout
+    if (! m_treeViewAction->isChecked()) {
+        m_iconView->doItemsLayout();
     }
 
     // TOOD: Wait until no resize events are coming in for 1 second
@@ -687,14 +700,11 @@ void FileManagerMainWindow::showTreeView()
     // Print the name of the called function
     qDebug() << Q_FUNC_INFO;
 
-    // Set the central widget to the tree view
-    setCentralWidget(m_treeView);
-    m_treeView->show();
-    m_iconView->hide();
-
     // Set the checkmark of the Tree View action
     m_treeViewAction->setChecked(true);
     m_iconViewAction->setChecked(false);
+
+    m_stackedWidget->setCurrentWidget(m_treeView);
 
     // Print a message indicating that the function has completed
     qDebug() << "Completed" << Q_FUNC_INFO;
@@ -706,16 +716,14 @@ void FileManagerMainWindow::showIconView()
     // Print the name of the called function
     qDebug() << Q_FUNC_INFO;
 
-    m_iconView->show();
-
-    // Set the central widget to the icon view
-    setCentralWidget(m_iconView);
-
-    m_treeView->hide();
-
     // Set the checkmark of the Icon View action
     m_iconViewAction->setChecked(true);
     m_treeViewAction->setChecked(false);
+
+    m_stackedWidget->setCurrentWidget(m_iconView);
+
+    // Relayout the icon view
+    m_iconView->doItemsLayout();
 
     // Print a message indicating that the function has completed
     qDebug() << "Completed" << Q_FUNC_INFO;

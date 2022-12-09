@@ -6,3 +6,4 @@ CMakeLists.txt.user*
 *.autosave
 *.DirInfo
 .idea
+cmake-build-debug/

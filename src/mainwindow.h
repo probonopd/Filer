@@ -44,6 +44,7 @@
 #include <QListView>
 #include <QStatusBar>
 #include <QList>
+#include <QStackedWidget>
 
 class FileManagerMainWindow : public QMainWindow
 {
@@ -81,6 +82,8 @@ public slots:
     void moveEvent(QMoveEvent *event);
 
 private:
+
+    QStackedWidget *m_stackedWidget;
 
     QString m_currentDir;
     QTreeView* m_treeView;
