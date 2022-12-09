@@ -21,7 +21,7 @@ task:
   name: freebsd-12-1-release-amd64
   stateful: false
   setup_script:
-    - pkg install -y git-lite curl wget zip cmake pkgconf qt5-core qt5-widgets qt5-qmake
+    - pkg install -y git-lite curl wget zip cmake pkgconf qt5-core qt5-widgets qt5-qmake qt5-buildtools
   ccache_setup_script:
     - env IGNORE_OSVERSION=yes pkg install -y ccache-static
     - ccache --max-size=${CCACHE_SIZE}
