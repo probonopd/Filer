@@ -73,6 +73,7 @@ public:
 
 public slots:
     void open(const QString &filePath);
+    void openWith(const QString &filePath);
     void openFolderInNewWindow(const QString &rootPath);
     void dragEnterEvent(QDragEnterEvent *event);
     void dragMoveEvent(QDragMoveEvent *event);

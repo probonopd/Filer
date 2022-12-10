@@ -48,7 +48,6 @@ CustomItemDelegate::CustomItemDelegate(QObject *parent, QFileSystemModel *fileSy
     // Initialize the m_fileSystemModel member variable with the provided QFileSystemModel pointer
     m_fileSystemModel = fileSystemModel;
 
-
     // Create an instance of the custom icon provider
     CustomFileIconProvider *iconProvider = new CustomFileIconProvider();
 
@@ -360,9 +359,15 @@ bool CustomItemDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, c
         });
         menu.addAction(openAction);
 
-        QAction *openWithAction = new QAction(tr("Open with..."), this);
-        openWithAction->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_O));
-        menu.addAction(openWithAction);
+        // If is not a directory, add the Open With... action
+        if(!QFileInfo(filePath).isDir()) {
+            QAction *openWithAction = new QAction("Open With...", &menu);
+            openWithAction->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_O));
+            connect(openWithAction, &QAction::triggered, [=]() {
+                mainWindow->openWith(filePath);
+            });
+            menu.addAction(openWithAction);
+        }
 
         menu.addSeparator();
 

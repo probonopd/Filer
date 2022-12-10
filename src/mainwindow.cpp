@@ -26,6 +26,7 @@
 
 #include "mainwindow.h"
 #include "customitemdelegate.h"
+#include "customfileiconprovider.h"
 #include "extendedattributes.h"
 
 #include <QMenuBar>
@@ -161,11 +162,20 @@ FileManagerMainWindow::FileManagerMainWindow(QWidget *parent, const QString &ini
     m_treeView->setFrameStyle(QFrame::NoFrame);
     m_iconView->setFrameStyle(QFrame::NoFrame);
 
+    // Create an instance of our custom QFileIconProvider
+    CustomFileIconProvider provider;
+
     m_fileSystemModel = new QFileSystemModel(this);
 
-    // Filter out items that should not be shown
+    // Make the file system model use the custom icon provider
+    m_fileSystemModel->setIconProvider(&provider);
 
+    // Filter out items that should not be shown
     m_fileSystemModel->setFilter(QDir::AllEntries | QDir::NoDotAndDotDot ); // | QDir::Hidden
+
+    // Make it use the icon provider on files as well
+    m_fileSystemModel->setResolveSymlinks(true);
+
 
     // A reliable way to hide hidden files seems to be to construct a QStringList with the names of the
     // items that should be shown; doing it this way breaks the tree view, which can then no longer be expanded
@@ -208,7 +218,7 @@ FileManagerMainWindow::FileManagerMainWindow(QWidget *parent, const QString &ini
     m_fileSystemModel->setRootPath(m_currentDir);
 
     // Set the window title to the root path of the QFileSystemModel
-    setWindowTitle(m_currentDir);
+    setWindowTitle(QFileInfo(m_fileSystemModel->rootPath()).fileName());
 
     // Create an instance of the CustomItemDelegate class;
     // we need this so that we have control over how the items (icons with text)
@@ -1028,6 +1038,17 @@ void FileManagerMainWindow::open(const QString &filePath)
     }
 }
 
+void FileManagerMainWindow::openWith(const QString &filePath)
+{
+    // Print the name of the called function
+    qDebug() << Q_FUNC_INFO;
+
+    // Use the "open" command to open the file
+    QProcess process;
+    process.setProgram("open");
+    process.setArguments({"--chooser", filePath});
+    process.startDetached();
+}
 
 /* This function will update the name of the selected item in the file system,
  * as well as in the tree or list view.

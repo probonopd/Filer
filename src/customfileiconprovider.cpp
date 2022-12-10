@@ -50,16 +50,19 @@ QIcon CustomFileIconProvider::icon(const QFileInfo &info) const
         return(QIcon(bundle.icon()));
     }
 
+
     // Get the MIME type of the file
     QMimeDatabase db;
     QMimeType mime = db.mimeTypeForFile(info);
     qDebug() << "MIME type:" << mime.name();
+    qDebug() << "MIME iconName:" << mime.iconName();
     QIcon icon = QIcon::fromTheme(mime.iconName());
 
     // Return the icon for the MIME type
     if(! icon.isNull()) {
         return icon;
     }
+
 
     // Use the base class method to return the default icon
     // in all other cases
