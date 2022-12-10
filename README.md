@@ -15,3 +15,5 @@ A clean rewrite of the Filer for helloSystem, inspired by [John Siracusa's descr
 * https://apple.stackexchange.com/questions/106681/is-there-software-that-implements-john-siracusas-spatial-finder-concept
 
 * https://dfeldman.medium.com/about-the-spatial-debate-4ccb8064f1df
+
+* https://news.ycombinator.com/item?id=12484241
