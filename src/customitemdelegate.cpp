@@ -354,7 +354,6 @@ bool CustomItemDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, c
         QAction *openAction = new QAction("Open", &menu);
         openAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_O));
         connect(openAction, &QAction::triggered, [=]() {
-            // Open the file or folder using the mainwindow.h open() method
             mainWindow->open(filePath);
         });
         menu.addAction(openAction);

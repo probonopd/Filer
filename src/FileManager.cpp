@@ -16,7 +16,7 @@
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
  * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+ * DAMAGES (INCLUDING, BUExtended attribute was written successfullyT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
  * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
  * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
@@ -24,45 +24,27 @@
  * SUCH DAMAGE.
  */
 
-#include <QApplication>
-#include <QCoreApplication>
-#include <QCommandLineParser>
-
-#include "mainwindow.h"
 #include "FileManager.h"
+#include "mainwindow.h"
 
-int main(int argc, char *argv[])
+FileManager::FileManager(QObject* parent) : QDBusAbstractAdaptor(parent)
 {
-    QApplication app(argc, argv);
+    qDebug() << "FileManager::FileManager()";
+}
 
-    // Set the application name
-    QCoreApplication::setApplicationName("Filer");
-    // Set the application version
-    QCoreApplication::setApplicationVersion("1.0");
-
-    // Add --version and -v
-    QCommandLineParser parser;
-    parser.setApplicationDescription("Filer");
-    parser.addHelpOption();
-    parser.addVersionOption();
-    parser.process(app);
-
-    /*
-     * FIXME: Why does this cause a crash?
-     *
-    // Expose services on D-Bus
-    FileManager fileManager;
-    QDBusConnection::sessionBus().registerService("org.freedesktop.FileManager1");
-    QDBusConnection::sessionBus().registerObject("/org/freedesktop/FileManager1", &fileManager);
-     */
-
-    // Create a FileManagerTreeView instance at ~/Desktop
-    FileManagerMainWindow mainWindow;
-
-
-
-    // Show the main window
-    mainWindow.show();
-
-    return app.exec();
+void FileManager::ShowItems(const QStringList& files, const QString& flags)
+{
+    for (const QString& file : files) {
+        // Find parent directory
+        QFileInfo fileInfo(file);
+        QString parentDir = fileInfo.absolutePath();
+        // Open parentDir in a new window
+        // Create a FileManagerTreeView instance at ~/Desktop
+        FileManagerMainWindow mainWindow;
+        mainWindow.setDirectory(parentDir);
+        // Select file in the new window
+        // mainWindow.selectFile(file); // TODO: Implement this
+        // Show the main window
+        mainWindow.show();
+    }
 }

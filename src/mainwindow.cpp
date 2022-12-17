@@ -49,6 +49,8 @@
 #include <QDesktopWidget>
 #include <QVBoxLayout>
 #include <QStandardPaths>
+#include <QShortcut>
+#include <QKeySequence>
 
 /*
  * This creates a FileManagerMainWindow object with a QTreeView and QListView widget.
@@ -223,6 +225,7 @@ FileManagerMainWindow::FileManagerMainWindow(QWidget *parent, const QString &ini
     // Create an instance of the CustomItemDelegate class;
     // we need this so that we have control over how the items (icons with text)
     // get drawn
+
     CustomItemDelegate *customItemDelegate = new CustomItemDelegate(this, m_fileSystemModel);
 
     m_iconView->setItemDelegate(customItemDelegate);
@@ -468,6 +471,19 @@ void FileManagerMainWindow::createMenus()
         open(filePath);
     });
 
+    // Open and close current
+    fileMenu->addAction(tr("Open and close current"));
+    fileMenu->actions().last()->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_O));
+    connect(fileMenu->actions().last(), &QAction::triggered, [=]() {
+        QModelIndex index = m_treeView->currentIndex();
+        QString filePath = m_fileSystemModel->filePath(index);
+        open(filePath);
+        close();
+    });
+    if (m_is_first_instance) {
+        fileMenu->actions().last()->setEnabled(false);
+    }
+
     fileMenu->addSeparator();
 
     QAction* closeAction = new QAction(tr("Close"), this);
@@ -552,6 +568,9 @@ void FileManagerMainWindow::createMenus()
 
     goMenu->addAction(tr("Go Up"));
     goMenu->actions().last()->setShortcut(QKeySequence("Ctrl+Up"));
+    if(QFileInfo(m_currentDir).canonicalFilePath() == "/") {
+        goMenu->actions().last()->setEnabled(false);
+    }
     connect(goMenu->actions().last(), &QAction::triggered, this, [this](){
         openFolderInNewWindow(QFileInfo(m_currentDir + "/../").canonicalFilePath());
     });
@@ -560,6 +579,9 @@ void FileManagerMainWindow::createMenus()
 
     goMenu->addAction(tr("Go Up and Close Current"));
     goMenu->actions().last()->setShortcut(QKeySequence("Shift+Ctrl+Up"));
+    if(QFileInfo(m_currentDir).canonicalFilePath() == "/") {
+        goMenu->actions().last()->setEnabled(false);
+    }
     connect(goMenu->actions().last(), &QAction::triggered, this, [this](){
         openFolderInNewWindow(QFileInfo(m_currentDir + "/../").canonicalFilePath());
         close();
@@ -673,6 +695,45 @@ void FileManagerMainWindow::createMenus()
 
     // Connect the triggered() signal of the About menu action to a slot
     connect(a, &QAction::triggered, this, &FileManagerMainWindow::showAboutBox);
+
+    // Set up additional shortcuts
+
+    QShortcut *shortcut;
+
+    shortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_Down), this);
+    connect(shortcut, &QShortcut::activated, this, [this] (){
+        QModelIndex index = m_treeView->currentIndex();
+        QString filePath = m_fileSystemModel->filePath(index);
+        open(filePath);
+    }, Qt::QueuedConnection);
+
+    shortcut = new QShortcut(QKeySequence(Qt::ALT + Qt::CTRL + Qt::Key_Down), this);
+    connect(shortcut, &QShortcut::activated, this, [this] (){
+        QModelIndex index = m_treeView->currentIndex();
+        QString filePath = m_fileSystemModel->filePath(index);
+        openWith(filePath);
+    }, Qt::QueuedConnection);
+
+    shortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_Down), this);
+    connect(shortcut, &QShortcut::activated, this, [this] (){
+        QModelIndex index = m_treeView->currentIndex();
+        QString filePath = m_fileSystemModel->filePath(index);
+        open(filePath);
+        if(!m_is_first_instance)
+            close();
+    }, Qt::QueuedConnection);
+
+    /*
+     * TODO
+    shortcut = new QShortcut(QKeySequence(Qt::Key_Delete), this);
+    connect(shortcut, &QShortcut::activated, this, &MainWindow::on_actionDelete_triggered);
+
+    shortcut = new QShortcut(QKeySequence(Qt::SHIFT + Qt::Key_Delete), this);
+    connect(shortcut, &QShortcut::activated, this, &MainWindow::on_actionDeleteWithoutTrash_triggered);
+
+    shortcut = new QShortcut(QKeySequence(Qt::SHIFT + Qt::CTRL + Qt::Key_Backspace), this);
+    connect(shortcut, &QShortcut::activated, this, &MainWindow::on_actionDeleteWithoutTrash_triggered);
+     */
  }
 
 void FileManagerMainWindow::showAboutBox()

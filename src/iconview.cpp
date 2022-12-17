@@ -53,6 +53,8 @@ void IconView::paintEvent(QPaintEvent *event)
         // Get the item delegate for the current index
         QAbstractItemDelegate *delegate = this->itemDelegate(index);
 
+        qDebug() << "TODO: Restore position for file:" << index.data(Qt::DisplayRole).toString();
+
         // Save the current position of the delegate in the model
         model->setData(index, delegate->pos(), Qt::UserRole);
     }

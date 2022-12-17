@@ -24,45 +24,33 @@
  * SUCH DAMAGE.
  */
 
-#include <QApplication>
-#include <QCoreApplication>
-#include <QCommandLineParser>
+/*
+ * This class, named FileManager, is derived from the QDBusAbstractAdaptor class,
+ * which provides some functionality for implementing D-Bus interfaces.
+ * The FileManager class has a ShowItems method that can be called
+ * by other applications over D-Bus.
+ *
+ * The QDBusAbstractAdaptor class is the starting point for all objects
+ * intending to provide interfaces to the external world using D-Bus.
+ */
 
-#include "mainwindow.h"
-#include "FileManager.h"
+#ifndef FILER_FILEMANAGER_H
+#define FILER_FILEMANAGER_H
 
-int main(int argc, char *argv[])
+#include <QtDBus>
+#include <QObject>
+
+class FileManager : public QDBusAbstractAdaptor
 {
-    QApplication app(argc, argv);
+    Q_OBJECT
+    Q_CLASSINFO("D-Bus Interface", "org.freedesktop.FileManager1")
 
-    // Set the application name
-    QCoreApplication::setApplicationName("Filer");
-    // Set the application version
-    QCoreApplication::setApplicationVersion("1.0");
+public:
+    FileManager(QObject* parent = nullptr);
 
-    // Add --version and -v
-    QCommandLineParser parser;
-    parser.setApplicationDescription("Filer");
-    parser.addHelpOption();
-    parser.addVersionOption();
-    parser.process(app);
+public slots:
+            // This is the "ShowItems" method that other applications (like menu and web browsers) can call
+            void ShowItems(const QStringList& files, const QString& flags);
+};
 
-    /*
-     * FIXME: Why does this cause a crash?
-     *
-    // Expose services on D-Bus
-    FileManager fileManager;
-    QDBusConnection::sessionBus().registerService("org.freedesktop.FileManager1");
-    QDBusConnection::sessionBus().registerObject("/org/freedesktop/FileManager1", &fileManager);
-     */
-
-    // Create a FileManagerTreeView instance at ~/Desktop
-    FileManagerMainWindow mainWindow;
-
-
-
-    // Show the main window
-    mainWindow.show();
-
-    return app.exec();
-}
+#endif //FILER_FILEMANAGER_H
