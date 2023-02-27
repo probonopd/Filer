@@ -28,6 +28,7 @@
 #define Filer_CUSTOMFILEICONPROVIDER_H
 
 #include <QFileIconProvider>
+#include <QMimeDatabase>
 
 class CustomFileIconProvider : public QFileIconProvider
 {
@@ -35,6 +36,8 @@ public:
     CustomFileIconProvider();
 
     QIcon icon(const QFileInfo &info) const override;
+
+    QMimeDatabase db;
 };
 
 #endif //Filer_CUSTOMFILEICONPROVIDER_H

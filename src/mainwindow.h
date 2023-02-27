@@ -81,6 +81,7 @@ public slots:
     void resizeEvent(QResizeEvent *event);
 
     void moveEvent(QMoveEvent *event);
+    void paintEvent(QPaintEvent *event); // Overriding the paintEvent() method to draw a background image
 
 private:
 

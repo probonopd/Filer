@@ -1,5 +1,8 @@
 cmake_minimum_required(VERSION 3.5)
 
+# Do not show deprecated warnings
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
+
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 set(CMAKE_AUTOUIC ON)
@@ -13,7 +16,7 @@ find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets DBus)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets DBus)
 
 # Add the path to the libqxdg library
-include_directories(/usr/include/qt5xdg /usr/local/include/qt5xdg)
+# include_directories(/usr/include/qt5xdg /usr/local/include/qt5xdg)
 
 set(PROJECT_SOURCES
         main.cpp

@@ -57,16 +57,16 @@ ApplicationBundle::ApplicationBundle(const QString &path)
     // Check if the path is an application bundle or AppDir
     if (fileInfo.isDir()) {
         QDir dir(path);
-        qDebug() << "Checking if" << path << "is an application bundle or AppDir";
+        // qDebug() << "Checking if" << path << "is an application bundle or AppDir";
         if (dir.exists("Resources") && QFileInfo(dir.filePath(fileInfo.completeBaseName())).isExecutable()) {
             m_isApp = true;
-            qDebug() << path << "is an application bundle";
+            // qDebug() << path << "is an application bundle";
             m_name = QFileInfo(dir.path()).completeBaseName();
-            qDebug() << "Name:" << m_name;
+            // qDebug() << "Name:" << m_name;
 
             // Check if the Resources directory contains an icon file with the same name as the dir
             QDir resourcesDir(dir.filePath("Resources"));
-            qDebug() << "resourcesDir: " << resourcesDir;
+            // qDebug() << "resourcesDir: " << resourcesDir;
             QStringList filters;
             filters << m_name + ".png"
                     << m_name + ".jpg"
@@ -80,43 +80,52 @@ ApplicationBundle::ApplicationBundle(const QString &path)
             }
         } else if (QFileInfo(dir.filePath("AppRun")).isExecutable()) {
             m_isAppDir = true;
-            qDebug() << path << "is an AppDir";
+            // qDebug() << path << "is an AppDir";
             m_name = QFileInfo(dir.path()).completeBaseName();
-            qDebug() << "Name:" << m_name;
+            // qDebug() << "Name:" << m_name;
 
             // Check if the AppDir contains a .DirIcon file
             if (dir.exists(".DirIcon")) {
                 m_icon = dir.filePath(".DirIcon");
             }
+        } else {
+            m_isApp = false;
+            m_isAppDir = false;
         }
-    }
+    } 
 
     // Check if the path is an AppImage
     if (fileInfo.fileName().endsWith(".AppImage")) {
         m_isAppImage = true;
         m_name = fileInfo.completeBaseName();
+    } else {
+        m_isAppImage = false;
     }
 
     // Check if the path is a desktop file
     if (fileInfo.fileName().endsWith(".desktop")) {
         m_isDesktopFile = true;
-        qDebug() << path << "is a desktop file";
+        // qDebug() << path << "is a desktop file";
         m_name = fileInfo.completeBaseName();
-        qDebug() << "Name:" << m_name;
+        // qDebug() << "Name:" << m_name;
 
         DesktopFile df(fileInfo.fileName());
         m_icon = df.getIcon();
-
+    } else {
+        m_isDesktopFile = false;
     }
 
     // Check if the path is a valid bundle
     if (m_isApp || m_isAppDir || m_isAppImage || m_isDesktopFile) {
+        // qDebug() << path << "m_isApp:" << m_isApp << "m_isAppDir:" << m_isAppDir << "m_isAppImage:" << m_isAppImage << "m_isDesktopFile:" << m_isDesktopFile;
+
         // The path is a recognized application bundle
         m_isValid = true;
+    } else {
+        m_isValid = false;
     }
 
 }
-
 
 QString ApplicationBundle::path() const
 {

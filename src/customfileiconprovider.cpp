@@ -27,12 +27,11 @@
 #include "customfileiconprovider.h"
 #include "applicationbundle.h"
 
-#include <QMimeDatabase>
 #include <QDebug>
 
 CustomFileIconProvider::CustomFileIconProvider()
 {
-
+    QMimeDatabase db;
 }
 
 /**
@@ -42,29 +41,23 @@ CustomFileIconProvider::CustomFileIconProvider()
  */
 QIcon CustomFileIconProvider::icon(const QFileInfo &info) const
 {
-    // Return the appropriate icon for the file based on its type
-
     // Check if the item is an application bundle and return the icon
     ApplicationBundle bundle(info.absoluteFilePath());
     if (bundle.isValid()) {
+        // qDebug() << "Bundle is valid: " << info.absoluteFilePath();
         return(QIcon(bundle.icon()));
+    } else {
+        // Load icons for mime types in a deterministic way
+        QString icon_name = db.mimeTypeForFile(info).iconName();
+        QString icon_path = QString("/usr/local/share/icons/elementary-xfce/mimes/32/") + icon_name + QString(".png");
+        // Check if the icon exists
+        QFileInfo icon_info(icon_path);
+        if (icon_info.exists()) {
+            QIcon icon(icon_path);
+            return(icon); 
+        }
     }
-
-
-    // Get the MIME type of the file
-    QMimeDatabase db;
-    QMimeType mime = db.mimeTypeForFile(info);
-    qDebug() << "MIME type:" << mime.name();
-    qDebug() << "MIME iconName:" << mime.iconName();
-    QIcon icon = QIcon::fromTheme(mime.iconName());
-
-    // Return the icon for the MIME type
-    if(! icon.isNull()) {
-        return icon;
-    }
-
-
-    // Use the base class method to return the default icon
-    // in all other cases
-    return QFileIconProvider::icon(info);
+    // As a last resort, return the default icon provided by the superclass
+    // For whatever reason, this only works for directories and shows a generic file icon for everything else
+    return(QFileIconProvider::icon(info));
 }

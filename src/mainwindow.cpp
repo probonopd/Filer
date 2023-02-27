@@ -51,6 +51,11 @@
 #include <QStandardPaths>
 #include <QShortcut>
 #include <QKeySequence>
+#include <QPainter>
+#include <QPen>
+#include <QRect>
+#include <QLinearGradient>
+#include <QColor>
 
 /*
  * This creates a FileManagerMainWindow object with a QTreeView and QListView widget.
@@ -66,6 +71,41 @@ QList<FileManagerMainWindow*> &FileManagerMainWindow::instances()
 {
     static QList<FileManagerMainWindow*> instances;
     return instances;
+}
+
+/*
+ * This is the paint event for the main window.
+ * We draw the desktop picture.
+ * We also draw a gradient at the top of the window.
+ */
+void FileManagerMainWindow::paintEvent(QPaintEvent *event)
+{
+
+    // Check if WA_TranslucentBackground is set
+    // because we only want to draw the desktop background in the first instance
+    if (! testAttribute(Qt::WA_TranslucentBackground)) {
+        return;
+    }
+
+    qDebug() << "FileManagerMainWindow::paintEvent()";
+
+    // Draw the background image
+    QPixmap background("/usr/local/share/slim/themes/default/background.jpg");
+    background = background.scaled(this->size(), Qt::KeepAspectRatioByExpanding);
+    QPainter painter(this);
+    painter.drawPixmap(0, 0, background);
+
+    // Draw a grey background over it to make it more muted
+    painter.fillRect(this->rect(), QColor(128, 128, 128, 128));
+
+    // Draw a rectangle with a gradient at the top of the window
+    QPen pen(Qt::NoPen);
+    painter.setPen(pen);
+    QRect rect(0, 0, this->width(), 44);
+    QLinearGradient gradient(0, 22, 0, 44);
+    gradient.setColorAt(0, QColor(0, 0, 0, 50));
+    gradient.setColorAt(1, QColor(0, 0, 0, 0));
+    painter.fillRect(rect, gradient);
 }
 
 FileManagerMainWindow::FileManagerMainWindow(QWidget *parent, const QString &initialDirectory)
@@ -89,23 +129,24 @@ FileManagerMainWindow::FileManagerMainWindow(QWidget *parent, const QString &ini
         if (!homeDir.exists("Desktop")) {
             homeDir.mkdir("Desktop");
         }
+           
         // Set the root path to ~/Desktop
         setDirectory(QDir::homePath() + "/Desktop");
-        qDebug() << "First instance, show the desktop";
-        QString desktopPicture = "/usr/local/share/slim/themes/default/background.jpg";
-        // Check if the desktop picture exists and is readable, show a waning dialog if it isn't
-        if (!QFile::exists(desktopPicture) || !QFile::permissions(desktopPicture).testFlag(QFile::ReadUser)) {
-            QMessageBox::warning(this, "Desktop picture not found", "The desktop picture could not be found or is not readable.");
-            setStyleSheet("background-color: grey;");
-        } else {
-            // Set the desktop picture
-            setStyleSheet("border-image: url(" + desktopPicture + ") 0 0 0 0 stretch stretch;");
-        }
 
-        setAutoFillBackground(true);
-        setWindowFlags(Qt::FramelessWindowHint);
+        qDebug() << "First instance, show the desktop";
+
+        // setWindowFlags(Qt::FramelessWindowHint);
         setFixedSize(QApplication::desktop()->screenGeometry(0).size());
+      
+        // Make the background of the window transparent; this works
+        // Since we are defining our own paintEvent, we need to paint the background ourselves
+        setStyleSheet("background-color: transparent;"); // Without this, the background is white-ish like a normal window
+        setAttribute(Qt::WA_TranslucentBackground); // Without this, the background is black
+
+        // Make the window a desktop window
         setAttribute(Qt::WA_X11NetWmWindowTypeDesktop, true);
+
+
     } else {
         m_is_first_instance = false;
         setDirectory(initialDirectory);
@@ -159,6 +200,9 @@ FileManagerMainWindow::FileManagerMainWindow(QWidget *parent, const QString &ini
 
     // Set the stacked widget as the central widget
     setCentralWidget(m_stackedWidget);
+
+    // Make the tree view sortable
+    m_treeView->setSortingEnabled(true);
 
     // No frame around the views
     m_treeView->setFrameStyle(QFrame::NoFrame);
