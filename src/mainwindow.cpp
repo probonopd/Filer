@@ -56,6 +56,7 @@
 #include <QRect>
 #include <QLinearGradient>
 #include <QColor>
+#include <QSortFilterProxyModel>
 
 /*
  * This creates a FileManagerMainWindow object with a QTreeView and QListView widget.
@@ -222,35 +223,9 @@ FileManagerMainWindow::FileManagerMainWindow(QWidget *parent, const QString &ini
     // Make it use the icon provider on files as well
     m_fileSystemModel->setResolveSymlinks(true);
 
-
-    // A reliable way to hide hidden files seems to be to construct a QStringList with the names of the
-    // items that should be shown; doing it this way breaks the tree view, which can then no longer be expanded
-    /*
-    QDir dir(m_currentDir);
-    QStringList itemsToBeShown = dir.entryList();
-    QStringList hiddenItems;
-
-    // Read the lines from the file .hidden into the QStringList hiddenItems
-    QFile file(m_currentDir + "/.hidden");
-    if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        QTextStream in(&file);
-        while (!in.atEnd()) {
-            QString line = in.readLine();
-            hiddenItems.append(line);
-        }
-    }
-
-    // Remove the hidden items from the list of items to be shown
-    for (int i = 0; i < hiddenItems.count(); i++) {
-        itemsToBeShown.removeAll(hiddenItems[i]);
-    }
-
-    m_fileSystemModel->setNameFilters(itemsToBeShown);
-
-    // This is needed so that the disabled items are not shown;
-    // otherwise, the disabled items are shown but cannot be used
-    m_fileSystemModel->setNameFilterDisables(false);
-    */
+    //////////////////////////////////
+    // TODO: Hide hidden files
+    //////////////////////////////////
 
     // Set the file system model as the model for the tree view and icon view
     m_treeView->setModel(m_fileSystemModel);
@@ -262,6 +237,13 @@ FileManagerMainWindow::FileManagerMainWindow(QWidget *parent, const QString &ini
 
     // Set the root path to the specified m_currentDir
     m_fileSystemModel->setRootPath(m_currentDir);
+
+    //////////////////////////////////////////////////////
+    // TODO: Add entries to the Desktop for Trash, Volumes
+    // by adding items to the file system model
+    m_fileSystemModel->insertRow(0, m_fileSystemModel->index(m_currentDir));
+    m_fileSystemModel->setData(m_fileSystemModel->index(0, 0, m_fileSystemModel->index(m_currentDir)), "Trash");
+    //////////////////////////////////////////////////////
 
     // Set the window title to the root path of the QFileSystemModel
     setWindowTitle(QFileInfo(m_fileSystemModel->rootPath()).fileName());
@@ -362,6 +344,8 @@ FileManagerMainWindow::FileManagerMainWindow(QWidget *parent, const QString &ini
         m_iconView->setFlow(QListView::TopToBottom);
         // Mirror the layout of the icons
         m_iconView->setLayoutDirection(Qt::RightToLeft);
+        // Make the items the same size to make the layout look orderly
+        m_iconView->setUniformItemSizes(true);
     }
 
     // Set the icon size to 32x32 pixels
