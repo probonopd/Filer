@@ -31,14 +31,12 @@
 #include <QTextStream>
 #include <QDebug>
 
-ExtendedAttributes::ExtendedAttributes(const QString &filePath)
-        : m_file(filePath)
-{
-}
+ExtendedAttributes::ExtendedAttributes(const QString &filePath) : m_file(filePath) { }
 
 bool ExtendedAttributes::write(const QString &attributeName, const QByteArray &attributeValue)
 {
-    qDebug() << "Trying to write extended attribute" << attributeName << "with value" << attributeValue;
+    qDebug() << "Trying to write extended attribute" << attributeName << "with value"
+             << attributeValue;
 
     if (!m_file.exists()) {
         // Error: File does not exist
@@ -48,25 +46,33 @@ bool ExtendedAttributes::write(const QString &attributeName, const QByteArray &a
 
 #if defined(__unix__) || defined(__APPLE__)
     // Write the extended attribute to the file in the "user" namespace
-    qDebug() << "Writing extended attribute" << attributeName << "with value" << attributeValue << "to file" << m_file.fileName();
+    qDebug() << "Writing extended attribute" << attributeName << "with value" << attributeValue
+             << "to file" << m_file.fileName();
     QProcess extattr;
-    extattr.start("setextattr", QStringList() << "-hq" << "user" << attributeName << attributeValue << m_file.fileName());
+    extattr.start("setextattr",
+                  QStringList() << "-hq"
+                                << "user" << attributeName << attributeValue << m_file.fileName());
     if (!extattr.waitForFinished()) {
         // Error writing extended attribute to user namespace
-        qWarning() << "ExtendedAttributes::write(): Error writing extended attribute to user namespace";
+        qWarning() << "ExtendedAttributes::write(): Error writing extended attribute to user "
+                      "namespace";
         return false;
     } else {
         // Extended attribute was written successfully
         qDebug() << "Extended attribute was written successfully";
     }
 #elif defined(__linux__)
-    qDebug() << "Writing extended attribute" << attributeName << "with value" << attributeValue << "to file" << m_file.fileName();
+    qDebug() << "Writing extended attribute" << attributeName << "with value" << attributeValue
+             << "to file" << m_file.fileName();
     // Write the extended attribute to the file in the "user" namespace
     QProcess xattr;
-    xattr.start("setxattr", QStringList() << "-hq" << "user" << attributeName << attributeValue << m_file.fileName());
+    xattr.start("setxattr",
+                QStringList() << "-hq"
+                              << "user" << attributeName << attributeValue << m_file.fileName());
     if (!xattr.waitForFinished()) {
         // Error writing extended attribute to user namespace
-        qWarning() << "ExtendedAttributes::write(): Error writing extended attribute to user namespace";
+        qWarning() << "ExtendedAttributes::write(): Error writing extended attribute to user "
+                      "namespace";
         return false;
     } else {
         // Extended attribute was written successfully
@@ -91,10 +97,13 @@ QByteArray ExtendedAttributes::read(const QString &attributeName)
     // Read the extended attribute from the file in the "user" namespace
     qDebug() << "Reading extended attribute" << attributeName << "from file" << m_file.fileName();
     QProcess extattr;
-    extattr.start("getextattr", QStringList() << "-hq" << "user" << attributeName << m_file.fileName());
+    extattr.start("getextattr",
+                  QStringList() << "-hq"
+                                << "user" << attributeName << m_file.fileName());
     if (!extattr.waitForFinished()) {
         // Error reading extended attribute from user namespace
-        qWarning() << "ExtendedAttributes::read(): Error reading extended attribute from user namespace";
+        qWarning() << "ExtendedAttributes::read(): Error reading extended attribute from user "
+                      "namespace";
         return QByteArray();
     } else {
         // Extended attribute was read successfully
@@ -107,10 +116,13 @@ QByteArray ExtendedAttributes::read(const QString &attributeName)
     // Read the extended attribute from the file in the "user" namespace
     qDebug() << "Reading extended attribute" << attributeName << "from file" << m_file.fileName();
     QProcess xattr;
-    xattr.start("getxattr", QStringList() << "-hq" << "user" << attributeName << m_file.fileName());
+    xattr.start("getxattr",
+                QStringList() << "-hq"
+                              << "user" << attributeName << m_file.fileName());
     if (!xattr.waitForFinished()) {
         // Error reading extended attribute from user namespace
-        qWarning() << "ExtendedAttributes::read(): Error reading extended attribute from user namespace";
+        qWarning() << "ExtendedAttributes::read(): Error reading extended attribute from user "
+                      "namespace";
         return QByteArray();
     } else {
         // Extended attribute was read successfully

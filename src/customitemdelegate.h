@@ -27,10 +27,9 @@
 /* To persist the fact that QModelItemDelegate objects in a QIconView have been moved,
  * we need to update the model to reflect the new positions of the delegates.
  * In Qt, the model is responsible for storing the data that is displayed in a view.
- * This means that if we want to persist changes to the positions of QModelItemDelegate objects in a QIconView,
- * we need to update the model to reflect the new positions of the delegates.
+ * This means that if we want to persist changes to the positions of QModelItemDelegate objects in a
+ * QIconView, we need to update the model to reflect the new positions of the delegates.
  */
-
 
 #ifndef CUSTOMITEMDELEGATE_H
 #define CUSTOMITEMDELEGATE_H
@@ -53,7 +52,8 @@ public:
     ~CustomItemDelegate();
 
     QString displayText(const QVariant &value, const QLocale &locale) const override;
-    void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
+    void paint(QPainter *painter, const QStyleOptionViewItem &option,
+               const QModelIndex &index) const override;
 
     // Override the eventFilter() method to handle events (e.g., move) for the delegate object
     bool eventFilter(QObject *object, QEvent *event) override;
@@ -78,7 +78,6 @@ private:
     // and it is not responsible for handling user interactions with the items.
     // We should probably fix this in a future version of the application.
     QMenu menu;
-
 };
 
 #endif // CUSTOMITEMDELEGATE_H

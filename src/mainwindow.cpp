@@ -65,12 +65,13 @@
  * to provide data for the views. The QItemSelectionModel class is used to manage the selection
  * of items in the views. The QMenuBar and QMenu classes are used to create a menu bar with a menu.
  * The menu has actions for switching between the tree and icon views.
- * The QStatusBar class is used to create a status bar that shows the number of items selected in the views.
+ * The QStatusBar class is used to create a status bar that shows the number of items selected in
+ * the views.
  */
 
-QList<FileManagerMainWindow*> &FileManagerMainWindow::instances()
+QList<FileManagerMainWindow *> &FileManagerMainWindow::instances()
 {
-    static QList<FileManagerMainWindow*> instances;
+    static QList<FileManagerMainWindow *> instances;
     return instances;
 }
 
@@ -84,7 +85,7 @@ void FileManagerMainWindow::paintEvent(QPaintEvent *event)
 
     // Check if WA_TranslucentBackground is set
     // because we only want to draw the desktop background in the first instance
-    if (! testAttribute(Qt::WA_TranslucentBackground)) {
+    if (!testAttribute(Qt::WA_TranslucentBackground)) {
         return;
     }
 
@@ -130,7 +131,7 @@ FileManagerMainWindow::FileManagerMainWindow(QWidget *parent, const QString &ini
         if (!homeDir.exists("Desktop")) {
             homeDir.mkdir("Desktop");
         }
-           
+
         // Set the root path to ~/Desktop
         setDirectory(QDir::homePath() + "/Desktop");
 
@@ -138,15 +139,15 @@ FileManagerMainWindow::FileManagerMainWindow(QWidget *parent, const QString &ini
 
         // setWindowFlags(Qt::FramelessWindowHint);
         setFixedSize(QApplication::desktop()->screenGeometry(0).size());
-      
+
         // Make the background of the window transparent; this works
         // Since we are defining our own paintEvent, we need to paint the background ourselves
-        setStyleSheet("background-color: transparent;"); // Without this, the background is white-ish like a normal window
+        setStyleSheet("background-color: transparent;"); // Without this, the background is
+                                                         // white-ish like a normal window
         setAttribute(Qt::WA_TranslucentBackground); // Without this, the background is black
 
         // Make the window a desktop window
         setAttribute(Qt::WA_X11NetWmWindowTypeDesktop, true);
-
 
     } else {
         m_is_first_instance = false;
@@ -166,10 +167,9 @@ FileManagerMainWindow::FileManagerMainWindow(QWidget *parent, const QString &ini
             qDebug() << "positionAndGeometryString is valid";
             // from qstring to qrect
             QStringList positionAndGeometryList = positionAndGeometryString.split(",");
-            QRect positionAndGeometryRect = QRect(positionAndGeometryList[0].toInt(),
-                                                  positionAndGeometryList[1].toInt(),
-                                                  positionAndGeometryList[2].toInt(),
-                                                  positionAndGeometryList[3].toInt());
+            QRect positionAndGeometryRect =
+                    QRect(positionAndGeometryList[0].toInt(), positionAndGeometryList[1].toInt(),
+                          positionAndGeometryList[2].toInt(), positionAndGeometryList[3].toInt());
             qDebug() << "positionAndGeometryRect:" << positionAndGeometryRect;
             setGeometry(positionAndGeometryRect);
         } else {
@@ -218,7 +218,7 @@ FileManagerMainWindow::FileManagerMainWindow(QWidget *parent, const QString &ini
     m_fileSystemModel->setIconProvider(&provider);
 
     // Filter out items that should not be shown
-    m_fileSystemModel->setFilter(QDir::AllEntries | QDir::NoDotAndDotDot ); // | QDir::Hidden
+    m_fileSystemModel->setFilter(QDir::AllEntries | QDir::NoDotAndDotDot); // | QDir::Hidden
 
     // Make it use the icon provider on files as well
     m_fileSystemModel->setResolveSymlinks(true);
@@ -242,7 +242,8 @@ FileManagerMainWindow::FileManagerMainWindow(QWidget *parent, const QString &ini
     // TODO: Add entries to the Desktop for Trash, Volumes
     // by adding items to the file system model
     m_fileSystemModel->insertRow(0, m_fileSystemModel->index(m_currentDir));
-    m_fileSystemModel->setData(m_fileSystemModel->index(0, 0, m_fileSystemModel->index(m_currentDir)), "Trash");
+    m_fileSystemModel->setData(
+            m_fileSystemModel->index(0, 0, m_fileSystemModel->index(m_currentDir)), "Trash");
     //////////////////////////////////////////////////////
 
     // Set the window title to the root path of the QFileSystemModel
@@ -310,20 +311,24 @@ FileManagerMainWindow::FileManagerMainWindow(QWidget *parent, const QString &ini
 
     // To call the updateStatusBar() function whenever the selected items change,
     // Connect the selectionChanged() signal of the selection model to the updateStatusBar() slot
-    connect(m_selectionModel, &QItemSelectionModel::selectionChanged, this, &FileManagerMainWindow::updateStatusBar);
+    connect(m_selectionModel, &QItemSelectionModel::selectionChanged, this,
+            &FileManagerMainWindow::updateStatusBar);
     updateStatusBar();
 
     // To call the updateMenus() function whenever the selected items change,
     // connect the QItemSelectionModel's selectionChanged() signal to the updateMenus() slot
-    connect(m_selectionModel, &QItemSelectionModel::selectionChanged, this, &FileManagerMainWindow::updateMenus);
+    connect(m_selectionModel, &QItemSelectionModel::selectionChanged, this,
+            &FileManagerMainWindow::updateMenus);
     updateMenus();
 
     // Connect the doubleClicked() signal to the open() slot
-    connect(m_iconView, &QTreeView::doubleClicked, this, [this] (const QModelIndex &index)
-    {
-        QString filePath = m_fileSystemModel->filePath(index);
-        open(filePath);
-    }, Qt::QueuedConnection);
+    connect(
+            m_iconView, &QTreeView::doubleClicked, this,
+            [this](const QModelIndex &index) {
+                QString filePath = m_fileSystemModel->filePath(index);
+                open(filePath);
+            },
+            Qt::QueuedConnection);
 
     /* Tree view */
 
@@ -361,11 +366,13 @@ FileManagerMainWindow::FileManagerMainWindow(QWidget *parent, const QString &ini
     m_iconView->setGridSize(QSize(iconSize.width() * 5, iconSize.height() * 2));
 
     // Connect the doubleClicked() signal to the open() slot
-    connect(m_treeView, &QTreeView::doubleClicked, this, [this] (const QModelIndex &index)
-    {
-        QString filePath = m_fileSystemModel->filePath(index);
-        open(filePath);
-    }, Qt::QueuedConnection);
+    connect(
+            m_treeView, &QTreeView::doubleClicked, this,
+            [this](const QModelIndex &index) {
+                QString filePath = m_fileSystemModel->filePath(index);
+                open(filePath);
+            },
+            Qt::QueuedConnection);
 
     /* Overall */
 
@@ -376,7 +383,7 @@ FileManagerMainWindow::FileManagerMainWindow(QWidget *parent, const QString &ini
     QByteArray viewMode = extendedAttributes.read("WindowView");
     int viewModeInt = viewMode.toInt();
     qDebug() << "viewModeString:" << viewModeInt;
-    if(viewModeInt == 1) {
+    if (viewModeInt == 1) {
         // Set the central widget to the list view (icons)
         showTreeView();
     } else {
@@ -385,15 +392,15 @@ FileManagerMainWindow::FileManagerMainWindow(QWidget *parent, const QString &ini
     }
 
     // Call destructor and destroy the window immediately when the window is closed
-    // Only this way the window will be destroyed immediately and not when the event loop is finished
-    // and we can remove the window from the list of child windows of the parent window
+    // Only this way the window will be destroyed immediately and not when the event loop is
+    // finished and we can remove the window from the list of child windows of the parent window
     setAttribute(Qt::WA_DeleteOnClose);
 }
 
 // Saves the window geometry
 void FileManagerMainWindow::saveWindowGeometry()
 {
-// Print window positionAndGeometry
+    // Print window positionAndGeometry
     qDebug() << "Window positionAndGeometry: " << geometry();
     qDebug() << "Window size: " << size();
     qDebug() << "Window position: " << pos();
@@ -403,13 +410,17 @@ void FileManagerMainWindow::saveWindowGeometry()
     qDebug() << "Window display number: " << displayNumber;
 
     // Get the filename of the current directory
-    QString currentDir = m_fileSystemModel->filePath(m_fileSystemModel->index(m_fileSystemModel->rootPath()));
+    QString currentDir =
+            m_fileSystemModel->filePath(m_fileSystemModel->index(m_fileSystemModel->rootPath()));
 
     // Write extended attribute to the current directory
     ExtendedAttributes ea = ExtendedAttributes(currentDir);
 
-    // Writing the window position and geometry directly as a QByteArray does not work because it contains null bytes, so we convert it to a string
-    QString positionAndGeometry = QString::number(pos().x()) + "," + QString::number(pos().y()) + "," + QString::number(geometry().width()) + "," + QString::number(geometry().height());
+    // Writing the window position and geometry directly as a QByteArray does not work because it
+    // contains null bytes, so we convert it to a string
+    QString positionAndGeometry = QString::number(pos().x()) + "," + QString::number(pos().y())
+            + "," + QString::number(geometry().width()) + ","
+            + QString::number(geometry().height());
     QByteArray positionAndGeometryByteArray = positionAndGeometry.toUtf8();
 
     // Write the window positionAndGeometry to an extended attribute
@@ -417,15 +428,11 @@ void FileManagerMainWindow::saveWindowGeometry()
 
     // If "Tree View" is checked in the "View" menu, write "1" to the extended attribute,
     // otherwise write "2" to the extended attribute
-    if (m_treeViewAction->isChecked())
-    {
+    if (m_treeViewAction->isChecked()) {
         ea.write("WindowView", "1");
-    }
-    else
-    {
+    } else {
         ea.write("WindowView", "2");
     }
-
 }
 
 // Callback function for when the user moves the window
@@ -449,14 +456,14 @@ void FileManagerMainWindow::resizeEvent(QResizeEvent *event)
     QMainWindow::resizeEvent(event);
 
     // Re-layout the items in the view to reflect the new grid layout
-    if (! m_treeViewAction->isChecked()) {
+    if (!m_treeViewAction->isChecked()) {
         m_iconView->doItemsLayout();
     }
 
     // TOOD: Wait until no resize events are coming in for 1 second
-    // This is necessary because the resizeEvent() is called multiple times when the user resizes the window
-    // and we only want to save the window geometry when the user has finished resizing the window.
-    // How to do this properly?
+    // This is necessary because the resizeEvent() is called multiple times when the user resizes
+    // the window and we only want to save the window geometry when the user has finished resizing
+    // the window. How to do this properly?
 
     saveWindowGeometry();
 }
@@ -472,12 +479,10 @@ FileManagerMainWindow::~FileManagerMainWindow()
     instances().removeAll(this);
 
     // If this is the last window, quit the application
-    if (instances().isEmpty())
-    {
+    if (instances().isEmpty()) {
         qDebug() << "Last window closed, quitting application";
         qApp->quit();
     }
-
 }
 
 void FileManagerMainWindow::createMenus()
@@ -492,8 +497,7 @@ void FileManagerMainWindow::createMenus()
 
     fileMenu->addAction(tr("Open"));
     fileMenu->actions().last()->setShortcut(QKeySequence("Ctrl+O"));
-    connect(fileMenu->actions().last(), &QAction::triggered, this, [this] ()
-    {
+    connect(fileMenu->actions().last(), &QAction::triggered, this, [this]() {
         QModelIndex index = m_treeView->currentIndex();
         QString filePath = m_fileSystemModel->filePath(index);
         open(filePath);
@@ -514,11 +518,11 @@ void FileManagerMainWindow::createMenus()
 
     fileMenu->addSeparator();
 
-    QAction* closeAction = new QAction(tr("Close"), this);
+    QAction *closeAction = new QAction(tr("Close"), this);
     closeAction->setShortcut(QKeySequence("Ctrl+W"));
     fileMenu->addAction(closeAction);
     connect(closeAction, &QAction::triggered, this, &FileManagerMainWindow::close);
-    if(m_is_first_instance) {
+    if (m_is_first_instance) {
         closeAction->setEnabled(false);
     }
 
@@ -545,7 +549,7 @@ void FileManagerMainWindow::createMenus()
     editMenu->addAction(tr("Delete"));
     editMenu->actions().last()->setShortcut(QKeySequence("Ctrl-Backspace"));
     editMenu->addSeparator();
-    QAction* selectAllAction = new QAction(tr("Select All"), this);
+    QAction *selectAllAction = new QAction(tr("Select All"), this);
     selectAllAction->setShortcut(QKeySequence("Ctrl+A"));
     editMenu->addAction(selectAllAction);
 
@@ -553,8 +557,8 @@ void FileManagerMainWindow::createMenus()
     connect(selectAllAction, &QAction::triggered, this, &FileManagerMainWindow::selectAll);
 
     // Create the Rename action
-    m_renameAction = editMenu->addAction(tr("Rename..."), this, &FileManagerMainWindow::renameSelectedItem);
-
+    m_renameAction =
+            editMenu->addAction(tr("Rename..."), this, &FileManagerMainWindow::renameSelectedItem);
 
     // Set the shortcut key for the Rename action to Ctrl+R
     m_renameAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_R));
@@ -565,7 +569,7 @@ void FileManagerMainWindow::createMenus()
     m_menuBar->addMenu(editMenu);
 
     // Create the View menu
-    QMenu* viewMenu = new QMenu(tr("View"));
+    QMenu *viewMenu = new QMenu(tr("View"));
 
     // Connect the triggered() signals of the Tree View and Icon View actions to slots
     connect(m_treeViewAction, &QAction::triggered, this, &FileManagerMainWindow::showTreeView);
@@ -580,26 +584,27 @@ void FileManagerMainWindow::createMenus()
         viewMenu->actions().last()->setEnabled(false);
 
     // Create the Show/Hide Status Bar action
-    QAction* showHideStatusBarAction = new QAction(tr("Show/Hide Status Bar"), this);
+    QAction *showHideStatusBarAction = new QAction(tr("Show/Hide Status Bar"), this);
 
     // Add the Show/Hide Status Bar action to the View menu
     viewMenu->addAction(showHideStatusBarAction);
 
     // Connect the triggered() signal of the Show/Hide Status Bar action to a slot
-    connect(showHideStatusBarAction, &QAction::triggered, this, &FileManagerMainWindow::showHideStatusBar);
+    connect(showHideStatusBarAction, &QAction::triggered, this,
+            &FileManagerMainWindow::showHideStatusBar);
 
     // Add the View menu to the menu bar
     m_menuBar->addMenu(viewMenu);
 
     // Create the Go menu
-    QMenu* goMenu = new QMenu(tr("Go"));
+    QMenu *goMenu = new QMenu(tr("Go"));
 
     goMenu->addAction(tr("Go Up"));
     goMenu->actions().last()->setShortcut(QKeySequence("Ctrl+Up"));
-    if(QFileInfo(m_currentDir).canonicalFilePath() == "/") {
+    if (QFileInfo(m_currentDir).canonicalFilePath() == "/") {
         goMenu->actions().last()->setEnabled(false);
     }
-    connect(goMenu->actions().last(), &QAction::triggered, this, [this](){
+    connect(goMenu->actions().last(), &QAction::triggered, this, [this]() {
         openFolderInNewWindow(QFileInfo(m_currentDir + "/../").canonicalFilePath());
     });
     if (m_is_first_instance)
@@ -607,10 +612,10 @@ void FileManagerMainWindow::createMenus()
 
     goMenu->addAction(tr("Go Up and Close Current"));
     goMenu->actions().last()->setShortcut(QKeySequence("Shift+Ctrl+Up"));
-    if(QFileInfo(m_currentDir).canonicalFilePath() == "/") {
+    if (QFileInfo(m_currentDir).canonicalFilePath() == "/") {
         goMenu->actions().last()->setEnabled(false);
     }
-    connect(goMenu->actions().last(), &QAction::triggered, this, [this](){
+    connect(goMenu->actions().last(), &QAction::triggered, this, [this]() {
         openFolderInNewWindow(QFileInfo(m_currentDir + "/../").canonicalFilePath());
         close();
     });
@@ -621,38 +626,34 @@ void FileManagerMainWindow::createMenus()
 
     goMenu->addAction(tr("Computer"));
     goMenu->actions().last()->setShortcut(QKeySequence("Ctrl+Shift+C"));
-    connect(goMenu->actions().last(), &QAction::triggered, this, [this](){
-        openFolderInNewWindow("/");
-    });
+    connect(goMenu->actions().last(), &QAction::triggered, this,
+            [this]() { openFolderInNewWindow("/"); });
 
     goMenu->addAction(tr("Network"));
     goMenu->actions().last()->setShortcut(QKeySequence("Ctrl+Shift+N"));
-    connect(goMenu->actions().last(), &QAction::triggered, this, [this](){
+    connect(goMenu->actions().last(), &QAction::triggered, this, [this]() {
         QMessageBox::information(nullptr, (" "), tr("This feature is still in development."));
     });
 
     goMenu->addAction(tr("Devices"));
     goMenu->actions().last()->setShortcut(QKeySequence("Ctrl+Shift+U"));
-    connect(goMenu->actions().last(), &QAction::triggered, this, [this](){
-        openFolderInNewWindow("/media");
-    });
+    connect(goMenu->actions().last(), &QAction::triggered, this,
+            [this]() { openFolderInNewWindow("/media"); });
     goMenu->addAction(tr("Applications"));
     goMenu->actions().last()->setShortcut(QKeySequence("Ctrl+Shift+A"));
-    connect(goMenu->actions().last(), &QAction::triggered, this, [this](){
-        openFolderInNewWindow("/Applications");
-    });
+    connect(goMenu->actions().last(), &QAction::triggered, this,
+            [this]() { openFolderInNewWindow("/Applications"); });
 
     goMenu->addSeparator();
 
     goMenu->addAction(tr("Home"));
     goMenu->actions().last()->setShortcut(QKeySequence("Ctrl+Home"));
-    connect(goMenu->actions().last(), &QAction::triggered, this, [this](){
-        openFolderInNewWindow(QDir::homePath());
-    });
+    connect(goMenu->actions().last(), &QAction::triggered, this,
+            [this]() { openFolderInNewWindow(QDir::homePath()); });
 
     goMenu->addAction(tr("Documents"));
     goMenu->actions().last()->setShortcut(QKeySequence("Ctrl+Shift+D"));
-    connect(goMenu->actions().last(), &QAction::triggered, this, [this](){
+    connect(goMenu->actions().last(), &QAction::triggered, this, [this]() {
         // Create if it doesn't exist
         QDir dir(QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation));
         if (!dir.exists())
@@ -662,7 +663,7 @@ void FileManagerMainWindow::createMenus()
 
     goMenu->addAction(tr("Downloads"));
     goMenu->actions().last()->setShortcut(QKeySequence("Ctrl+Shift+L"));
-    connect(goMenu->actions().last(), &QAction::triggered, this, [this](){
+    connect(goMenu->actions().last(), &QAction::triggered, this, [this]() {
         // Create if it doesn't exist
         QDir dir(QStandardPaths::writableLocation(QStandardPaths::DownloadLocation));
         if (!dir.exists())
@@ -672,7 +673,7 @@ void FileManagerMainWindow::createMenus()
 
     goMenu->addAction(tr("Music"));
     goMenu->actions().last()->setShortcut(QKeySequence("Ctrl+Shift+M"));
-    connect(goMenu->actions().last(), &QAction::triggered, this, [this](){
+    connect(goMenu->actions().last(), &QAction::triggered, this, [this]() {
         // Create if it doesn't exist
         QDir dir(QStandardPaths::writableLocation(QStandardPaths::MusicLocation));
         if (!dir.exists())
@@ -682,7 +683,7 @@ void FileManagerMainWindow::createMenus()
 
     goMenu->addAction(tr("Pictures"));
     goMenu->actions().last()->setShortcut(QKeySequence("Ctrl+Shift+P"));
-    connect(goMenu->actions().last(), &QAction::triggered, this, [this](){
+    connect(goMenu->actions().last(), &QAction::triggered, this, [this]() {
         // Create if it doesn't exist
         QDir dir(QStandardPaths::writableLocation(QStandardPaths::PicturesLocation));
         if (!dir.exists())
@@ -692,7 +693,7 @@ void FileManagerMainWindow::createMenus()
 
     goMenu->addAction(tr("Videos"));
     goMenu->actions().last()->setShortcut(QKeySequence("Ctrl+Shift+V"));
-    connect(goMenu->actions().last(), &QAction::triggered, this, [this](){
+    connect(goMenu->actions().last(), &QAction::triggered, this, [this]() {
         // Create if it doesn't exist
         QDir dir(QStandardPaths::writableLocation(QStandardPaths::MoviesLocation));
         if (!dir.exists())
@@ -704,7 +705,7 @@ void FileManagerMainWindow::createMenus()
 
     goMenu->addAction(tr("Trash"));
     goMenu->actions().last()->setShortcut(QKeySequence("Ctrl+Shift+T"));
-    connect(goMenu->actions().last(), &QAction::triggered, this, [this](){
+    connect(goMenu->actions().last(), &QAction::triggered, this, [this]() {
         // XDG Trash path
         openFolderInNewWindow(QDir::homePath() + "/.local/share/Trash/files");
     });
@@ -713,7 +714,7 @@ void FileManagerMainWindow::createMenus()
     m_menuBar->addMenu(goMenu);
 
     // Create the Help menu
-    QMenu* helpMenu = new QMenu("Help");
+    QMenu *helpMenu = new QMenu("Help");
 
     // Add an action to the Help menu
     QAction *a = helpMenu->addAction("About Filer");
@@ -729,27 +730,36 @@ void FileManagerMainWindow::createMenus()
     QShortcut *shortcut;
 
     shortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_Down), this);
-    connect(shortcut, &QShortcut::activated, this, [this] (){
-        QModelIndex index = m_treeView->currentIndex();
-        QString filePath = m_fileSystemModel->filePath(index);
-        open(filePath);
-    }, Qt::QueuedConnection);
+    connect(
+            shortcut, &QShortcut::activated, this,
+            [this]() {
+                QModelIndex index = m_treeView->currentIndex();
+                QString filePath = m_fileSystemModel->filePath(index);
+                open(filePath);
+            },
+            Qt::QueuedConnection);
 
     shortcut = new QShortcut(QKeySequence(Qt::ALT + Qt::CTRL + Qt::Key_Down), this);
-    connect(shortcut, &QShortcut::activated, this, [this] (){
-        QModelIndex index = m_treeView->currentIndex();
-        QString filePath = m_fileSystemModel->filePath(index);
-        openWith(filePath);
-    }, Qt::QueuedConnection);
+    connect(
+            shortcut, &QShortcut::activated, this,
+            [this]() {
+                QModelIndex index = m_treeView->currentIndex();
+                QString filePath = m_fileSystemModel->filePath(index);
+                openWith(filePath);
+            },
+            Qt::QueuedConnection);
 
     shortcut = new QShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_Down), this);
-    connect(shortcut, &QShortcut::activated, this, [this] (){
-        QModelIndex index = m_treeView->currentIndex();
-        QString filePath = m_fileSystemModel->filePath(index);
-        open(filePath);
-        if(!m_is_first_instance)
-            close();
-    }, Qt::QueuedConnection);
+    connect(
+            shortcut, &QShortcut::activated, this,
+            [this]() {
+                QModelIndex index = m_treeView->currentIndex();
+                QString filePath = m_fileSystemModel->filePath(index);
+                open(filePath);
+                if (!m_is_first_instance)
+                    close();
+            },
+            Qt::QueuedConnection);
 
     /*
      * TODO
@@ -757,12 +767,14 @@ void FileManagerMainWindow::createMenus()
     connect(shortcut, &QShortcut::activated, this, &MainWindow::on_actionDelete_triggered);
 
     shortcut = new QShortcut(QKeySequence(Qt::SHIFT + Qt::Key_Delete), this);
-    connect(shortcut, &QShortcut::activated, this, &MainWindow::on_actionDeleteWithoutTrash_triggered);
+    connect(shortcut, &QShortcut::activated, this,
+    &MainWindow::on_actionDeleteWithoutTrash_triggered);
 
     shortcut = new QShortcut(QKeySequence(Qt::SHIFT + Qt::CTRL + Qt::Key_Backspace), this);
-    connect(shortcut, &QShortcut::activated, this, &MainWindow::on_actionDeleteWithoutTrash_triggered);
+    connect(shortcut, &QShortcut::activated, this,
+    &MainWindow::on_actionDeleteWithoutTrash_triggered);
      */
- }
+}
 
 void FileManagerMainWindow::showAboutBox()
 {
@@ -784,13 +796,16 @@ void FileManagerMainWindow::selectAll()
     QModelIndex parentIndex = m_treeView->currentIndex().parent();
 
     // Create a new selection model
-    QItemSelectionModel* selectionModel = new QItemSelectionModel(m_treeView->model());
+    QItemSelectionModel *selectionModel = new QItemSelectionModel(m_treeView->model());
 
     // Set the selection model for the tree view
     m_treeView->setSelectionModel(selectionModel);
 
     // Select all items in the parent directory
-    selectionModel->select(QItemSelection(parentIndex.child(0, 0), parentIndex.child(parentIndex.model()->rowCount() - 1, 0)), QItemSelectionModel::Select);
+    selectionModel->select(
+            QItemSelection(parentIndex.child(0, 0),
+                           parentIndex.child(parentIndex.model()->rowCount() - 1, 0)),
+            QItemSelectionModel::Select);
 }
 
 // Show the tree view
@@ -855,7 +870,7 @@ void FileManagerMainWindow::updateStatusBar()
 
     // Calculate the size of the selected items on disk
     qint64 size = 0;
-    for (const QModelIndex& index : selectedIndexes) {
+    for (const QModelIndex &index : selectedIndexes) {
         size += m_fileSystemModel->size(index);
     }
 
@@ -863,7 +878,8 @@ void FileManagerMainWindow::updateStatusBar()
     QString sizeString = QLocale().formattedDataSize(size);
 
     // Show the number of selected items and their size on disk in the status bar
-    m_statusBar->showMessage(QString("%1 items selected (%2)").arg(selectedIndexes.size()).arg(sizeString));
+    m_statusBar->showMessage(
+            QString("%1 items selected (%2)").arg(selectedIndexes.size()).arg(sizeString));
 }
 
 // Getter method for the directory property
@@ -884,13 +900,11 @@ void FileManagerMainWindow::openFolder(const QString &rootPath)
     // Print the name of the called function
     qDebug() << Q_FUNC_INFO;
 
-
     // Set the root path to the selected directory
     m_fileSystemModel->setRootPath(rootPath);
 
     // Set the root index to the selected directory
     m_treeView->setRootIndex(m_fileSystemModel->index(rootPath));
-
 }
 
 void FileManagerMainWindow::openFolderInNewWindow(const QString &rootPath)
@@ -901,7 +915,8 @@ void FileManagerMainWindow::openFolderInNewWindow(const QString &rootPath)
         return;
     }
 
-    // Check if the path exists and is a directory or a symlink to a directory, show an error dialog if it is not
+    // Check if the path exists and is a directory or a symlink to a directory, show an error dialog
+    // if it is not
     if (!QFileInfo(rootPath).exists() || !QFileInfo(rootPath).isDir()) {
         QMessageBox::critical(nullptr, "Error", "This path is not a folder.");
         return;
@@ -915,7 +930,7 @@ void FileManagerMainWindow::openFolderInNewWindow(const QString &rootPath)
 
     // Check if a window for the specified root path already exists
     bool windowExists = false;
-    for (FileManagerMainWindow* window : instances()) {
+    for (FileManagerMainWindow *window : instances()) {
         if (window->m_fileSystemModel->rootPath() == rootPath) {
             // A window for the specified root path already exists, so raise it and return
             window->raise();
@@ -926,8 +941,9 @@ void FileManagerMainWindow::openFolderInNewWindow(const QString &rootPath)
 
     if (!windowExists) {
         // No window for the specified root path exists, so create a new one
-        // Not setting a parent, so that the window does not get destroyed when the parent gets destroyed
-        FileManagerMainWindow* newWindow = new FileManagerMainWindow(nullptr, rootPath);
+        // Not setting a parent, so that the window does not get destroyed when the parent gets
+        // destroyed
+        FileManagerMainWindow *newWindow = new FileManagerMainWindow(nullptr, rootPath);
         newWindow->show();
     }
 }
@@ -952,13 +968,10 @@ void FileManagerMainWindow::onItemDropped(const QModelIndex &targetIndex)
     QString targetPath = m_fileSystemModel->filePath(targetIndex);
 
     // Handle the selected action
-    if (selectedAction == copyAction)
-    {
+    if (selectedAction == copyAction) {
         // Copy the selected items to the target folder
         copySelectedItems(targetPath);
-    }
-    else if (selectedAction == moveAction)
-    {
+    } else if (selectedAction == moveAction) {
         // Move the selected items to the target folder
         moveSelectedItems(targetPath);
     }
@@ -980,12 +993,14 @@ void FileManagerMainWindow::moveSelectedItems(const QString &destinationPath)
  * and if the directory is writable by the user. If all these conditions are met,
  * it enables the drop indicator for the tree view and the icon view, allowing
  * the user to drop items onto the folder.
- * Otherwise, it disables the drop indicator, preventing the user from dropping items onto the folder.
+ * Otherwise, it disables the drop indicator, preventing the user from dropping items onto the
+ * folder.
  */
 void FileManagerMainWindow::enableDropOnFolder(const QModelIndex &index)
 {
     /*
-     * This code is commented out because it made the TreeView crash when the user used the scroll wheel
+     * This code is commented out because it made the TreeView crash when the user used the scroll
+    wheel
      *
     // Print the name of the called function
     qDebug() << Q_FUNC_INFO;
@@ -1024,8 +1039,7 @@ void FileManagerMainWindow::dragEnterEvent(QDragEnterEvent *event)
     QFileInfo targetFolderInfo(m_fileSystemModel->filePath(targetIndex));
 
     // Check if the target folder is writable
-    if (targetFolderInfo.isWritable())
-    {
+    if (targetFolderInfo.isWritable()) {
         qDebug() << "The target folder is writable";
         // Accept the drag and drop event
         event->accept();
@@ -1036,9 +1050,7 @@ void FileManagerMainWindow::dragEnterEvent(QDragEnterEvent *event)
 
         // Accept the event
         event->acceptProposedAction();
-    }
-    else
-    {
+    } else {
         qDebug() << "The target folder is not writable";
         // Reject the event
         event->ignore();
@@ -1055,7 +1067,7 @@ void FileManagerMainWindow::dragMoveEvent(QDragMoveEvent *event)
     qDebug() << Q_FUNC_INFO;
 
     // Get the model index of the item the drag is over
-   const QModelIndex targetIndex = m_iconView->indexAt(event->pos());
+    const QModelIndex targetIndex = m_iconView->indexAt(event->pos());
 
     // Get the file path of the item
     const QString filePath = m_fileSystemModel->filePath(targetIndex);
@@ -1064,17 +1076,14 @@ void FileManagerMainWindow::dragMoveEvent(QDragMoveEvent *event)
     QFileInfo fileInfo(filePath);
 
     // Check if the item is a folder and is writable by the user
-    if (fileInfo.isDir() && fileInfo.isWritable())
-    {
+    if (fileInfo.isDir() && fileInfo.isWritable()) {
         // Accept the drag and drop event
         event->accept();
 
         // Show the drop indicator
         m_treeView->setDropIndicatorShown(true);
         m_iconView->setDropIndicatorShown(true);
-    }
-    else
-    {
+    } else {
         // Ignore the drag and drop event
         event->ignore();
 
@@ -1083,7 +1092,6 @@ void FileManagerMainWindow::dragMoveEvent(QDragMoveEvent *event)
         m_iconView->setDropIndicatorShown(false);
     }
 }
-
 
 void FileManagerMainWindow::open(const QString &filePath)
 {
@@ -1094,20 +1102,21 @@ void FileManagerMainWindow::open(const QString &filePath)
     const QModelIndex selectedIndex = m_selectionModel->currentIndex();
 
     // Check if the file path ends with ".app", ".AppDir", or ".AppImage"
-    if (filePath.endsWith(".app") || filePath.endsWith(".AppDir") || filePath.endsWith(".AppImage")) {
+    if (filePath.endsWith(".app") || filePath.endsWith(".AppDir")
+        || filePath.endsWith(".AppImage")) {
         // Use the "launch" command to open the file
         qDebug() << "Launching:" << filePath;
         QProcess process;
         process.setProgram("launch");
-        process.setArguments({filePath});
+        process.setArguments({ filePath });
         process.startDetached();
     } else {
 
         // Check if the filePath is a directory or a file
-        if(QFileInfo(filePath).isDir())
-        {
+        if (QFileInfo(filePath).isDir()) {
             QString rootPath = m_fileSystemModel->filePath(selectedIndex);
-            // If central widget is a tree view, open folder in existing window; else open in new window
+            // If central widget is a tree view, open folder in existing window; else open in new
+            // window
             if (this->centralWidget() == m_treeView) {
                 // Open the folder in the current window
                 openFolder(rootPath);
@@ -1115,13 +1124,11 @@ void FileManagerMainWindow::open(const QString &filePath)
                 // Open the folder in a new window
                 openFolderInNewWindow(rootPath);
             }
-        }
-        else
-        {
+        } else {
             // Use the "open" command to open the file
             QProcess process;
             process.setProgram("open");
-            process.setArguments({filePath});
+            process.setArguments({ filePath });
             process.startDetached();
         }
     }
@@ -1135,7 +1142,7 @@ void FileManagerMainWindow::openWith(const QString &filePath)
     // Use the "open" command to open the file
     QProcess process;
     process.setProgram("open");
-    process.setArguments({"--chooser", filePath});
+    process.setArguments({ "--chooser", filePath });
     process.startDetached();
 }
 
@@ -1155,7 +1162,8 @@ void FileManagerMainWindow::renameSelectedItem()
 
     // Use the QInputDialog class to ask the user for the new name for the selected item
     bool ok;
-    const QString newName = QInputDialog::getText(nullptr, tr("Rename"), tr("New name:"), QLineEdit::Normal, currentName, &ok);
+    const QString newName = QInputDialog::getText(nullptr, tr("Rename"), tr("New name:"),
+                                                  QLineEdit::Normal, currentName, &ok);
     if (!ok)
         return;
 
@@ -1175,28 +1183,25 @@ void FileManagerMainWindow::updateMenus()
     if (selectedIndexes.size() == 1) {
         // Get the selected index
         const QModelIndex selectedIndex = selectedIndexes.first();
-            m_renameAction->setEnabled(true);
+        m_renameAction->setEnabled(true);
     } else {
         // Disable the Rename action
         m_renameAction->setEnabled(false);
     }
 }
 
-QStringList FileManagerMainWindow::readFilenamesFromHiddenFile(const QString& filePath)
+QStringList FileManagerMainWindow::readFilenamesFromHiddenFile(const QString &filePath)
 {
     QStringList filenames;
 
     // Open the .hidden file for reading
     QFile file(filePath);
-    if (file.open(QIODevice::ReadOnly))
-    {
+    if (file.open(QIODevice::ReadOnly)) {
         // Read the filenames from the file and store them in the list
         QTextStream stream(&file);
-        while (!stream.atEnd())
-        {
+        while (!stream.atEnd()) {
             QString filename = stream.readLine().trimmed();
-            if (!filename.isEmpty())
-            {
+            if (!filename.isEmpty()) {
                 filenames << filename;
             }
         }

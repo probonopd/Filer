@@ -92,21 +92,22 @@ qint64 MoverCopier::getTotalSize(const QString &source, bool recursive)
 
     // Get the list of files and directories in the source
     QDir dir(source);
-    QFileInfoList entries = dir.entryInfoList(QDir::NoDotAndDotDot | QDir::Files | QDir::Dirs | QDir::NoSymLinks);
+    QFileInfoList entries =
+            dir.entryInfoList(QDir::NoDotAndDotDot | QDir::Files | QDir::Dirs | QDir::NoSymLinks);
 
     // Iterate over the entries
-            foreach (const QFileInfo &entry, entries) {
-            // If the entry is a file, add its size to the total
-            if (entry.isFile()) {
-                totalSize += entry.size();
-            }
-
-            // If the entry is a directory and recursive copying/moving is enabled,
-            // recursively get the total size of the files in the directory
-            if (entry.isDir() && recursive) {
-                totalSize += getTotalSize(entry.absoluteFilePath(), recursive);
-            }
+    foreach (const QFileInfo &entry, entries) {
+        // If the entry is a file, add its size to the total
+        if (entry.isFile()) {
+            totalSize += entry.size();
         }
+
+        // If the entry is a directory and recursive copying/moving is enabled,
+        // recursively get the total size of the files in the directory
+        if (entry.isDir() && recursive) {
+            totalSize += getTotalSize(entry.absoluteFilePath(), recursive);
+        }
+    }
 
     return totalSize;
 }
@@ -115,7 +116,8 @@ void MoverCopier::copyFiles(const QString &source, const QString &destination, b
 {
     // Get the list of files and directories in the source
     QDir dir(source);
-    QFileInfoList entries = dir.entryInfoList(QDir::NoDotAndDotDot | QDir::Files | QDir::Dirs | QDir::NoSymLinks);
+    QFileInfoList entries =
+            dir.entryInfoList(QDir::NoDotAndDotDot | QDir::Files | QDir::Dirs | QDir::NoSymLinks);
 
     // Create the destination directory if it doesn't exist
     if (!dir.exists(destination)) {
@@ -123,28 +125,31 @@ void MoverCopier::copyFiles(const QString &source, const QString &destination, b
     }
 
     // Iterate over the entries
-            foreach (const QFileInfo &entry, entries) {
-            // If the entry is a file, copy it to the destination
-            if (entry.isFile()) {
-                QFile::copy(entry.absoluteFilePath(), destination + QDir::separator() + entry.fileName());
+    foreach (const QFileInfo &entry, entries) {
+        // If the entry is a file, copy it to the destination
+        if (entry.isFile()) {
+            QFile::copy(entry.absoluteFilePath(),
+                        destination + QDir::separator() + entry.fileName());
 
-                // Update the progress
-                progressDialog->setValue(progressDialog->value() + entry.size());
-            }
-
-            // If the entry is a directory and recursive copying is enabled,
-            // recursively copy the files in the directory
-            if (entry.isDir() && recursive) {
-                copyFiles(entry.absoluteFilePath(), destination + QDir::separator() + entry.fileName(), recursive);
-            }
+            // Update the progress
+            progressDialog->setValue(progressDialog->value() + entry.size());
         }
+
+        // If the entry is a directory and recursive copying is enabled,
+        // recursively copy the files in the directory
+        if (entry.isDir() && recursive) {
+            copyFiles(entry.absoluteFilePath(), destination + QDir::separator() + entry.fileName(),
+                      recursive);
+        }
+    }
 }
 
 void MoverCopier::moveFiles(const QString &source, const QString &destination, bool recursive)
 {
     // Get the list of files and directories in the source
     QDir dir(source);
-    QFileInfoList entries = dir.entryInfoList(QDir::NoDotAndDotDot | QDir::Files | QDir::Dirs | QDir::NoSymLinks);
+    QFileInfoList entries =
+            dir.entryInfoList(QDir::NoDotAndDotDot | QDir::Files | QDir::Dirs | QDir::NoSymLinks);
 
     // Create the destination directory if it doesn't exist
     if (!dir.exists(destination)) {
@@ -152,21 +157,23 @@ void MoverCopier::moveFiles(const QString &source, const QString &destination, b
     }
 
     // Iterate over the entries
-            foreach (const QFileInfo &entry, entries) {
-            // If the entry is a file, move it to the destination
-            if (entry.isFile()) {
-                QFile::rename(entry.absoluteFilePath(), destination + QDir::separator() + entry.fileName());
+    foreach (const QFileInfo &entry, entries) {
+        // If the entry is a file, move it to the destination
+        if (entry.isFile()) {
+            QFile::rename(entry.absoluteFilePath(),
+                          destination + QDir::separator() + entry.fileName());
 
-                // Update the progress
-                progressDialog->setValue(progressDialog->value() + entry.size());
-            }
-
-            // If the entry is a directory and recursive moving is enabled,
-            // recursively move the files in the directory
-            if (entry.isDir() && recursive) {
-                moveFiles(entry.absoluteFilePath(), destination + QDir::separator() + entry.fileName(), recursive);
-            }
+            // Update the progress
+            progressDialog->setValue(progressDialog->value() + entry.size());
         }
+
+        // If the entry is a directory and recursive moving is enabled,
+        // recursively move the files in the directory
+        if (entry.isDir() && recursive) {
+            moveFiles(entry.absoluteFilePath(), destination + QDir::separator() + entry.fileName(),
+                      recursive);
+        }
+    }
 }
 
 // Set Shortcut Command+. to cancel the current operation

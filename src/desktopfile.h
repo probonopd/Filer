@@ -38,7 +38,7 @@
 class DesktopFile
 {
 public:
-    DesktopFile(const QString& filename);
+    DesktopFile(const QString &filename);
     QString getIcon() const;
 
 private:

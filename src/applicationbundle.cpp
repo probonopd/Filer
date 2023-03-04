@@ -58,7 +58,8 @@ ApplicationBundle::ApplicationBundle(const QString &path)
     if (fileInfo.isDir()) {
         QDir dir(path);
         // qDebug() << "Checking if" << path << "is an application bundle or AppDir";
-        if (dir.exists("Resources") && QFileInfo(dir.filePath(fileInfo.completeBaseName())).isExecutable()) {
+        if (dir.exists("Resources")
+            && QFileInfo(dir.filePath(fileInfo.completeBaseName())).isExecutable()) {
             m_isApp = true;
             // qDebug() << path << "is an application bundle";
             m_name = QFileInfo(dir.path()).completeBaseName();
@@ -68,12 +69,8 @@ ApplicationBundle::ApplicationBundle(const QString &path)
             QDir resourcesDir(dir.filePath("Resources"));
             // qDebug() << "resourcesDir: " << resourcesDir;
             QStringList filters;
-            filters << m_name + ".png"
-                    << m_name + ".jpg"
-                    << m_name + ".svg"
-                    << m_name + ".svgz"
-                    << m_name + ".ico"
-                    << m_name + ".icns";
+            filters << m_name + ".png" << m_name + ".jpg" << m_name + ".svg" << m_name + ".svgz"
+                    << m_name + ".ico" << m_name + ".icns";
             resourcesDir.setNameFilters(filters);
             if (resourcesDir.exists()) {
                 m_icon = resourcesDir.filePath(resourcesDir.entryList(filters).first());
@@ -92,7 +89,7 @@ ApplicationBundle::ApplicationBundle(const QString &path)
             m_isApp = false;
             m_isAppDir = false;
         }
-    } 
+    }
 
     // Check if the path is an AppImage
     if (fileInfo.fileName().endsWith(".AppImage")) {
@@ -117,14 +114,14 @@ ApplicationBundle::ApplicationBundle(const QString &path)
 
     // Check if the path is a valid bundle
     if (m_isApp || m_isAppDir || m_isAppImage || m_isDesktopFile) {
-        // qDebug() << path << "m_isApp:" << m_isApp << "m_isAppDir:" << m_isAppDir << "m_isAppImage:" << m_isAppImage << "m_isDesktopFile:" << m_isDesktopFile;
+        // qDebug() << path << "m_isApp:" << m_isApp << "m_isAppDir:" << m_isAppDir <<
+        // "m_isAppImage:" << m_isAppImage << "m_isDesktopFile:" << m_isDesktopFile;
 
         // The path is a recognized application bundle
         m_isValid = true;
     } else {
         m_isValid = false;
     }
-
 }
 
 QString ApplicationBundle::path() const

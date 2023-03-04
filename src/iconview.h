@@ -33,7 +33,6 @@
 class IconView : public QListView
 {
 
-
 public:
     IconView();
 

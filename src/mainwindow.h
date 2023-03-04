@@ -25,13 +25,13 @@
  */
 
 /*
- * This code defines a class called FileManagerMainWindow, which is derived from the QMainWindow class.
- * It provides a GUI for a file manager application that allows the user to browse and manage files and directories.
- * The class has several private member variables, including m_treeView and m_iconView,
- * which are pointers to QTreeView and QListView objects, respectively.
- * These objects will be used to display the file system hierarchy in a tree view and a list view.
- * The class also has several private member functions, such as showTreeView() and showIconView(),
- * which are used to switch between the tree view and the list view.
+ * This code defines a class called FileManagerMainWindow, which is derived from the QMainWindow
+ * class. It provides a GUI for a file manager application that allows the user to browse and manage
+ * files and directories. The class has several private member variables, including m_treeView and
+ * m_iconView, which are pointers to QTreeView and QListView objects, respectively. These objects
+ * will be used to display the file system hierarchy in a tree view and a list view. The class also
+ * has several private member functions, such as showTreeView() and showIconView(), which are used
+ * to switch between the tree view and the list view.
  */
 
 #ifndef FILEMANAGERMAINWINDOW_H
@@ -51,7 +51,8 @@ class FileManagerMainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    static QList<FileManagerMainWindow*> &instances(); // The list is declared static, so it is unique for the entire application
+    static QList<FileManagerMainWindow *> &
+    instances(); // The list is declared static, so it is unique for the entire application
 
     FileManagerMainWindow(QWidget *parent = nullptr, const QString &initialDirectory = "/");
 
@@ -67,7 +68,7 @@ public:
     void showIconView();
     void showHideStatusBar();
 
-    QFileSystemModel* m_fileSystemModel;
+    QFileSystemModel *m_fileSystemModel;
 
     bool m_is_first_instance = false;
 
@@ -81,25 +82,25 @@ public slots:
     void resizeEvent(QResizeEvent *event);
 
     void moveEvent(QMoveEvent *event);
-    void paintEvent(QPaintEvent *event); // Overriding the paintEvent() method to draw a background image
+    void
+    paintEvent(QPaintEvent *event); // Overriding the paintEvent() method to draw a background image
 
 private:
-
     QStackedWidget *m_stackedWidget;
 
     QString m_currentDir;
-    QTreeView* m_treeView;
-    QListView* m_iconView;
-    QItemSelectionModel* m_selectionModel;
-    QMenuBar* m_menuBar;
+    QTreeView *m_treeView;
+    QListView *m_iconView;
+    QItemSelectionModel *m_selectionModel;
+    QMenuBar *m_menuBar;
 
-    QStatusBar* m_statusBar;
-    QAction* m_treeViewAction;
-    QAction* m_iconViewAction;
+    QStatusBar *m_statusBar;
+    QAction *m_treeViewAction;
+    QAction *m_iconViewAction;
 
-    QAction* m_renameAction;
+    QAction *m_renameAction;
 
-    QStringList readFilenamesFromHiddenFile(const QString& filePath);
+    QStringList readFilenamesFromHiddenFile(const QString &filePath);
     void openFolder(const QString &rootPath);
 
     void createMenus();
@@ -114,6 +115,5 @@ private:
 
     void saveWindowGeometry();
 };
-
 
 #endif // FILEMANAGERMAINWINDOW_H

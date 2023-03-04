@@ -59,8 +59,6 @@ int main(int argc, char *argv[])
     // Create a FileManagerTreeView instance at ~/Desktop
     FileManagerMainWindow mainWindow;
 
-
-
     // Show the main window
     mainWindow.show();
 

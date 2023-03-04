@@ -25,18 +25,16 @@
  */
 
 /* The MoverCopier class provides two public methods:
- * copy() and move() which can be used to copy or move a file or a directory from one location to another.
- * The copy() and move() methods take three arguments:
- * The source file or directory path.
+ * copy() and move() which can be used to copy or move a file or a directory from one location to
+ * another. The copy() and move() methods take three arguments: The source file or directory path.
  * The destination file or directory path.
  * A boolean flag indicating whether to recursively copy or move subdirectories (defaults to true).
- * Internally, the MoverCopier class uses the copyFile(), copyDirectory(), moveFile(), and moveDirectory() methods
- * to perform the actual copying or moving of files and directories.
- * These methods also update a QProgressDialog instance to show the progress
- * and estimated time remaining for the operation.
- * A QTimer instance is also used to periodically reset the progress dialog to update the estimated time remaining.
+ * Internally, the MoverCopier class uses the copyFile(), copyDirectory(), moveFile(), and
+ * moveDirectory() methods to perform the actual copying or moving of files and directories. These
+ * methods also update a QProgressDialog instance to show the progress and estimated time remaining
+ * for the operation. A QTimer instance is also used to periodically reset the progress dialog to
+ * update the estimated time remaining.
  */
-
 
 #ifndef MOVERCOPIER_H
 #define MOVERCOPIER_H
@@ -51,7 +49,7 @@
 
 class MoverCopier : public QObject
 {
-Q_OBJECT
+    Q_OBJECT
 
 public:
     MoverCopier(QObject *parent = nullptr);
@@ -84,6 +82,5 @@ private:
     // Progress dialog to show the progress of the operation
     QProgressDialog *progressDialog;
 };
-
 
 #endif // MOVERCOPIER_H

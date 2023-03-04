@@ -46,11 +46,11 @@ class FileManager : public QDBusAbstractAdaptor
     Q_CLASSINFO("D-Bus Interface", "org.freedesktop.FileManager1")
 
 public:
-    FileManager(QObject* parent = nullptr);
+    FileManager(QObject *parent = nullptr);
 
 public slots:
-            // This is the "ShowItems" method that other applications (like menu and web browsers) can call
-            void ShowItems(const QStringList& files, const QString& flags);
+    // This is the "ShowItems" method that other applications (like menu and web browsers) can call
+    void ShowItems(const QStringList &files, const QString &flags);
 };
 
-#endif //FILER_FILEMANAGER_H
+#endif // FILER_FILEMANAGER_H

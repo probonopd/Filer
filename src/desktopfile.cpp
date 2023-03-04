@@ -29,31 +29,24 @@
 #include <QStringList>
 #include <QTextStream>
 
-DesktopFile::DesktopFile(const QString& filename)
-    : m_filename(filename)
-{
-}
+DesktopFile::DesktopFile(const QString &filename) : m_filename(filename) { }
 
 QString DesktopFile::getIcon() const
 {
     QString icon;
     QFile file(m_filename);
-    if (file.open(QIODevice::ReadOnly))
-    {
+    if (file.open(QIODevice::ReadOnly)) {
         QTextStream stream(&file);
-        while (!stream.atEnd())
-        {
+        while (!stream.atEnd()) {
             QString line = stream.readLine();
-            if (line.startsWith("Icon="))
-            {
+            if (line.startsWith("Icon=")) {
                 icon = line.mid(5); // get the value after "Icon="
                 break;
             }
         }
     }
 
-    if (!icon.isEmpty())
-    {
+    if (!icon.isEmpty()) {
         // Search for the icon in directories that may contain icons
         QStringList iconPaths;
         iconPaths << "/usr/share/pixmaps"
@@ -63,15 +56,16 @@ QString DesktopFile::getIcon() const
 
         // List of allowed icon suffixes
         QStringList allowedSuffixes;
-        allowedSuffixes << ".png" << ".svg" << ".xpm" << ".ico" << ".icns";
+        allowedSuffixes << ".png"
+                        << ".svg"
+                        << ".xpm"
+                        << ".ico"
+                        << ".icns";
 
-        for (const QString& path : iconPaths)
-        {
-            for (const QString& suffix : allowedSuffixes)
-            {
+        for (const QString &path : iconPaths) {
+            for (const QString &suffix : allowedSuffixes) {
                 QString iconFile = path + "/" + icon + suffix;
-                if (QFile::exists(iconFile))
-                {
+                if (QFile::exists(iconFile)) {
                     icon = iconFile;
                     break;
                 }

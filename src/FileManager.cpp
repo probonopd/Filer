@@ -16,7 +16,7 @@
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
  * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
  * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUExtended attribute was written successfullyT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
  * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
  * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
@@ -27,14 +27,14 @@
 #include "FileManager.h"
 #include "mainwindow.h"
 
-FileManager::FileManager(QObject* parent) : QDBusAbstractAdaptor(parent)
+FileManager::FileManager(QObject *parent) : QDBusAbstractAdaptor(parent)
 {
     qDebug() << "FileManager::FileManager()";
 }
 
-void FileManager::ShowItems(const QStringList& files, const QString& flags)
+void FileManager::ShowItems(const QStringList &files, const QString &flags)
 {
-    for (const QString& file : files) {
+    for (const QString &file : files) {
         // Find parent directory
         QFileInfo fileInfo(file);
         QString parentDir = fileInfo.absolutePath();

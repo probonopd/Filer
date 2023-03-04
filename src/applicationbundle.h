@@ -41,7 +41,8 @@ public:
     // Returns the path of the bundle
     QString path() const;
 
-    // Returns true if the bundle is valid, i.e. it is an application bundle, AppDir, AppImage, or .desktop file
+    // Returns true if the bundle is valid, i.e. it is an application bundle, AppDir, AppImage, or
+    // .desktop file
     bool isValid() const;
 
     // Returns true if the bundle is an application bundle

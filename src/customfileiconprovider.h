@@ -40,4 +40,4 @@ public:
     QMimeDatabase db;
 };
 
-#endif //Filer_CUSTOMFILEICONPROVIDER_H
+#endif // Filer_CUSTOMFILEICONPROVIDER_H
