@@ -52,7 +52,8 @@ QColor CombinedIconCreator::findDominantColor(const QPixmap& pixmap) {
     return QColor(dominantColor);
 }
 
-QIcon CombinedIconCreator::createCombinedIcon(const QIcon& documentIcon, const QIcon& applicationIcon) {
+QIcon CombinedIconCreator::createCombinedIcon(const QIcon& applicationIcon) {
+    QIcon documentIcon = QIcon::fromTheme("document");
     QPixmap document_pixmap = documentIcon.pixmap(32, 32);
     QPixmap application_pixmap = applicationIcon.pixmap(24, 24);
 

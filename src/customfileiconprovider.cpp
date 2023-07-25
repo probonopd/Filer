@@ -28,6 +28,7 @@
 #include "applicationbundle.h"
 #include "LaunchDB.h"
 #include "CombinedIconCreator.h"
+#include "extendedattributes.h"
 
 #include <QDebug>
 #include <QFile>
@@ -80,6 +81,24 @@ QIcon CustomFileIconProvider::icon(const QFileInfo &info) const
         // This is how it should be, so that the user always knows what
         // application will be used to open the file
 
+        CombinedIconCreator iconCreator;
+
+        // Read the extended attributes of the file, see if there is an "open-with" attribute
+        // If so, then use that application to open the file
+
+        ExtendedAttributes ea(info.absoluteFilePath());
+        QByteArray openWith = ea.read("open-with");
+
+        if (!openWith.isEmpty()) {
+            qDebug() << "openWith:" << openWith << "for" << info.absoluteFilePath();
+            ApplicationBundle bundle(openWith);
+            if (bundle.isValid()) {
+                QIcon applicationIcon = QIcon(bundle.icon()).pixmap(16, 16);
+                QIcon combinedIcon = iconCreator.createCombinedIcon( applicationIcon);
+                return (combinedIcon);
+            }
+        }
+
         // Find out which application will be used to open the file by default from the launch database
         LaunchDB ldb;
         QString application = ldb.applicationForFile(info);
@@ -105,11 +124,8 @@ QIcon CustomFileIconProvider::icon(const QFileInfo &info) const
                 return (QIcon(combined_icon));
                  */
 
-                QIcon documentIcon = QIcon::fromTheme("document");
                 QIcon applicationIcon = QIcon(bundle.icon()).pixmap(16, 16);
-
-                CombinedIconCreator iconCreator;
-                QIcon combinedIcon = iconCreator.createCombinedIcon(documentIcon, applicationIcon);
+                QIcon combinedIcon = iconCreator.createCombinedIcon( applicationIcon);
                 return (combinedIcon);
 
             }

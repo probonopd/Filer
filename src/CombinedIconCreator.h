@@ -57,7 +57,7 @@
 class CombinedIconCreator
 {
 public:
-    QIcon createCombinedIcon(const QIcon& documentIcon, const QIcon& applicationIcon);
+    QIcon createCombinedIcon(const QIcon& applicationIcon);
 
 private:
     QColor findDominantColor(const QPixmap& pixmap);
