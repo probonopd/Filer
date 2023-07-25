@@ -25,9 +25,13 @@
  */
 
 #include "DesktopFile.h"
+#include <QDir>
 #include <QFile>
+#include <QFileInfo>
 #include <QStringList>
 #include <QTextStream>
+#include <QDebug>
+#include <QIcon>
 
 DesktopFile::DesktopFile(const QString &filename) : m_filename(filename) { }
 
@@ -35,24 +39,43 @@ QString DesktopFile::getIcon() const
 {
     QString icon;
     QFile file(m_filename);
+    qDebug() << "Searching for icon for" << m_filename;
+    // Search for a line starting with "Icon=" in the file
     if (file.open(QIODevice::ReadOnly)) {
-        QTextStream stream(&file);
-        while (!stream.atEnd()) {
-            QString line = stream.readLine();
-            if (line.startsWith("Icon=")) {
-                icon = line.mid(5); // get the value after "Icon="
+        QTextStream in(&file);
+        while (!in.atEnd()) {
+            QString line = in.readLine();
+            qDebug() << line;
+            if (line.startsWith("Icon")) {
+                // Split the line at "=" and take the second part, trim it
+                icon = line.split("=").at(1).trimmed();
                 break;
             }
         }
+        file.close();
+    }
+
+    // Print error message if icon is not found
+    if (icon.isEmpty()) {
+        qDebug() << "Icon= not found in" << m_filename;
+    } else {
+        qDebug() << "Searching typical xdg locations for" << icon;
     }
 
     if (!icon.isEmpty()) {
         // Search for the icon in directories that may contain icons
         QStringList iconPaths;
+        QString currentThemeName = QIcon::themeName();
+        qDebug() << "currentThemeName: " << currentThemeName;
         iconPaths << "/usr/share/pixmaps"
-                  << "/usr/share/icons"
+                  << QString("/usr/share/icons") + QDir::separator() + currentThemeName
+                  << QString("/usr/share/icons") + QDir::separator() + "hicolor" // Fallback icon theme
                   << "/usr/local/share/pixmaps"
-                  << "/usr/local/share/icons";
+                  << QString("/usr/local/share/icons") + QDir::separator() + currentThemeName
+                  << QString("/usr/local/share/icons") + QDir::separator() + "hicolor" // Fallback icon theme
+                  << QDir::homePath() + QDir::separator() + ".icons" // User's icon directory
+                  << QDir::homePath() + QDir::separator() + ".local/share/pixmaps" // User's pixmap directory
+                  << QDir::homePath() + QDir::separator() + ".local/share/icons"; // User's icon theme directory
 
         // List of allowed icon suffixes
         QStringList allowedSuffixes;
@@ -62,12 +85,30 @@ QString DesktopFile::getIcon() const
                         << ".ico"
                         << ".icns";
 
+        // List of additional sizes based on XDG icon theme specification
+        QStringList iconSizes;
+        iconSizes << ""
+                  << "32x32"
+                  << "48x48"
+                  << "64x64"
+                  << "512x512"
+                  << "256x256"
+                  << "128x128"
+                  << "scalable"
+                  << "24x24"
+                  << "22x22"
+                  << "16x16";
+
+        // Check each directory in iconPaths and for each size
         for (const QString &path : iconPaths) {
-            for (const QString &suffix : allowedSuffixes) {
-                QString iconFile = path + "/" + icon + suffix;
-                if (QFile::exists(iconFile)) {
-                    icon = iconFile;
-                    break;
+            for (const QString &size : iconSizes) {
+                for (const QString &suffix : allowedSuffixes) {
+                    QString iconFile = path + "/" + size + "/apps/" + icon + suffix;
+                    if (QFile::exists(iconFile)) {
+                        icon = iconFile;
+                        qDebug() << "Found icon" << icon;
+                        return icon;
+                    }
                 }
             }
         }

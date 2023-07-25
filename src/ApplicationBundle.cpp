@@ -106,7 +106,7 @@ ApplicationBundle::ApplicationBundle(const QString &path)
         m_name = fileInfo.completeBaseName();
         // qDebug() << "Name:" << m_name;
 
-        DesktopFile df(fileInfo.fileName());
+        DesktopFile df(fileInfo.filePath());
         m_icon = df.getIcon();
     } else {
         m_isDesktopFile = false;
