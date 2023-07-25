@@ -403,7 +403,6 @@ void FileManagerMainWindow::saveWindowGeometry()
     // Print window positionAndGeometry
     qDebug() << "Window positionAndGeometry: " << geometry();
     qDebug() << "Window size: " << size();
-    qDebug() << "Window position: " << pos();
 
     // Get the number of the display the window is on
     int displayNumber = QGuiApplication::screens().indexOf(windowHandle()->screen());
@@ -418,7 +417,7 @@ void FileManagerMainWindow::saveWindowGeometry()
 
     // Writing the window position and geometry directly as a QByteArray does not work because it
     // contains null bytes, so we convert it to a string
-    QString positionAndGeometry = QString::number(pos().x()) + "," + QString::number(pos().y())
+    QString positionAndGeometry = QString::number(geometry().x()) + "," + QString::number(geometry().y())
             + "," + QString::number(geometry().width()) + ","
             + QString::number(geometry().height());
     QByteArray positionAndGeometryByteArray = positionAndGeometry.toUtf8();

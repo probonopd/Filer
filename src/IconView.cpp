@@ -24,7 +24,7 @@
  * SUCH DAMAGE.
  */
 
-#include "iconview.h"
+#include "IconView.h"
 
 #include <QAbstractItemModel>
 #include <QDragMoveEvent>
