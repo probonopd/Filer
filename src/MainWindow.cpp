@@ -57,6 +57,7 @@
 #include <QLinearGradient>
 #include <QColor>
 #include <QSortFilterProxyModel>
+#include <QMimeData>
 
 /*
  * This creates a FileManagerMainWindow object with a QTreeView and QListView widget.
@@ -260,6 +261,11 @@ FileManagerMainWindow::FileManagerMainWindow(QWidget *parent, const QString &ini
 
     CustomItemDelegate *customItemDelegate = new CustomItemDelegate(this, m_fileSystemModel);
 
+    // Install the custom item delegate as an event filter on the tree view and icon view
+    // so that we can intercept mouse events like QEvent::DragMove
+    m_treeView->viewport()->installEventFilter(customItemDelegate);
+    m_iconView->viewport()->installEventFilter(customItemDelegate);
+
     m_iconView->setItemDelegate(customItemDelegate);
     m_treeView->setItemDelegate(customItemDelegate);
 
@@ -356,6 +362,8 @@ FileManagerMainWindow::FileManagerMainWindow(QWidget *parent, const QString &ini
         m_iconView->setLayoutDirection(Qt::RightToLeft);
         // Make the items the same size to make the layout look orderly
         m_iconView->setUniformItemSizes(true);
+        // Sort the items in the model
+        // m_fileSystemModel->sort(0, Qt::AscendingOrder);
     }
 
     // Set the icon size to 32x32 pixels
@@ -1217,4 +1225,10 @@ QStringList FileManagerMainWindow::readFilenamesFromHiddenFile(const QString &fi
     qDebug() << "Hidden files:" << filenames;
 
     return filenames;
+}
+
+void FileManagerMainWindow::dropEvent(QDropEvent *event)
+{
+
+    qDebug() << "TODO: Save position for file:" << event->mimeData()->urls().first().toLocalFile();
 }

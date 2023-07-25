@@ -39,10 +39,11 @@
 #include <QDebug>
 #include <QMoveEvent>
 #include <QTreeWidgetItem>
+#include "ExtendedAttributes.h"
 
 // Constructor that takes a QObject pointer and a QFileSystemModel pointer as arguments
 CustomItemDelegate::CustomItemDelegate(QObject *parent, QFileSystemModel *fileSystemModel)
-    : QStyledItemDelegate(parent), m_fileSystemModel(fileSystemModel)
+        : QStyledItemDelegate(parent), m_fileSystemModel(fileSystemModel)
 {
     // Initialize the m_fileSystemModel member variable with the provided QFileSystemModel pointer
     m_fileSystemModel = fileSystemModel;
@@ -57,40 +58,7 @@ CustomItemDelegate::CustomItemDelegate(QObject *parent, QFileSystemModel *fileSy
 // Implement the destructor of the CustomItemDelegate class
 CustomItemDelegate::~CustomItemDelegate()
 {
-    // The destructor does not have any additional functionality
-}
-
-// When a delegate object is moved, save its coordinates relative to the parent widget
-// Implement the eventFilter() method in the CustomItemDelegate class
-bool CustomItemDelegate::eventFilter(QObject *object, QEvent *event)
-{
-
-    qDebug() << "Received event:" << event->type();
-
-    // Check if the event is a move event
-    if (event->type() == QEvent::Move) {
-        qDebug() << "Move event";
-
-        // Check if the object is a QWidget
-        if (QWidget *widget = qobject_cast<QWidget *>(object)) {
-            // Get the global position of the widget in the view
-            QPoint globalPos = widget->mapToGlobal(QPoint(0, 0));
-
-            // Get the coordinates of the object relative to the parent widget
-            int x = globalPos.x();
-            int y = globalPos.y();
-            qDebug() << "x: " << x << "y: " << y;
-
-            qDebug() << "TODO: Save the coordinates of the delegate object relative to the parent "
-                        "widget";
-
-            // Return true to indicate that the event was handled
-            return true;
-        }
-    }
-
-    // Return false to indicate that the event was not handled
-    return false;
+    // Clean up any allocated resources or objects if needed
 }
 
 // Reimplement the displayText() function of the CustomItemDelegate class
@@ -413,4 +381,46 @@ bool CustomItemDelegate::editorEvent(QEvent *event, QAbstractItemModel *model,
     }
 
     return false;
+}
+
+void CustomItemDelegate::installEventFilterOnView(QAbstractItemView* view) {
+    if (view) {
+        view->viewport()->installEventFilter(this);
+    }
+}
+
+bool CustomItemDelegate::eventFilter(QObject* object, QEvent* event) {
+    if (event->type() == QEvent::DragEnter) {
+        onDragEnterEvent(static_cast<QDragEnterEvent*>(event));
+    } else if (event->type() == QEvent::Drop) {
+        onDropEvent(static_cast<QDropEvent*>(event));
+    }
+
+    // Continue with default event processing
+    return QObject::eventFilter(object, event);
+}
+
+void CustomItemDelegate::onDragEnterEvent(QDragEnterEvent* event) {
+    if (event->mimeData()->hasUrls()) {
+        event->acceptProposedAction();
+    }
+}
+
+void CustomItemDelegate::onDropEvent(QDropEvent* event) {
+    if (event->mimeData()->hasUrls()) {
+        QList<QUrl> urls = event->mimeData()->urls();
+        if (!urls.isEmpty()) {
+            // Assuming you handle only one file drop, take the first URL
+            QString filePath = urls.first().toLocalFile();
+
+            qDebug() << "Dropped file:" << filePath << "at position:" << event->pos();
+            // Store the position in extended attribute
+            QString coordinates = QString::number(event->pos().x()) + "," + QString::number(event->pos().y());
+            qDebug() << "Coordinates:" << coordinates;
+            // Set the extended attribute using ExtendedAttributes class
+            ExtendedAttributes ea(filePath);
+            ea.write("coordinates", coordinates.toUtf8());
+            emit fileDropped(filePath, event->pos());
+        }
+    }
 }

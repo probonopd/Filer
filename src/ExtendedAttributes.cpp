@@ -59,7 +59,7 @@ bool ExtendedAttributes::write(const QString &attributeName, const QByteArray &a
         return false;
     } else {
         // Extended attribute was written successfully
-        qDebug() << "Extended attribute was written successfully";
+        // qDebug() << "Extended attribute was written successfully";
     }
 #elif defined(__linux__)
     qDebug() << "Writing extended attribute" << attributeName << "with value" << attributeValue
@@ -76,7 +76,7 @@ bool ExtendedAttributes::write(const QString &attributeName, const QByteArray &a
         return false;
     } else {
         // Extended attribute was written successfully
-        qDebug() << "Extended attribute was written successfully";
+        // qDebug() << "Extended attribute was written successfully";
     }
 #endif
     return true;
@@ -85,7 +85,7 @@ bool ExtendedAttributes::write(const QString &attributeName, const QByteArray &a
 
 QByteArray ExtendedAttributes::read(const QString &attributeName)
 {
-    qDebug() << "Trying to read extended attribute" << attributeName;
+    // qDebug() << "Trying to read extended attribute" << attributeName;
 
     if (!m_file.exists()) {
         // Error: File does not exist
@@ -95,7 +95,7 @@ QByteArray ExtendedAttributes::read(const QString &attributeName)
 
 #if defined(__unix__) || defined(__APPLE__)
     // Read the extended attribute from the file in the "user" namespace
-    qDebug() << "Reading extended attribute" << attributeName << "from file" << m_file.fileName();
+    // qDebug() << "Reading extended attribute" << attributeName << "from file" << m_file.fileName();
     QProcess extattr;
     extattr.start("getextattr",
                   QStringList() << "-hq"
@@ -107,10 +107,10 @@ QByteArray ExtendedAttributes::read(const QString &attributeName)
         return QByteArray();
     } else {
         // Extended attribute was read successfully
-        qDebug() << "Extended attribute was read successfully";
+        // qDebug() << "Extended attribute was read successfully";
     }
     QByteArray attributeValue = extattr.readAllStandardOutput().trimmed();
-    qDebug() << "ExtendedAttributes::read():" << attributeName << " " << attributeValue;
+    // qDebug() << "ExtendedAttributes::read():" << attributeName << " " << attributeValue;
     return attributeValue;
 #elif defined(__linux__)
     // Read the extended attribute from the file in the "user" namespace

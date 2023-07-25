@@ -45,7 +45,6 @@ QString DesktopFile::getIcon() const
         QTextStream in(&file);
         while (!in.atEnd()) {
             QString line = in.readLine();
-            qDebug() << line;
             if (line.startsWith("Icon")) {
                 // Split the line at "=" and take the second part, trim it
                 icon = line.split("=").at(1).trimmed();

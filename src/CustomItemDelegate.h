@@ -1,49 +1,22 @@
-/*-
- * Copyright (c) 2022-23 Simon Peter <probono@puredarwin.org>
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS "AS IS" AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
- * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
- * SUCH DAMAGE.
- */
-
-/* To persist the fact that QModelItemDelegate objects in a QIconView have been moved,
- * we need to update the model to reflect the new positions of the delegates.
- * In Qt, the model is responsible for storing the data that is displayed in a view.
- * This means that if we want to persist changes to the positions of QModelItemDelegate objects in a
- * QIconView, we need to update the model to reflect the new positions of the delegates.
- */
-
 #ifndef CUSTOMITEMDELEGATE_H
 #define CUSTOMITEMDELEGATE_H
 
 #include <QStyledItemDelegate>
-#include <QObject>
 #include <QFileSystemModel>
+#include <QObject>
 #include <QAction>
 #include <QMenu>
+#include <QMimeData>
+
+// Add a custom role to store the delegate position
+enum CustomItemDelegateRole {
+    DelegatePositionRole = Qt::UserRole + 1
+};
 
 // Define the CustomItemDelegate class, which is derived from the QStyledItemDelegate class
 class CustomItemDelegate : public QStyledItemDelegate
 {
-    Q_OBJECT
+Q_OBJECT
 
 public:
     CustomItemDelegate(QObject *parent, QFileSystemModel *fileSystemModel);
@@ -55,8 +28,14 @@ public:
     void paint(QPainter *painter, const QStyleOptionViewItem &option,
                const QModelIndex &index) const override;
 
-    // Override the eventFilter() method to handle events (e.g., move) for the delegate object
-    bool eventFilter(QObject *object, QEvent *event) override;
+    // Install event filters on your view using this function
+    void installEventFilterOnView(QAbstractItemView* view);
+
+    bool eventFilter(QObject* object, QEvent* event) override;
+
+signals:
+    // Define a signal to emit the file path and icon coordinates when a file is dropped
+    void fileDropped(const QString& filePath, const QPoint& iconPosition);
 
 protected:
     // Override the editorEvent() function to handle right-click events for the context menu
@@ -78,6 +57,13 @@ private:
     // and it is not responsible for handling user interactions with the items.
     // We should probably fix this in a future version of the application.
     QMenu menu;
+
+private slots:
+    // Slot to handle drag enter events
+    void onDragEnterEvent(QDragEnterEvent* event);
+
+    // Slot to handle drop events
+    void onDropEvent(QDropEvent* event);
 };
 
 #endif // CUSTOMITEMDELEGATE_H

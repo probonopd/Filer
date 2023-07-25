@@ -85,6 +85,8 @@ public slots:
     void
     paintEvent(QPaintEvent *event); // Overriding the paintEvent() method to draw a background image
 
+    void dropEvent(QDropEvent *event);
+
 private:
     QStackedWidget *m_stackedWidget;
 
