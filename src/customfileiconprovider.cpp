@@ -27,6 +27,7 @@
 #include "customfileiconprovider.h"
 #include "applicationbundle.h"
 #include "LaunchDB.h"
+#include "CombinedIconCreator.h"
 
 #include <QDebug>
 #include <QFile>
@@ -91,6 +92,7 @@ QIcon CustomFileIconProvider::icon(const QFileInfo &info) const
             ApplicationBundle bundle(application);
             if (bundle.isValid()) {
 
+                /*
                 // Overlay the icon of the application over the document icon
                 QPixmap document_icon = QIcon::fromTheme("document").pixmap(32, 32);
                 QPixmap application_icon = QIcon(bundle.icon()).pixmap(16, 16);
@@ -101,6 +103,15 @@ QIcon CustomFileIconProvider::icon(const QFileInfo &info) const
                 painter.drawPixmap(8, 8, application_icon);
                 painter.end();
                 return (QIcon(combined_icon));
+                 */
+
+                QIcon documentIcon = QIcon::fromTheme("document");
+                QIcon applicationIcon = QIcon(bundle.icon()).pixmap(16, 16);
+
+                CombinedIconCreator iconCreator;
+                QIcon combinedIcon = iconCreator.createCombinedIcon(documentIcon, applicationIcon);
+                return (combinedIcon);
+
             }
         }
     }
