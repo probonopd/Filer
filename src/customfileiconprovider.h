@@ -29,6 +29,7 @@
 
 #include <QFileIconProvider>
 #include <QMimeDatabase>
+#include "LaunchDB.h"
 
 class CustomFileIconProvider : public QFileIconProvider
 {
@@ -38,6 +39,7 @@ public:
     QIcon icon(const QFileInfo &info) const override;
 
     QMimeDatabase db;
+    LaunchDB ldb;
 
     QString currentThemeName;
 };

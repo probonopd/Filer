@@ -26,7 +26,7 @@
 
 #include "customfileiconprovider.h"
 #include "applicationbundle.h"
-#include "LaunchDB.h"
+
 #include "CombinedIconCreator.h"
 #include "extendedattributes.h"
 
@@ -39,6 +39,7 @@
 CustomFileIconProvider::CustomFileIconProvider()
 {
     QMimeDatabase db;
+    LaunchDB ldb;
 
     currentThemeName = QIcon::themeName();
     qDebug() << "currentThemeName: " << currentThemeName;
@@ -100,7 +101,7 @@ QIcon CustomFileIconProvider::icon(const QFileInfo &info) const
         }
 
         // Find out which application will be used to open the file by default from the launch database
-        LaunchDB ldb;
+
         QString application = ldb.applicationForFile(info);
         qDebug() << "application:" << application << "for" << info.absoluteFilePath();
         // If we did not find an application, then we use the "?" icon

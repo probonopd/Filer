@@ -10,7 +10,7 @@ LaunchDB::~LaunchDB() {
     delete db;
 }
 
-QString LaunchDB::applicationForFile(const QFileInfo &fileInfo) {
+QString LaunchDB::applicationForFile(const QFileInfo &fileInfo) const {
     // Check if the file exists
     if (!fileInfo.exists()) {
         return QString(); // Return an empty QString if the file doesn't exist
