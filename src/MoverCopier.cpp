@@ -24,7 +24,7 @@
  * SUCH DAMAGE.
  */
 
-#include "movercopier.h"
+#include "MoverCopier.h"
 
 #include <QObject>
 #include <QString>
@@ -36,7 +36,7 @@
 #include <QPushButton>
 #include <QKeyEvent>
 
-#include "movercopier.h"
+#include "MoverCopier.h"
 
 MoverCopier::MoverCopier(QObject *parent) : QObject(parent)
 {

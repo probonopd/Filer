@@ -20,14 +20,14 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets DBus)
 
 set(PROJECT_SOURCES
         main.cpp
-        mainwindow.cpp
-        mainwindow.h
-        applicationbundle.h applicationbundle.cpp
-        desktopfile.h desktopfile.cpp
-        customitemdelegate.h customitemdelegate.cpp
-        extendedattributes.cpp extendedattributes.h
-        movercopier.cpp movercopier.h
-        customfileiconprovider.cpp customfileiconprovider.h
+        MainWindow.cpp
+        MainWindow.h
+        ApplicationBundle.h ApplicationBundle.cpp
+        DesktopFile.h DesktopFile.cpp
+        CustomItemDelegate.h CustomItemDelegate.cpp
+        ExtendedAttributes.cpp ExtendedAttributes.h
+        MoverCopier.cpp MoverCopier.h
+        CustomFileIconProvider.cpp CustomFileIconProvider.h
         FileManager.cpp FileManager.h LaunchDB.cpp LaunchDB.h CombinedIconCreator.cpp CombinedIconCreator.h)
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

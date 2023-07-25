@@ -24,10 +24,10 @@
  * SUCH DAMAGE.
  */
 
-#include "applicationbundle.h"
-#include "customitemdelegate.h"
-#include "mainwindow.h"
-#include "customfileiconprovider.h"
+#include "ApplicationBundle.h"
+#include "CustomItemDelegate.h"
+#include "MainWindow.h"
+#include "CustomFileIconProvider.h"
 
 #include <QFileIconProvider>
 #include <QFileInfo>

@@ -24,16 +24,17 @@
  * SUCH DAMAGE.
  */
 
-#include "customfileiconprovider.h"
-#include "applicationbundle.h"
+#include "CustomFileIconProvider.h"
+#include "ApplicationBundle.h"
 
 #include "CombinedIconCreator.h"
-#include "extendedattributes.h"
+#include "ExtendedAttributes.h"
 
 #include <QDebug>
 #include <QFile>
 #include <QIcon>
 #include <QPainter>
+#include <QApplication>
 
 
 CustomFileIconProvider::CustomFileIconProvider()
@@ -61,7 +62,17 @@ QIcon CustomFileIconProvider::icon(const QFileInfo &info) const
         // If the file has the executable bit set and is not a directory,
         // then we always want to show the executable icon
         if (info.isExecutable() && !info.isDir()) {
-            return (QIcon::fromTheme("application-x-executable"));
+            // Try to load the application icon from the path ./Resources/application.png relative to the application executable path
+            // If the icon cannot be loaded, use the default application icon from the icon theme
+            QString applicationPath = QApplication::applicationDirPath();
+            QIcon applicationIcon;
+            QString applicationIconPath = applicationPath + "/Resources/application.png";
+            if (QFile::exists(applicationIconPath)) {
+                applicationIcon = QIcon(applicationIconPath);
+            } else {
+                applicationIcon = QIcon::fromTheme("application-x-executable");
+            }
+            return (applicationIcon);
         }
         // Handle .DirIcon (AppDir) and volumelcon.icns (Mac)
         QStringList candidates = {info.absoluteFilePath() + "/.DirIcon", info.absoluteFilePath() + "/volumelcon.icns"};

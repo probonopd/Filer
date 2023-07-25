@@ -24,7 +24,7 @@
  * SUCH DAMAGE.
  */
 
-#include "desktopfile.h"
+#include "DesktopFile.h"
 #include <QFile>
 #include <QStringList>
 #include <QTextStream>

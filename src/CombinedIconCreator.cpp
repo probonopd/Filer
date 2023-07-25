@@ -4,6 +4,8 @@
 #include <QIcon>
 #include <QPainter>
 #include <QHash>
+#include <QApplication>
+#include <QFile>
 
 bool isVibrantColor(const QColor& color) {
     // Threshold values to define vibrant colors
@@ -53,7 +55,18 @@ QColor CombinedIconCreator::findDominantColor(const QPixmap& pixmap) {
 }
 
 QIcon CombinedIconCreator::createCombinedIcon(const QIcon& applicationIcon) {
-    QIcon documentIcon = QIcon::fromTheme("document");
+    // Try to load the document icon from the path ./Resources/document.png relative to the application executable path
+    // If the icon cannot be loaded, use the default document icon from the icon theme
+    QString applicationPath = QApplication::applicationDirPath();
+    QIcon documentIcon;
+    QString documentPath = applicationPath + "/Resources/document.png";
+
+    if (QFile::exists(documentPath)) {
+        documentIcon = QIcon(documentPath);
+    } else {
+        documentIcon = QIcon::fromTheme("document");
+    }
+
     QPixmap document_pixmap = documentIcon.pixmap(32, 32);
     QPixmap application_pixmap = applicationIcon.pixmap(24, 24);
 

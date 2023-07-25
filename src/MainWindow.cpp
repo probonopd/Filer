@@ -24,10 +24,10 @@
  * SUCH DAMAGE.
  */
 
-#include "mainwindow.h"
-#include "customitemdelegate.h"
-#include "customfileiconprovider.h"
-#include "extendedattributes.h"
+#include "MainWindow.h"
+#include "CustomItemDelegate.h"
+#include "CustomFileIconProvider.h"
+#include "ExtendedAttributes.h"
 
 #include <QMenuBar>
 #include <QMenu>

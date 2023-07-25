@@ -24,7 +24,7 @@
  * SUCH DAMAGE.
  */
 
-#include "applicationbundle.h"
+#include "ApplicationBundle.h"
 
 #include <QDir>
 #include <QFileInfo>
@@ -35,7 +35,7 @@
 #include <QStandardPaths>
 #include <QDebug>
 
-#include <desktopfile.h>
+#include <DesktopFile.h>
 
 ApplicationBundle::ApplicationBundle(const QString &path)
     : m_path(path),

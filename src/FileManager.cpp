@@ -25,7 +25,7 @@
  */
 
 #include "FileManager.h"
-#include "mainwindow.h"
+#include "MainWindow.h"
 
 FileManager::FileManager(QObject *parent) : QDBusAbstractAdaptor(parent)
 {

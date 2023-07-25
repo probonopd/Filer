@@ -24,7 +24,7 @@
  * SUCH DAMAGE.
  */
 
-#include "extendedattributes.h"
+#include "ExtendedAttributes.h"
 
 #include <QProcess>
 #include <QStringList>

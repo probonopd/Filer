@@ -28,7 +28,7 @@
 #include <QCoreApplication>
 #include <QCommandLineParser>
 
-#include "mainwindow.h"
+#include "MainWindow.h"
 #include "FileManager.h"
 
 int main(int argc, char *argv[])
