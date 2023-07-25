@@ -177,6 +177,11 @@ FileManagerMainWindow::FileManagerMainWindow(QWidget *parent, const QString &ini
             resize(600, 400);
             // move(100, 100);
         }
+        // If the window is outside the screen, move it to the center of the screen
+        if (!QApplication::desktop()->screenGeometry().contains(geometry())) {
+            qDebug() << "Window is outside the screen";
+            move(QApplication::desktop()->screen()->rect().center() - rect().center());
+        }
     }
 
     // Append to the list of windows
