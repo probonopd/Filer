@@ -32,6 +32,9 @@
 CustomFileIconProvider::CustomFileIconProvider()
 {
     QMimeDatabase db;
+
+    currentThemeName = QIcon::themeName();
+    qDebug() << "currentThemeName: " << currentThemeName;
 }
 
 /**
@@ -49,14 +52,37 @@ QIcon CustomFileIconProvider::icon(const QFileInfo &info) const
     } else {
         // Load icons for mime types in a deterministic way
         QString icon_name = db.mimeTypeForFile(info).iconName();
-        QString icon_path = QString("/usr/local/share/icons/elementary-xfce/mimes/32/") + icon_name
-                + QString(".png");
-        // Check if the icon exists
-        QFileInfo icon_info(icon_path);
-        if (icon_info.exists()) {
-            QIcon icon(icon_path);
-            return (icon);
+        QStringList icon_name_candidates = {icon_name};
+        // Note that we get, e.g., "text-x-python3" but we only have "text-x-python.png" in the icon theme
+        // So we need to strip the "3" from the icon name - just as an example
+        icon_name_candidates.append(icon_name.remove(QRegExp("[0-9*?]$")));
+        // Also note that we get "image-svg+xml" but we only have "image-x-svg+xml.png" in the icon theme
+        // So we need to add the "x-" to the icon name after the first "-" - just as an example (not limited to svg)
+        if (icon_name.contains("-")) {
+            icon_name_candidates.append(icon_name.replace("-", "-x-"));
         }
+        for (int i = 0; i < icon_name_candidates.size(); i++) {
+            QList<int> sizes = {32};
+            for (int j = 0; j < sizes.size(); j++) {
+                // icns, png, svg, xpm
+                QStringList extensions = {"icns", "png", "svg", "xpm"};
+                for (int k = 0; k < extensions.size(); k++) {
+                    QString icon_path = QString("/usr/local/share/icons/" + currentThemeName + "/mimes/") +
+                            QString::number(sizes[j]) + QString("/") + icon_name_candidates[i] +
+                            QString(".") + extensions[k];
+                    // Check if the icon exists
+                    QFileInfo icon_info(icon_path);
+                    if (icon_info.exists()) {
+                        QIcon icon(icon_path);
+                        return (icon);
+                    }
+                }
+            }
+        }
+        QString icon_path = QString("/usr/local/share/icons/" + currentThemeName + "/mimes/32/") +
+                            QString("/") + icon_name +
+                            QString(".*");
+        qDebug() << "No icon found for mime type" << icon_name << "in path" << icon_path;
     }
 
     // TODO:

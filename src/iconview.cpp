@@ -45,8 +45,7 @@ void IconView::paintEvent(QPaintEvent *event)
     QAbstractItemModel *model = this->model();
 
     // Loop through all rows in the model
-    for (int row = 0; row < model->rowCount(); row++)
-    {
+    for (int row = 0; row < model->rowCount(); row++) {
         // Get the index for the current row
         QModelIndex index = model->index(row, 0);
 
@@ -68,6 +67,8 @@ void IconView::dragMoveEvent(QDragMoveEvent *event)
     // Update the model to reflect the new position of the delegate
     QModelIndex index = this->indexAt(event->pos());
     this->model()->setData(index, event->pos(), Qt::UserRole);
+    qDebug() << "TODO: Save position for file:" << index.data(Qt::DisplayRole).toString();
+    qDebug() << "Position:" << event->pos();
 }
 
 void IconView::dropEvent(QDropEvent *event)
@@ -78,4 +79,6 @@ void IconView::dropEvent(QDropEvent *event)
     // Update the model to reflect the new position of the delegate
     QModelIndex index = this->indexAt(event->pos());
     this->model()->setData(index, event->pos(), Qt::UserRole);
+    qDebug() << "TODO: Save position for file:" << index.data(Qt::DisplayRole).toString();
+    qDebug() << "Position:" << event->pos();
 }

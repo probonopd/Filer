@@ -38,6 +38,8 @@ public:
     QIcon icon(const QFileInfo &info) const override;
 
     QMimeDatabase db;
+
+    QString currentThemeName;
 };
 
 #endif // Filer_CUSTOMFILEICONPROVIDER_H
