@@ -1,5 +1,5 @@
 /*-
- * Copyright (c) 2022 Simon Peter <probono@puredarwin.org>
+ * Copyright (c) 2022-23 Simon Peter <probono@puredarwin.org>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without

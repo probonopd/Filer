@@ -1,0 +1,8 @@
+|Other file managers|Filer|Implemented|
+|---|---|---|
+|Show icons for files based on their MIME type|Show icons for files based on the application that opens them|WIP based on `launch` "database"|
+|Do not allow individual files of the same MIME type to be opened with different applications|Allows individual files of the same MIME type to be opened with different applications (using the `can-open` extended attribute)|Handled by `launch`|
+|Do not persist window location and size for each window|Persists window location and size for each window|Implemented|
+|Do not persist the view type for each window|Persists the view type for each window|Implemented|
+|Do not persist icon locations|Persists icon locations|TODO|
+|Do not persist the size of each icon|Persists the size of each icon|For consideration|

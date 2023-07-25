@@ -28,7 +28,7 @@ set(PROJECT_SOURCES
         extendedattributes.cpp extendedattributes.h
         movercopier.cpp movercopier.h
         customfileiconprovider.cpp customfileiconprovider.h
-        FileManager.cpp FileManager.h)
+        FileManager.cpp FileManager.h LaunchDB.cpp LaunchDB.h)
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(Filer
