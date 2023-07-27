@@ -42,7 +42,7 @@
 #include "ExtendedAttributes.h"
 
 // Constructor that takes a QObject pointer and a QFileSystemModel pointer as arguments
-CustomItemDelegate::CustomItemDelegate(QObject *parent, QFileSystemModel *fileSystemModel)
+CustomItemDelegate::CustomItemDelegate(QObject* parent, CustomFileSystemModel* fileSystemModel)
         : QStyledItemDelegate(parent), m_fileSystemModel(fileSystemModel)
 {
     // Initialize the m_fileSystemModel member variable with the provided QFileSystemModel pointer
@@ -50,6 +50,9 @@ CustomItemDelegate::CustomItemDelegate(QObject *parent, QFileSystemModel *fileSy
 
     // Create an instance of the custom icon provider
     CustomFileIconProvider *iconProvider = new CustomFileIconProvider();
+
+    // Set the custom file system model in the file icon provider.
+    iconProvider->setModel(m_fileSystemModel);
 
     // Set the icon provider for the model
     m_fileSystemModel->setIconProvider(iconProvider);
@@ -125,8 +128,7 @@ void CustomItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
     }
 
     // Get the file path of the item
-    QString filePath =
-            static_cast<FileManagerMainWindow *>(parent())->m_fileSystemModel->filePath(index);
+    QString filePath = index.data(Qt::UserRole + 1).toString();
 
     // Create a QFileInfo object for the item
     QFileInfo fileInfo(filePath);

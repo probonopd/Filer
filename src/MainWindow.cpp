@@ -218,7 +218,10 @@ FileManagerMainWindow::FileManagerMainWindow(QWidget *parent, const QString &ini
     // Create an instance of our custom QFileIconProvider
     CustomFileIconProvider provider;
 
-    m_fileSystemModel = new QFileSystemModel(this);
+    // m_fileSystemModel = new QFileSystemModel(this);
+    m_fileSystemModel = new CustomFileSystemModel(this); // Not really working correctly yet; FIXME
+
+    provider.setModel(m_fileSystemModel);
 
     // Make the file system model use the custom icon provider
     m_fileSystemModel->setIconProvider(&provider);
@@ -237,12 +240,13 @@ FileManagerMainWindow::FileManagerMainWindow(QWidget *parent, const QString &ini
     m_treeView->setModel(m_fileSystemModel);
     m_iconView->setModel(m_fileSystemModel);
 
-    // Set the root index to the model's root directory
+    // Set the root path to the specified m_currentDir
+    m_fileSystemModel->setRootPath(m_currentDir);
+
+    // Preload the data for the tree view (so that e.g., CustomIconProvider can know open-with attributes)
     m_treeView->setRootIndex(m_fileSystemModel->index(m_currentDir));
     m_iconView->setRootIndex(m_fileSystemModel->index(m_currentDir));
 
-    // Set the root path to the specified m_currentDir
-    m_fileSystemModel->setRootPath(m_currentDir);
 
     //////////////////////////////////////////////////////
     // TODO: Add entries to the Desktop for Trash, Volumes
@@ -392,17 +396,23 @@ FileManagerMainWindow::FileManagerMainWindow(QWidget *parent, const QString &ini
     // showTreeView();
     // showIconView();
 
-    // Read extended attribute describing the view mode
-    QByteArray viewMode = extendedAttributes.read("WindowView");
-    int viewModeInt = viewMode.toInt();
-    qDebug() << "viewModeString:" << viewModeInt;
-    if (viewModeInt == 1) {
-        // Set the central widget to the list view (icons)
-        showTreeView();
+    if (instanceCount != 0) {
+        // Read extended attribute describing the view mode
+        QByteArray viewMode = extendedAttributes.read("WindowView");
+        int viewModeInt = viewMode.toInt();
+        qDebug() << "viewModeString:" << viewModeInt;
+        if (viewModeInt == 1) {
+            // Set the central widget to the list view (icons)
+            showTreeView();
+        } else {
+            // Set the central widget to the tree view
+            showIconView();
+        }
     } else {
-        // Set the central widget to the tree view
+        // The desktop is always shown as icons
         showIconView();
     }
+
 
     // Call destructor and destroy the window immediately when the window is closed
     // Only this way the window will be destroyed immediately and not when the event loop is
@@ -1170,7 +1180,7 @@ void FileManagerMainWindow::renameSelectedItem()
     const QModelIndex selectedIndex = m_selectionModel->currentIndex();
 
     // Get the current name of the selected item
-    const QString currentName = m_fileSystemModel->data(selectedIndex, Qt::DisplayRole).toString();
+    const QString currentName = m_fileSystemModel->fileName(selectedIndex);
 
     // Use the QInputDialog class to ask the user for the new name for the selected item
     bool ok;

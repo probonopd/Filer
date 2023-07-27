@@ -57,10 +57,10 @@
 class CombinedIconCreator
 {
 public:
-    QIcon createCombinedIcon(const QIcon& applicationIcon);
+    QIcon createCombinedIcon(const QIcon& applicationIcon) const;
 
 private:
-    QColor findDominantColor(const QPixmap& pixmap);
+    QColor findDominantColor(const QPixmap& pixmap) const;
 };
 
 #endif // COMBINEDICONCREATOR_H

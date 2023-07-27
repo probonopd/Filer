@@ -6,6 +6,7 @@
 #include <QHash>
 #include <QApplication>
 #include <QFile>
+#include <QDebug>
 
 bool isVibrantColor(const QColor& color) {
     // Threshold values to define vibrant colors
@@ -15,7 +16,7 @@ bool isVibrantColor(const QColor& color) {
     return color.saturation() > minSaturation && color.lightness() > minLightness;
 }
 
-QColor CombinedIconCreator::findDominantColor(const QPixmap& pixmap) {
+QColor CombinedIconCreator::findDominantColor(const QPixmap& pixmap) const {
     QImage image = pixmap.toImage();
 
     QHash<QRgb, int> colorCounts;
@@ -54,7 +55,8 @@ QColor CombinedIconCreator::findDominantColor(const QPixmap& pixmap) {
     return QColor(dominantColor);
 }
 
-QIcon CombinedIconCreator::createCombinedIcon(const QIcon& applicationIcon) {
+QIcon CombinedIconCreator::createCombinedIcon(const QIcon& applicationIcon) const {
+    qDebug() << "Creating combined icon";
     // Try to load the document icon from the path ./Resources/document.png relative to the application executable path
     // If the icon cannot be loaded, use the default document icon from the icon theme
     QString applicationPath = QApplication::applicationDirPath();
@@ -94,6 +96,6 @@ QIcon CombinedIconCreator::createCombinedIcon(const QIcon& applicationIcon) {
     painter.drawPixmap(8, 8-5, application_pixmap);
 
     painter.end();
-
+    qDebug() << "Combined icon created";
     return QIcon(combined_icon);
 }

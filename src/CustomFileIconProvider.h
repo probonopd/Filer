@@ -30,6 +30,9 @@
 #include <QFileIconProvider>
 #include <QMimeDatabase>
 #include "LaunchDB.h"
+#include <QModelIndex>
+#include "CustomFileSystemModel.h"
+#include "CombinedIconCreator.h"
 
 class CustomFileIconProvider : public QFileIconProvider
 {
@@ -38,10 +41,13 @@ public:
 
     QIcon icon(const QFileInfo &info) const override;
 
-    QMimeDatabase db;
-    LaunchDB ldb;
-
     QString currentThemeName;
+
+    void setModel(CustomFileSystemModel* model);
+
+private:
+    const CustomFileSystemModel* m_model;
+    CombinedIconCreator iconCreator;
 };
 
 #endif // Filer_CUSTOMFILEICONPROVIDER_H

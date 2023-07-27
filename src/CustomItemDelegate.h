@@ -7,6 +7,7 @@
 #include <QAction>
 #include <QMenu>
 #include <QMimeData>
+#include "CustomFileSystemModel.h"
 
 // Add a custom role to store the delegate position
 enum CustomItemDelegateRole {
@@ -19,7 +20,7 @@ class CustomItemDelegate : public QStyledItemDelegate
 Q_OBJECT
 
 public:
-    CustomItemDelegate(QObject *parent, QFileSystemModel *fileSystemModel);
+    explicit CustomItemDelegate(QObject* parent = nullptr, CustomFileSystemModel* fileSystemModel = nullptr);
 
     // Destructor
     ~CustomItemDelegate();
@@ -44,7 +45,7 @@ protected:
 
 private:
     // Private member variable to hold a pointer to the QFileSystemModel object
-    QFileSystemModel *m_fileSystemModel;
+    CustomFileSystemModel *m_fileSystemModel;
 
     // We use this to flash the icon if the item was double-clicked
     bool iconShown = false;

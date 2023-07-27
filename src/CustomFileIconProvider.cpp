@@ -25,6 +25,7 @@
  */
 
 #include "CustomFileIconProvider.h"
+#include "CustomFileSystemModel.h"
 #include "ApplicationBundle.h"
 
 #include "CombinedIconCreator.h"
@@ -36,14 +37,13 @@
 #include <QPainter>
 #include <QApplication>
 
-
 CustomFileIconProvider::CustomFileIconProvider()
 {
-    QMimeDatabase db;
-    LaunchDB ldb;
 
     currentThemeName = QIcon::themeName();
-    qDebug() << "currentThemeName: " << currentThemeName;
+    // qDebug() << "currentThemeName: " << currentThemeName;
+
+    CombinedIconCreator iconCreator;
 }
 
 /**
@@ -53,96 +53,87 @@ CustomFileIconProvider::CustomFileIconProvider()
  */
 QIcon CustomFileIconProvider::icon(const QFileInfo &info) const
 {
+
+    // If it is a directory, then we always want to show the folder icon
+    if (info.isDir()) {
+        return (QIcon::fromTheme("folder"));
+    }
+
     // Check if the item is an application bundle and return the icon
     ApplicationBundle bundle(info.absoluteFilePath());
     if (bundle.isValid()) {
         // qDebug() << "Bundle is valid: " << info.absoluteFilePath();
         return (QIcon(bundle.icon()));
-    } else {
-        // If the file has the executable bit set and is not a directory,
-        // then we always want to show the executable icon
-        if (info.isExecutable() && !info.isDir()) {
-            // Try to load the application icon from the path ./Resources/application.png relative to the application executable path
-            // If the icon cannot be loaded, use the default application icon from the icon theme
-            QString applicationPath = QApplication::applicationDirPath();
-            QIcon applicationIcon;
-            QString applicationIconPath = applicationPath + "/Resources/application.png";
-            if (QFile::exists(applicationIconPath)) {
-                applicationIcon = QIcon(applicationIconPath);
-            } else {
-                applicationIcon = QIcon::fromTheme("application-x-executable");
-            }
-            return (applicationIcon);
-        }
-        // Handle .DirIcon (AppDir) and volumelcon.icns (Mac)
-        QStringList candidates = {info.absoluteFilePath() + "/.DirIcon", info.absoluteFilePath() + "/volumelcon.icns"};
-        for (const QString &candidate: candidates) {
-            if (QFileInfo(candidate).exists()) {
-                // Read the contents of the file and turn it into an icon
-                QFile file(candidate);
-                return (QIcon(file.readAll()));
-            }
-        }
-        // If it is a directory, then we always want to show the folder icon
-        if (info.isDir()) {
-            return (QIcon::fromTheme("folder"));
-        }
+    }
 
-        // Construct an icon from the default document icon plus the icon of the application that will
-        // be used to open the file
-        // This is how it should be, so that the user always knows what
-        // application will be used to open the file
-
-        CombinedIconCreator iconCreator;
-
-        // Read the extended attributes of the file, see if there is an "open-with" attribute
-        // If so, then use that application to open the file
-
-        ExtendedAttributes ea(info.absoluteFilePath());
-        QByteArray openWith = ea.read("open-with");
-
-        if (!openWith.isEmpty()) {
-            qDebug() << "openWith:" << openWith << "for" << info.absoluteFilePath();
-            ApplicationBundle bundle(openWith);
-            if (bundle.isValid()) {
-                QIcon applicationIcon = QIcon(bundle.icon()).pixmap(16, 16);
-                QIcon combinedIcon = iconCreator.createCombinedIcon( applicationIcon);
-                return (combinedIcon);
-            }
-        }
-
-        // Find out which application will be used to open the file by default from the launch database
-
-        QString application = ldb.applicationForFile(info);
-        qDebug() << "application:" << application << "for" << info.absoluteFilePath();
-        // If we did not find an application, then we use the "?" icon
-        if (application.isEmpty()) {
-            return (QIcon::fromTheme("unknown"));
+    // If the file has the executable bit set and is not a directory,
+    // then we always want to show the executable icon
+    if (info.isExecutable() && !info.isDir()) {
+        // Try to load the application icon from the path ./Resources/application.png relative to the application executable path
+        // If the icon cannot be loaded, use the default application icon from the icon theme
+        QString applicationPath = QApplication::applicationDirPath();
+        QIcon applicationIcon;
+        QString applicationIconPath = applicationPath + "/Resources/application.png";
+        if (QFile::exists(applicationIconPath)) {
+            applicationIcon = QIcon(applicationIconPath);
         } else {
-            // Get the icon of the application
-            ApplicationBundle bundle(application);
-            if (bundle.isValid()) {
+            applicationIcon = QIcon::fromTheme("application-x-executable");
+        }
+        return (applicationIcon);
+    }
 
-                /*
-                // Overlay the icon of the application over the document icon
-                QPixmap document_icon = QIcon::fromTheme("document").pixmap(32, 32);
-                QPixmap application_icon = QIcon(bundle.icon()).pixmap(16, 16);
-                QPixmap combined_icon(32, 32);
-                combined_icon.fill(Qt::transparent);
-                QPainter painter(&combined_icon);
-                painter.drawPixmap(0, 0, document_icon);
-                painter.drawPixmap(8, 8, application_icon);
-                painter.end();
-                return (QIcon(combined_icon));
-                 */
-
-                QIcon applicationIcon = QIcon(bundle.icon()).pixmap(16, 16);
-                QIcon combinedIcon = iconCreator.createCombinedIcon( applicationIcon);
-                return (combinedIcon);
-
-            }
+    // Handle .DirIcon (AppDir) and volumelcon.icns (Mac)
+    QStringList candidates = {info.absoluteFilePath() + "/.DirIcon", info.absoluteFilePath() + "/volumelcon.icns"};
+    for (const QString &candidate: candidates) {
+        if (QFileInfo(candidate).exists()) {
+            // Read the contents of the file and turn it into an icon
+            QFile file(candidate);
+            return (QIcon(file.readAll()));
         }
     }
+
+    // Construct an icon from the default document icon plus the icon of the application that will
+    // be used to open the file
+
+    QString filePath = info.absoluteFilePath();
+
+    /*
+     * It seems like we may be running into some timing issue, where the file is not yet in the model
+     * at the point in time when the icon is requested (but shortly after).
+     * For this reason, we are not using the index for now, but the file path directly.
+     * This is not ideal, because we are not using the index, but it seems to work for now.
+     * FIXME: Find out why the index is not valid at this point in time.
+    QModelIndex index = m_model->index(filePath);
+    qDebug() << "filePath:" << filePath << "index:" << index;
+    if(!index.isValid()) {
+        // Does this mean that at the point in time when the icon was requested, the file was not yet in the model?
+        qDebug() << "SHOULD NEVER END UP HERE";
+        // Return warning icon from theme
+        return (QIcon::fromTheme("dialog-warning"));
+    }
+    */
+
+    // Retrieve the "open-with" attribute from the stored attributes in the model.
+    QString openWith = QString(m_model->openWith(filePath)); // NOTE: We would like to do this with the index, but we don't have a valid index at this point for unknown reasons
+    qDebug() << "openWith: " << openWith;
+    if (!openWith.isEmpty()) {
+        qDebug() << "-> xxxxxxxxxxx, openWith:" << openWith << "for" << info.absoluteFilePath();
+        ApplicationBundle bundle(openWith);
+        if (bundle.isValid()) {
+            qDebug("Info: %s is a valid application bundle", qPrintable(openWith));
+            QIcon applicationIcon = QIcon(bundle.icon()).pixmap(16, 16);
+            if (applicationIcon.isNull()) {
+                qDebug("Warning: %s does not have an icon", qPrintable(openWith));
+                applicationIcon = QIcon::fromTheme("unknown");
+            }
+            // return(applicationIcon);
+            QIcon combinedIcon = iconCreator.createCombinedIcon(applicationIcon);
+            return (combinedIcon);
+        } else {
+            qDebug("Info: %s is not a valid application bundle", qPrintable(openWith));
+        }
+    }
+
 /*
         // As a fallback, try to load the icon from the icon theme.
         // TODO: We may want to remove this once using the launch database works satisfactorily
@@ -196,4 +187,11 @@ QIcon CustomFileIconProvider::icon(const QFileInfo &info) const
 */
     // As a last resort, return "?" icon for everything else
     return (QIcon::fromTheme("unknown"));
+}
+
+void CustomFileIconProvider::setModel(CustomFileSystemModel* model)
+{
+    // Since we need to access the CustomFileSystemModel from the icon provider so that we can call openWith() on it,
+    // we need to make it accessible to the icon provider
+    m_model = model;
 }

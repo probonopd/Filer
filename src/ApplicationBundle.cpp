@@ -151,5 +151,6 @@ bool ApplicationBundle::isAppImage() const
 
 QIcon ApplicationBundle::icon() const
 {
+    qDebug() << "m_icon:" << m_icon;
     return QIcon(m_icon);
 }

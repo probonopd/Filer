@@ -39,7 +39,7 @@ QString DesktopFile::getIcon() const
 {
     QString icon;
     QFile file(m_filename);
-    qDebug() << "Searching for icon for" << m_filename;
+    // qDebug() << "Searching for icon for" << m_filename;
     // Search for a line starting with "Icon=" in the file
     if (file.open(QIODevice::ReadOnly)) {
         QTextStream in(&file);
@@ -65,7 +65,7 @@ QString DesktopFile::getIcon() const
         // Search for the icon in directories that may contain icons
         QStringList iconPaths;
         QString currentThemeName = QIcon::themeName();
-        qDebug() << "currentThemeName: " << currentThemeName;
+        // qDebug() << "currentThemeName: " << currentThemeName;
         iconPaths << "/usr/share/pixmaps"
                   << QString("/usr/share/icons") + QDir::separator() + currentThemeName
                   << QString("/usr/share/icons") + QDir::separator() + "hicolor" // Fallback icon theme
@@ -105,7 +105,7 @@ QString DesktopFile::getIcon() const
                     QString iconFile = path + "/" + size + "/apps/" + icon + suffix;
                     if (QFile::exists(iconFile)) {
                         icon = iconFile;
-                        qDebug() << "Found icon" << icon;
+                        // qDebug() << "Found icon" << icon;
                         return icon;
                     }
                 }

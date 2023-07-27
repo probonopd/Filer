@@ -38,13 +38,13 @@
 #define FILEMANAGERMAINWINDOW_H
 
 #include <QMainWindow>
-#include <QFileSystemModel>
 #include <QMenuBar>
 #include <QTreeView>
 #include <QListView>
 #include <QStatusBar>
 #include <QList>
 #include <QStackedWidget>
+#include "CustomFileSystemModel.h"
 
 class FileManagerMainWindow : public QMainWindow
 {
@@ -68,7 +68,8 @@ public:
     void showIconView();
     void showHideStatusBar();
 
-    QFileSystemModel *m_fileSystemModel;
+    // QFileSystemModel *m_fileSystemModel;
+    CustomFileSystemModel *m_fileSystemModel;
 
     bool m_is_first_instance = false;
 
