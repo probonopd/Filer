@@ -45,6 +45,7 @@
 #include <QList>
 #include <QStackedWidget>
 #include "CustomFileSystemModel.h"
+#include "CustomListView.h"
 
 class FileManagerMainWindow : public QMainWindow
 {
@@ -93,7 +94,7 @@ private:
 
     QString m_currentDir;
     QTreeView *m_treeView;
-    QListView *m_iconView;
+    CustomListView *m_iconView;
     QItemSelectionModel *m_selectionModel;
     QMenuBar *m_menuBar;
 

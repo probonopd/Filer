@@ -54,16 +54,16 @@ CustomFileIconProvider::CustomFileIconProvider()
 QIcon CustomFileIconProvider::icon(const QFileInfo &info) const
 {
 
-    // If it is a directory, then we always want to show the folder icon
-    if (info.isDir()) {
-        return (QIcon::fromTheme("folder"));
-    }
-
     // Check if the item is an application bundle and return the icon
     ApplicationBundle bundle(info.absoluteFilePath());
     if (bundle.isValid()) {
         // qDebug() << "Bundle is valid: " << info.absoluteFilePath();
         return (QIcon(bundle.icon()));
+    }
+
+    // If it is not a bundle but a directory, then we always want to show the folder icon
+    if (info.isDir()) {
+        return (QIcon::fromTheme("folder"));
     }
 
     // If the file has the executable bit set and is not a directory,

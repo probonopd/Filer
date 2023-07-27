@@ -103,18 +103,6 @@ void CustomItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
     // Get the current position of the delegate in the view
     QRect rect = option.rect;
 
-    /*
-        // Save the rect of the delegate in the model and check if it was successful
-        if (model->setData(index, rect, Qt::UserRole + 1)) {
-            // The rect was saved successfully
-            qDebug() << "Saved rect of delegate in model";
-        } else {
-            // The rect was not saved successfully
-            qDebug() << "Failed to save rect of delegate in model";
-        }
-        model->setData(index, rect, Qt::UserRole);
-    */
-
     // An option is a set of parameters that is passed to a style to draw a primitive element;
     // we are customizing the appearance of the delegate before it is drawn
     QStyleOptionViewItem customizedOption = option;
@@ -141,6 +129,24 @@ void CustomItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
         customizedOption.font.setItalic(true);
     }
 
+    // Custom icon positions
+    // Customize the icon position to reflect custom icon positions
+    // Maybe it is wrong to do this here. Maybe the icon position should be managed in the view.
+/*
+    // Get the coordinates of the icon from the model
+    QPoint customCoordinates = m_fileSystemModel->getIconCoordinates(fileInfo);
+    // Only if the coordinates are valid, set them in the option that the superclass will use for drawing
+    if (customCoordinates != QPoint(-1, -1)) {
+        customizedOption.rect.setX(customCoordinates.x());
+        customizedOption.rect.setY(customCoordinates.y());
+        // We need to make the view aware of the new position of the delegate. Just because we are painting to a
+        // different position, it doesn't mean that the view will be aware of it. We need to update the model to
+        // reflect the new positions of the delegate.
+        // So, how do we do that? We need to tell the view or the model the coordinates of the delegate.
+        // Somehow on the CustomListView, setPositionForIndex(customCoordinates, index);
+        // ???
+    }
+*/
     // Call the base class implementation of the paint() function
     // and make it use our customized option
     QStyledItemDelegate::paint(painter, customizedOption, index);

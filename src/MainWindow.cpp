@@ -199,7 +199,7 @@ FileManagerMainWindow::FileManagerMainWindow(QWidget *parent, const QString &ini
 
     // Create the tree view and list view
     m_treeView = new QTreeView(this);
-    m_iconView = new QListView(this);
+    m_iconView = new CustomListView(this);
 
     // Add the tree view and list view to the stacked widget
     m_stackedWidget->addWidget(m_treeView);
@@ -366,8 +366,6 @@ FileManagerMainWindow::FileManagerMainWindow(QWidget *parent, const QString &ini
         m_iconView->setLayoutDirection(Qt::RightToLeft);
         // Make the items the same size to make the layout look orderly
         m_iconView->setUniformItemSizes(true);
-        // Sort the items in the model
-        // m_fileSystemModel->sort(0, Qt::AscendingOrder);
     }
 
     // Set the icon size to 32x32 pixels
@@ -412,7 +410,6 @@ FileManagerMainWindow::FileManagerMainWindow(QWidget *parent, const QString &ini
         // The desktop is always shown as icons
         showIconView();
     }
-
 
     // Call destructor and destroy the window immediately when the window is closed
     // Only this way the window will be destroyed immediately and not when the event loop is
