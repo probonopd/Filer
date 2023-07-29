@@ -263,7 +263,7 @@ FileManagerMainWindow::FileManagerMainWindow(QWidget *parent, const QString &ini
     // we need this so that we have control over how the items (icons with text)
     // get drawn
 
-    CustomItemDelegate *customItemDelegate = new CustomItemDelegate(this, m_fileSystemModel);
+    CustomItemDelegate *customItemDelegate = new CustomItemDelegate(m_stackedWidget->currentWidget(), m_fileSystemModel);
 
     // Install the custom item delegate as an event filter on the tree view and icon view
     // so that we can intercept mouse events like QEvent::DragMove
@@ -279,6 +279,8 @@ FileManagerMainWindow::FileManagerMainWindow(QWidget *parent, const QString &ini
     // Set the selection model for the tree view and icon view
     m_treeView->setSelectionModel(m_selectionModel);
     m_iconView->setSelectionModel(m_selectionModel);
+
+    customItemDelegate->setSelectionModel(m_selectionModel); // Set the selection model
 
     // Enable drag-and-drop
     m_treeView->setDragEnabled(true);
@@ -814,14 +816,9 @@ void FileManagerMainWindow::selectAll()
     // Get the parent index of the current index
     QModelIndex parentIndex = m_treeView->currentIndex().parent();
 
-    // Create a new selection model
-    QItemSelectionModel *selectionModel = new QItemSelectionModel(m_treeView->model());
-
-    // Set the selection model for the tree view
-    m_treeView->setSelectionModel(selectionModel);
 
     // Select all items in the parent directory
-    selectionModel->select(
+    m_selectionModel->select(
             QItemSelection(parentIndex.child(0, 0),
                            parentIndex.child(parentIndex.model()->rowCount() - 1, 0)),
             QItemSelectionModel::Select);
@@ -1119,6 +1116,60 @@ void FileManagerMainWindow::open(const QString &filePath)
 
     // Get the index of the selected item in the tree or list view
     const QModelIndex selectedIndex = m_selectionModel->currentIndex();
+
+    if (selectedIndex.isValid())
+    {
+        // Check if we are in the tree view or the icon view
+        QAbstractItemView* view;
+        if (m_treeView->isVisible()) {
+            qDebug() << "The tree view is visible";
+            view= m_treeView;
+        } else if (m_iconView->isVisible()) {
+            qDebug() << "The icon view is visible";
+            view = m_iconView;
+        } else {
+            qDebug() << "ERROR: Neither the tree view nor the icon view is visible";
+        }
+
+
+        if (view)
+        {
+            // Get the item delegate for the selected index
+            qDebug() << "Getting the item delegate for the selected index";
+
+            // Get the index of the selected item in the icon view
+            const QModelIndex selectedIndex = m_iconView->currentIndex();
+
+            // Get the item delegate for the selected index
+            QAbstractItemDelegate* itemDelegate = m_iconView->getItemDelegateForIndex(selectedIndex);
+
+            qDebug() << "itemDelegate:" << itemDelegate;
+
+            // Check if the item delegate is an instance of CustomItemDelegate
+            CustomItemDelegate* customDelegate = dynamic_cast<CustomItemDelegate*>(itemDelegate);
+            qDebug() << "customDelegate:" << customDelegate;
+
+            if (customDelegate)
+            {
+                // Stop the previous animation, if any, and start the new animation
+                qDebug() << "Stopping the previous animation, if any, and starting the new animation";
+                customDelegate->stopAnimation();
+                if (selectedIndex.isValid())
+                {
+                    qDebug() << "Starting animation for selected index:" << selectedIndex;
+                    customDelegate->startAnimation(selectedIndex);
+                }
+                else
+                {
+                    qDebug() << "Invalid selected index. Cannot start animation.";
+                }
+            } else {
+                qDebug() << "ERROR: The item delegate is not an instance of CustomItemDelegate";
+            }
+        } else {
+            qDebug() << "ERROR: The view is null";
+        }
+    }
 
     // Check if the file path ends with ".app", ".AppDir", or ".AppImage"
     if (filePath.endsWith(".app") || filePath.endsWith(".AppDir")

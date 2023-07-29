@@ -40,11 +40,13 @@
 #include <QMoveEvent>
 #include <QTreeWidgetItem>
 #include "ExtendedAttributes.h"
+#include <QSize>
 
 // Constructor that takes a QObject pointer and a QFileSystemModel pointer as arguments
 CustomItemDelegate::CustomItemDelegate(QObject* parent, CustomFileSystemModel* fileSystemModel)
         : QStyledItemDelegate(parent), m_fileSystemModel(fileSystemModel)
 {
+
     // Initialize the m_fileSystemModel member variable with the provided QFileSystemModel pointer
     m_fileSystemModel = fileSystemModel;
 
@@ -56,6 +58,20 @@ CustomItemDelegate::CustomItemDelegate(QObject* parent, CustomFileSystemModel* f
 
     // Set the icon provider for the model
     m_fileSystemModel->setIconProvider(iconProvider);
+
+    // Create a QTimeLine instance for the animation
+    animationTimeline = new QTimeLine(1000, this); // 1000 ms duration for the animation
+    // Get faster towards the end of the animation
+    animationTimeline->setEasingCurve(QEasingCurve::OutCubic);
+    animationTimeline->setUpdateInterval(16); // About 60 FPS update rate
+    // Verify the signal-slot connection for animation updates
+    bool isConnected = connect(animationTimeline, &QTimeLine::valueChanged, this, &CustomItemDelegate::animationValueChanged);
+    if (!isConnected) {
+        qDebug() << "CustomItemDelegate::CustomItemDelegate: Could not connect animationTimeline to animationValueChanged";
+    }
+
+    connect(animationTimeline, &QTimeLine::finished, this, &CustomItemDelegate::animationFinished);
+
 }
 
 // Implement the destructor of the CustomItemDelegate class
@@ -107,12 +123,17 @@ void CustomItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
     // we are customizing the appearance of the delegate before it is drawn
     QStyleOptionViewItem customizedOption = option;
 
+    m_currentIndex = index;
+    m_currentOption = customizedOption;
+
     // Find out whether the instance is the first instance (the Desktop)
     bool isFirstInstance = static_cast<FileManagerMainWindow *>(parent())->m_is_first_instance;
 
     // Set the color of the text in the option to white if the desktop is drawn
     if (isFirstInstance) {
         customizedOption.palette.setColor(QPalette::Text, Qt::white);
+    } else {
+        customizedOption.palette.setColor(QPalette::Text, Qt::black);
     }
 
     // Get the file path of the item
@@ -147,175 +168,57 @@ void CustomItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
         // ???
     }
 */
-    // Call the base class implementation of the paint() function
-    // and make it use our customized option
-    QStyledItemDelegate::paint(painter, customizedOption, index);
-    return;
-    /*
-     *
-     *  The alternative would be to customize the drawing of the delegate... but in this case it
-     looks
-     *  like we need to do everything ourselves, including drawing the icon, the text, etc...
-     *  So, for now, we will stick with the approach of customizing the option and then calling the
-     *  base class implementation of the paint() function.
 
-        // Get the file path of the item
-        QString filePath =
-     static_cast<FileManagerMainWindow*>(parent())->m_fileSystemModel->filePath(index);
+    // Check if the current item is the one being animated
+    bool isAnimatingItem = (index == m_animatedIndex);
 
-        // Find out the class of the central widget
-        bool isListView = false;
-        QString className =
-     static_cast<FileManagerMainWindow*>(parent())->centralWidget()->metaObject()->className();
-        if(className == "QListView")
-            isListView = true;
-        qDebug() << "isListView:" << isListView;
+    if (isAnimatingItem && animationTimeline->state() == QTimeLine::Running)
+    {
+        // Save state of the painter so that we can reset to it
+        painter->save();
 
-        qDebug() << "Painting delegate for" << filePath << "at x: " << rect.x() << "y: " <<
-     rect.y();
+        // Retrieve the data from the model using the 'index'
+        QVariant data = index.model()->data(index, Qt::DecorationRole);
+        // Get the icon size from the view
+        QSize iconSize = customizedOption.decorationSize;
+        QPixmap originalIcon = data.value<QIcon>().pixmap(QSize(iconSize)); // Adjust the icon size as needed; FIXME: Depends on the view
 
-        // Create a QFileInfo object for the item
-        QFileInfo fileInfo(filePath);
+        // Calculate the scale factor for the icon
+        qreal scaleFactor = 1.0 + 7.0 * currentAnimationValue;
+        // qDebug() << "::paint() - Scale factor: " << scaleFactor;
 
-        // Get the original name of the item
-        QString originalName = fileInfo.fileName();
+        // Calculate the opacity (1.0 to 0.0)
+        qreal opacity = 1.0 - currentAnimationValue;
+        // qDebug() << "::paint() - Opacity: " << opacity;
 
-        // Create a QFileIconProvider object
-        QFileIconProvider iconProvider;
+        // Create a new scaled icon based on the scaleFactor
+        QPixmap scaledIcon = originalIcon.scaled(originalIcon.width() * scaleFactor,
+                                                 originalIcon.height() * scaleFactor,
+                                                 Qt::KeepAspectRatio,
+                                                 Qt::SmoothTransformation);
 
-        // Get the icon for the file info's MIME type
-        QIcon icon = iconProvider.icon(fileInfo);
+        // The rect also needs to be scaled
+        customizedOption.rect.setWidth(scaledIcon.width());
+        customizedOption.rect.setHeight(scaledIcon.height());
 
-        // Get the model item flags for the item
-        Qt::ItemFlags flags = model->flags(index);
+        // The rect needs to be moved to keep the icon centered
+        customizedOption.rect.moveCenter(rect.center());
 
-        // Check if the original name ends with ".app", ".AppDir", or ".AppImage"
-        if (originalName.endsWith(".app") || originalName.endsWith(".AppDir") ||
-     originalName.endsWith(".AppImage")) {
+        // Set the painter's opacity based on the animation value
+        painter->setOpacity(opacity);
 
-            // Set the icon to an application icon
-            ApplicationBundle *bundle = new ApplicationBundle(filePath);
-            icon = bundle->icon();
+        // Draw the scaled and faded icon
+        painter->drawPixmap(customizedOption.rect, scaledIcon);
 
-            // If the view is a QTreeView, prevent bundles from being expandable
-            // Get the QTreeViewItem object if the view is a QTreeView
-            QTreeWidgetItem *treeWidgetItem = nullptr;
-            if(!isListView) {
-                treeWidgetItem = static_cast<QTreeWidgetItem*>(index.internalPointer());
-                qDebug() << "TODO: Prevent treeWidgetItem from being expandable:" << treeWidgetItem;
-                // TODO: Find a way to do this without crashing
-            }
-
-        }
-
-        // Get the icon size from the option object
-        QSize iconSize = option.decorationSize; // E.g., QSize(32, 32)
-
-
-        if(isListView) {
-            // Calculate icon x position
-            int iconX = option.rect.x() + (option.rect.width() - iconSize.width()) / 2;
-
-            // Draw the application icon next to the item using the icon size
-            icon.paint(painter, iconX, option.rect.y(), iconSize.width(), iconSize.height(),
-     Qt::AlignTop | Qt::AlignHCenter, QIcon::Normal, QIcon::On); } else {
-            // Icon only in the first column
-
-            if (index.column() == 0) {
-                // Draw the application icon next to the item using the icon size
-                painter->save();
-                // Move Painter to the right by 1/2 icon sizes
-                painter->translate(iconSize.width() / 2, 0);
-                icon.paint(painter, option.rect.x(), option.rect.y(), iconSize.width(),
-     iconSize.height(), Qt::AlignTop | Qt::AlignHCenter, QIcon::Normal, QIcon::On);
-                painter->restore();
-            }
-        }
-
-        // Set the font of the text to italic for symlinks
-        QFont font = painter->font();
-        if(fileInfo.isSymbolicLink()){
-            font.setItalic(true);
-            painter->setFont(font);
-        } else {
-            font.setItalic(false);
-            painter->setFont(font);
-        }
-
-        // Get the data for the item being displayed
-        QVariant data = index.data();
-
-        // Get the text to be displayed for the item
-        QString text = displayText(data, QLocale::system());
-
-        // Align the text to the center of the bounding rectangle
-        QRect boundingRect;
-
-        if(isListView) {
-            // If it is the first instance (the Desktop), use black text for the shadow
-            if(isFirstInstance) {
-                // Draw drop shadow under the text
-                painter->setPen(Qt::black);
-                QRect shadowRect = option.rect.translated(1, 1);
-                painter->drawText(shadowRect, Qt::AlignBottom | Qt::AlignHCenter, text,
-     &shadowRect); painter->drawText(option.rect, Qt::AlignBottom | Qt::AlignHCenter, text,
-     &boundingRect);
-            }
-            // If it is the first instance (the Desktop), use white text
-            if(isFirstInstance) {
-                painter->setPen(Qt::white);
-            } else {
-                painter->setPen(Qt::black);
-            }
-            painter->drawText(option.rect, Qt::AlignBottom | Qt::AlignHCenter, text, &boundingRect);
-        } else {
-            if(index.column() == 0) {
-                painter->save();
-                // Move Painter to the right by 2 icon sizes
-                painter->translate(iconSize.width() * 2, 0);
-                painter->drawText(option.rect, Qt::AlignVCenter | Qt::AlignLeft, text,
-     &boundingRect); painter->restore(); } else { painter->drawText(option.rect, Qt::AlignVCenter |
-     Qt::AlignLeft, text, &boundingRect);
-            }
-        }
-    */
-
-    /*
-     * FIXME:
-     * The issue here is that this method needs to be const, otherwise it does not get used.
-     * But when it is const, then it cannot set iconShown, iconVisible, etc.
-     *
-        // Flash if the item was double-clicked
-        if (option.state & QStyle::State_Selected && option.state & QStyle::State_MouseOver) {
-            // Create a timer to flash the icon
-            QTimer* timer = new QTimer(const_cast<CustomItemDelegate*>(this));
-            connect(timer, &QTimer::timeout, [=]() {
-                // Show or hide the icon on each timer tick
-                if (iconShown) {
-                    iconShown = false;
-                    iconVisible = false;
-                } else {
-                    iconShown = true;
-                    iconVisible = !iconVisible;
-                }
-
-                // Update the item to redraw the icon
-                // Emit the dataChanged() signal from the item model
-                m_fileSystemModel->dataChanged(index, index, {Qt::DecorationRole});
-
-                // Stop the timer after 3 flashes
-                if (flashCount >= 3) {
-                    timer->stop();
-                } else {
-                    flashCount++;
-                }
-            });
-
-            // Start the timer with a 100ms interval
-            timer->start(100);
-        }
-
-    */
+        // Restore the painter's state
+        painter->restore();
+    }
+    else
+    {
+        // Ensure the item is drawn normally otherwise:
+        // Everything that is not currently being animated
+        QStyledItemDelegate::paint(painter, customizedOption, index);
+    }
 }
 
 // Override the editorEvent() function to handle mouse events
@@ -431,4 +334,76 @@ void CustomItemDelegate::onDropEvent(QDropEvent* event) {
             emit fileDropped(filePath, event->pos());
         }
     }
+}
+
+void CustomItemDelegate::animationValueChanged(double value)
+{
+    currentAnimationValue = value;
+    qDebug() << "Animation value changed:" << value;
+
+    // Trigger a redraw of the view
+    if (QAbstractItemView* view = qobject_cast<QAbstractItemView*>(parent()))
+    {
+        // Print the class name of the stacked widget that the view is in
+        qDebug() << "Parent widget class name:" << view->parentWidget()->metaObject()->className();
+        // Given that view->parentWidget() is a QStackedWidget, we can cast it to that type
+        QStackedWidget* stackedWidget = static_cast<QStackedWidget*>(view->parentWidget());
+        // Update the widget in the stacked widget
+        stackedWidget->update();
+    } else {
+        qDebug() << "Parent widget is not a view";
+    }
+
+}
+
+void CustomItemDelegate::animationFinished()
+{
+    // Animation is finished, perform any cleanup if necessary
+
+    // Ensure the item is drawn normally after the animation is finished
+    // You can call the view's update() method here to refresh the view
+    // and ensure that all items are drawn normally.
+    // For example: view->update();
+
+    qDebug() << "Animation finished";
+
+    // Get the view from the parent widget
+    if (QAbstractItemView* view = qobject_cast<QAbstractItemView*>(parent()))
+    {
+        // Redraw the view
+        qDebug() << "Updating view";
+        view->viewport()->update();
+    } else {
+        qDebug() << "Parent widget is not a view";
+    }
+}
+
+void CustomItemDelegate::stopAnimation()
+{
+    // Stop the animation timeline
+    qDebug() << "Stopping animation";
+    animationTimeline->stop();
+}
+
+void CustomItemDelegate::startAnimation(const QModelIndex& index)
+{
+    // If index invalid, stop the animation
+    if (!index.isValid())
+    {
+        qDebug() << "Invalid index. Cannot start animation.";
+        return;
+    }
+
+    // Set the currently animated index
+    m_animatedIndex = index;
+
+    // Start the animation timeline
+    animationTimeline->start();
+    qDebug() << "Started animation for index:" << index;
+}
+
+// Setter function to set the selection model
+void CustomItemDelegate::setSelectionModel(QItemSelectionModel* selectionModel)
+{
+    m_selectionModel = selectionModel;
 }

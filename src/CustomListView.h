@@ -13,4 +13,9 @@ public:
     inline void setPositionForIndex(const QPoint& position, const QModelIndex& index) {
         QListView::setPositionForIndex(position, index);
     }
+
+    // Public function to get the item delegate for a given index
+    QAbstractItemDelegate* getItemDelegateForIndex(const QModelIndex& index) const {
+        return itemDelegate(index);
+    }
 };
