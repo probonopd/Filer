@@ -66,9 +66,10 @@ bool ExtendedAttributes::write(const QString &attributeName, const QByteArray &a
              << "to file" << m_file.fileName();
     // Write the extended attribute to the file in the "user" namespace
     QProcess xattr;
-    xattr.start("setxattr",
-                QStringList() << "-hq"
-                              << "user" << attributeName << attributeValue << m_file.fileName());
+    xattr.start("setfattr",
+                QStringList() << "-n" << "user." + attributeName
+                            << "-v" << attributeValue
+                            << m_file.fileName());
     if (!xattr.waitForFinished()) {
         // Error writing extended attribute to user namespace
         qWarning() << "ExtendedAttributes::write(): Error writing extended attribute to user "
@@ -116,9 +117,9 @@ QByteArray ExtendedAttributes::read(const QString &attributeName)
     // Read the extended attribute from the file in the "user" namespace
     qDebug() << "Reading extended attribute" << attributeName << "from file" << m_file.fileName();
     QProcess xattr;
-    xattr.start("getxattr",
-                QStringList() << "-hq"
-                              << "user" << attributeName << m_file.fileName());
+    xattr.start("getfattr",
+                QStringList() << "-n" << "user." + attributeName
+                            << "-d" << m_file.fileName());
     if (!xattr.waitForFinished()) {
         // Error reading extended attribute from user namespace
         qWarning() << "ExtendedAttributes::read(): Error reading extended attribute from user "
