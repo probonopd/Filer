@@ -300,6 +300,10 @@ FileManagerMainWindow::FileManagerMainWindow(QWidget *parent, const QString &ini
     // Set the menu bar
     setMenuBar(m_menuBar);
 
+    // Set the background color of the menu bar
+    // to the background color of QWidgets
+    m_menuBar->setStyleSheet("QMenuBar { background-color: palette(window); }");
+
     // Use full width for the menu bar
     m_menuBar->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
@@ -386,7 +390,7 @@ FileManagerMainWindow::FileManagerMainWindow(QWidget *parent, const QString &ini
 
     // Put the icons on a grid
     QSize iconSize = m_iconView->iconSize();
-    m_iconView->setGridSize(QSize(iconSize.width() * 5, iconSize.height() * 2));
+    m_iconView->setGridSize(QSize(200, 64));
 
     // Connect the doubleClicked() signal to the open() slot
     connect(
