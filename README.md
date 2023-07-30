@@ -8,6 +8,27 @@ A clean rewrite of the Filer for helloSystem, inspired by [John Siracusa's descr
 * No libfm dependency
 * No inherited code
 
+## Features
+
+|Other file managers|Filer|Implemented|
+|---|---|---|
+|Using XDG standards that have prevented *nix desktops from working well for all too long|Engineered from first principles to be a great desktop file manager|WIP|
+|Assume applications are at fixed locations, e.g., in `/usr/bin`|Assumes applications can be anywhere including external disks and file shares, and can be freely moved around|WIP|
+|Show icons for files based on their MIME type|Show icons for files based on the application that opens them|WIP based on `launch` "database"|
+|Do not allow individual files of the same MIME type to be opened with different applications|Allows individual files of the same MIME type to be opened with different applications (using the `can-open` extended attribute)|Handled by `launch`|
+|Do not persist window location and size for each window|Persists window location and size for each window|Implemented|
+|Do not persist the view type for each window|Persists the view type for each window|Implemented|
+|Do not persist icon locations|Persists icon locations|TODO|
+|Do not persist the size of each icon|Persists the size of each icon|For consideration|
+|Cannot use copy and pasted icons for documents and folders|Can use copy and pasted icons for documents and folders|TODO|
+|Opens files with whatever application if there is more than one that can handle a file|Asks the user which application to use if there is more than one that can handle a file|Handled by `launch`|
+|Do not know which application created a file|Knows which application created a file and by default opens it with that application|TODO; how? Using DTrace or similar?|
+|Do not allow drag-and-drop of files onto applications|Allows drag-and-drop of files onto applications|TODO|
+|No animation when applications, documents, or folders are opened|Animation when applications, documents, or folders are opened|Implemented (using QTimeLine Property Animation)|
+|Opened applications, documents, and folders are not shown as such|Opened applications, documents, and folders are shown as such|Implemented for folders, TODO for the other types|
+
+My conclusion is that most "desktop environments" are made by people who don't actually love the desktop. Or else, those basic things would work.
+
 ## References
 
 * https://arstechnica.com/gadgets/2003/04/finder/
