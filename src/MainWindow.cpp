@@ -954,6 +954,16 @@ void FileManagerMainWindow::openFolderInNewWindow(const QString &rootPath)
         return;
     }
 
+    QString resolvedRootPath = rootPath;
+
+    // If it is a symlink, resolve it
+    if (QFileInfo(rootPath).isSymLink()) {
+        resolvedRootPath = QFileInfo(rootPath).symLinkTarget();
+    }
+
+    // Get the normalized absolute path
+    resolvedRootPath = QDir(resolvedRootPath).canonicalPath();
+
     // Check if a window for the specified root path already exists
     bool windowExists = false;
     for (FileManagerMainWindow *window : instances()) {
