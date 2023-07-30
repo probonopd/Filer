@@ -52,8 +52,9 @@ class FileManagerMainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    static QList<FileManagerMainWindow *> &
-    instances(); // The list is declared static, so it is unique for the entire application
+    static QList<FileManagerMainWindow *> & instances(); // The list is declared static, so it is unique for the entire application
+
+    bool instanceExists(const QString &directory);
 
     FileManagerMainWindow(QWidget *parent = nullptr, const QString &initialDirectory = "/");
 
@@ -69,10 +70,14 @@ public:
     void showIconView();
     void showHideStatusBar();
 
+    void refresh();
+
     // QFileSystemModel *m_fileSystemModel;
     CustomFileSystemModel *m_fileSystemModel;
 
     bool m_is_first_instance = false;
+
+    bool isTreeView();
 
 public slots:
     void open(const QString &filePath);
@@ -105,7 +110,6 @@ private:
     QAction *m_renameAction;
 
     QStringList readFilenamesFromHiddenFile(const QString &filePath);
-    void openFolder(const QString &rootPath);
 
     void createMenus();
 

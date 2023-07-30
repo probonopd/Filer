@@ -110,8 +110,17 @@ void CustomItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
      * in a QIconView, we need to update the model to reflect the new positions of the delegate.
      */
 
-    // Get the model that emitted the paint() signal
-    QObject *sender = QObject::sender();
+    // Find out whether we are drawing for the first instane (desktop)
+    // or for another instance (file manager window)
+    QAbstractItemView *view = static_cast<QAbstractItemView *>(parent());
+    // Get the parent (MainWindow) of the parent (QStackedWidget) of the view (CustomListView/QTreeView)
+    FileManagerMainWindow *mainWindow = static_cast<FileManagerMainWindow *>(view->parent()->parent());
+    // Assert that the parent of the parent of the view is a FileManagerMainWindow
+    Q_ASSERT(mainWindow);
+    bool isTreeView = mainWindow->isTreeView();
+
+    // Check if it is the first instance
+    bool isFirstInstance = mainWindow->m_is_first_instance;
 
     // Cast the sender to a QFileSystemModel
     QFileSystemModel *model = this->m_fileSystemModel;
@@ -125,9 +134,6 @@ void CustomItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
 
     m_currentIndex = index;
     m_currentOption = customizedOption;
-
-    // Find out whether the instance is the first instance (the Desktop)
-    bool isFirstInstance = static_cast<FileManagerMainWindow *>(parent())->m_is_first_instance;
 
     // Set the color of the text in the option to white if the desktop is drawn
     if (isFirstInstance) {
@@ -148,6 +154,20 @@ void CustomItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
     // Set the font of the text to italic for symlinks
     if (fileInfo.isSymLink()) {
         customizedOption.font.setItalic(true);
+    }
+
+    // Opened folders are drawn differently
+    if (QFileInfo(filePath).isDir()) {
+        // Check if we have a window open for the directory
+        bool isOpen = static_cast<FileManagerMainWindow *>(parent())->instanceExists(filePath);
+        if (isOpen) {
+            // If it is already open, set the option to draw the icon as disabled
+            customizedOption.state &= ~QStyle::State_Enabled;
+            // Set opacity to 50% for the painter
+            painter->setOpacity(0.5);
+        } else {
+            painter->setOpacity(1.0);
+        }  
     }
 
     // Custom icon positions
@@ -171,20 +191,28 @@ void CustomItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
 
     // Check if the current item is the one being animated
     bool isAnimatingItem = (index == m_animatedIndex);
+    // Print its path if it is
+    if (isAnimatingItem) {
+        qDebug() << "::paint() - Animated item: " << filePath;
+    }
 
-    if (isAnimatingItem && animationTimeline->state() == QTimeLine::Running)
+    if (!isTreeView && isAnimatingItem && animationTimeline->state() == QTimeLine::Running)
     {
+            // An option is a set of parameters that is passed to a style to draw a primitive element;
+            // we are customizing the appearance of the delegate before it is drawn
+            QStyleOptionViewItem customizedOptionForAnim = customizedOption;
+
         // Save state of the painter so that we can reset to it
         painter->save();
 
         // Retrieve the data from the model using the 'index'
         QVariant data = index.model()->data(index, Qt::DecorationRole);
         // Get the icon size from the view
-        QSize iconSize = customizedOption.decorationSize;
+        QSize iconSize = customizedOptionForAnim.decorationSize;
         QPixmap originalIcon = data.value<QIcon>().pixmap(QSize(iconSize)); // Adjust the icon size as needed; FIXME: Depends on the view
 
         // Calculate the scale factor for the icon
-        qreal scaleFactor = 1.0 + 7.0 * currentAnimationValue;
+        qreal scaleFactor = 1.0 + 8.0 * currentAnimationValue;
         // qDebug() << "::paint() - Scale factor: " << scaleFactor;
 
         // Calculate the opacity (1.0 to 0.0)
@@ -198,27 +226,25 @@ void CustomItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
                                                  Qt::SmoothTransformation);
 
         // The rect also needs to be scaled
-        customizedOption.rect.setWidth(scaledIcon.width());
-        customizedOption.rect.setHeight(scaledIcon.height());
+        customizedOptionForAnim.rect.setWidth(scaledIcon.width());
+        customizedOptionForAnim.rect.setHeight(scaledIcon.height());
 
         // The rect needs to be moved to keep the icon centered
-        customizedOption.rect.moveCenter(rect.center());
+        customizedOptionForAnim.rect.moveCenter(rect.center());
 
         // Set the painter's opacity based on the animation value
         painter->setOpacity(opacity);
 
         // Draw the scaled and faded icon
-        painter->drawPixmap(customizedOption.rect, scaledIcon);
+        painter->drawPixmap(customizedOptionForAnim.rect, scaledIcon);
 
         // Restore the painter's state
         painter->restore();
     }
-    else
-    {
-        // Ensure the item is drawn normally otherwise:
-        // Everything that is not currently being animated
-        QStyledItemDelegate::paint(painter, customizedOption, index);
-    }
+
+    // Call the superclass implementation of the paint() function
+    QStyledItemDelegate::paint(painter, customizedOption, index);
+    
 }
 
 // Override the editorEvent() function to handle mouse events
@@ -376,6 +402,7 @@ void CustomItemDelegate::animationFinished()
     } else {
         qDebug() << "Parent widget is not a view";
     }
+
 }
 
 void CustomItemDelegate::stopAnimation()

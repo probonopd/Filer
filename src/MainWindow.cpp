@@ -489,6 +489,12 @@ void FileManagerMainWindow::resizeEvent(QResizeEvent *event)
     saveWindowGeometry();
 }
 
+void FileManagerMainWindow::refresh() {
+    qDebug() << "Calling update() on the views";
+    m_treeView->update();
+    m_iconView->update();
+}
+
 FileManagerMainWindow::~FileManagerMainWindow()
 {
     qDebug() << "Destructor called";
@@ -504,6 +510,17 @@ FileManagerMainWindow::~FileManagerMainWindow()
         qDebug() << "Last window closed, quitting application";
         qApp->quit();
     }
+
+    // Tell all windows that they should be redrawn
+    // so that they can update their icons to reflect the new state of
+    // folders being open
+    QTimer::singleShot(100, []() {
+        qDebug() << "Redrawing all windows";
+        for (FileManagerMainWindow *window : FileManagerMainWindow::instances()) {
+            qDebug("Asking window %s to refresh", window->directory().toUtf8().constData());
+            window->refresh();
+        }
+    });
 }
 
 void FileManagerMainWindow::createMenus()
@@ -910,19 +927,6 @@ void FileManagerMainWindow::setDirectory(const QString &directory)
     m_currentDir = directory;
 }
 
-// Open a folder in the current window
-void FileManagerMainWindow::openFolder(const QString &rootPath)
-{
-    // Print the name of the called function
-    qDebug() << Q_FUNC_INFO;
-
-    // Set the root path to the selected directory
-    m_fileSystemModel->setRootPath(rootPath);
-
-    // Set the root index to the selected directory
-    m_treeView->setRootIndex(m_fileSystemModel->index(rootPath));
-}
-
 void FileManagerMainWindow::openFolderInNewWindow(const QString &rootPath)
 {
     // Check if the path exists, show an error dialog if it is not
@@ -1109,6 +1113,12 @@ void FileManagerMainWindow::dragMoveEvent(QDragMoveEvent *event)
     }
 }
 
+bool FileManagerMainWindow::isTreeView()
+{
+    return m_treeView->isVisible();
+
+}
+
 void FileManagerMainWindow::open(const QString &filePath)
 {
     // Print the name of the called function
@@ -1121,16 +1131,6 @@ void FileManagerMainWindow::open(const QString &filePath)
     {
         // Check if we are in the tree view or the icon view
         QAbstractItemView* view;
-        if (m_treeView->isVisible()) {
-            qDebug() << "The tree view is visible";
-            view= m_treeView;
-        } else if (m_iconView->isVisible()) {
-            qDebug() << "The icon view is visible";
-            view = m_iconView;
-        } else {
-            qDebug() << "ERROR: Neither the tree view nor the icon view is visible";
-        }
-
 
         if (view)
         {
@@ -1187,9 +1187,8 @@ void FileManagerMainWindow::open(const QString &filePath)
             QString rootPath = m_fileSystemModel->filePath(selectedIndex);
             // If central widget is a tree view, open folder in existing window; else open in new
             // window
-            if (this->centralWidget() == m_treeView) {
-                // Open the folder in the current window
-                openFolder(rootPath);
+            if (m_treeView->isVisible()) {
+                // Let the tree view do its thing
             } else {
                 // Open the folder in a new window
                 openFolderInNewWindow(rootPath);
@@ -1289,4 +1288,15 @@ void FileManagerMainWindow::dropEvent(QDropEvent *event)
 {
 
     qDebug() << "TODO: Save position for file:" << event->mimeData()->urls().first().toLocalFile();
+}
+
+bool FileManagerMainWindow::instanceExists(const QString &directory)
+{
+    // static QList<FileManagerMainWindow *> & instances();
+    for (FileManagerMainWindow *instance : instances()) {
+        if (instance->m_currentDir == directory) {
+            return true;
+        }
+    }
+    return false;
 }
