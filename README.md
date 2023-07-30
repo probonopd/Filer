@@ -12,7 +12,8 @@ A clean rewrite of the Filer for helloSystem, inspired by [John Siracusa's descr
 
 |Other file managers|Filer|Implemented|
 |---|---|---|
-|Using XDG standards that have prevented *nix desktops from working well for all too long|Engineered from first principles to be a great desktop file manager|WIP|
+|Do not natively support `.app` bundles, `.AppDir` and `.AppImage` formats | Natively supports `.app` bundles, `.AppDir` and `.AppImage` formats|WIP|
+|Use XDG standards that have prevented *nix desktops from working well for all too long|Engineered from first principles to be a great desktop file manager|WIP|
 |Assume applications are at fixed locations, e.g., in `/usr/bin`|Assumes applications can be anywhere including external disks and file shares, and can be freely moved around|WIP|
 |Show icons for files based on their MIME type|Show icons for files based on the application that opens them|WIP based on `launch` "database"|
 |Do not allow individual files of the same MIME type to be opened with different applications|Allows individual files of the same MIME type to be opened with different applications (using the `can-open` extended attribute)|Handled by `launch`|
