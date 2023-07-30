@@ -297,6 +297,12 @@ FileManagerMainWindow::FileManagerMainWindow(QWidget *parent, const QString &ini
     // Create the menu bar
     m_menuBar = new QMenuBar(this);
 
+    // Set the menu bar
+    setMenuBar(m_menuBar);
+
+    // Use full width for the menu bar
+    m_menuBar->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+
     // Initialize the Tree View and Icon View actions
     m_iconViewAction = new QAction("Icon View", this);
     m_iconViewAction->setCheckable(true);
