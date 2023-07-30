@@ -7,34 +7,36 @@ on:
 
 jobs:
   build:
-    runs-on: alpine-latest
+    runs-on: ubuntu-latest
 
     steps:
       - name: Check out code
         uses: actions/checkout@v2
 
-      - name: Install dependencies
-        run: |
-          apk update
-          apk add --no-cache \
-            git \
-            curl \
-            wget \
-            zip \
-            cmake \
-            pkgconf \
-            qt5-qtbase-dev \
-            qt5-qttools-dev
+      - name: Set up Docker
+        uses: docker/setup-docker@v1
 
-      - name: Build and package
+      - name: Build in Alpine container
         run: |
-          git submodule update --init --recursive
-          mkdir build ; cd build
-          cmake .. -DCMAKE_BUILD_TYPE=Release
-          make -j$(nproc)
-          make DESTDIR=. install
-          find Filer.app/
-          zip --symlinks -r ./Filer_Alpine.zip Filer.app/
+          docker run --rm -v $PWD:/app -w /app alpine:latest sh -c '
+            apk update
+            apk add --no-cache \
+              git \
+              curl \
+              wget \
+              zip \
+              cmake \
+              pkgconf \
+              qt5-qtbase-dev \
+              qt5-qttools-dev
+            git submodule update --init --recursive
+            mkdir build ; cd build
+            cmake .. -DCMAKE_BUILD_TYPE=Release
+            make -j$(nproc)
+            make DESTDIR=. install
+            find Filer.app/
+            zip --symlinks -r ./Filer_Alpine.zip Filer.app/
+          '
 
       - name: Upload artifact
         uses: actions/upload-artifact@v2
