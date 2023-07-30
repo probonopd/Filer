@@ -22,7 +22,7 @@ A clean rewrite of the Filer for helloSystem, inspired by [John Siracusa's descr
 |Do not persist icon locations|Persists icon locations|TODO|
 |Do not persist the size of each icon|Persists the size of each icon|For consideration|
 |Cannot use copy and pasted icons for documents and folders|Can use copy and pasted icons for documents and folders|TODO|
-|Opens files with whatever application if there is more than one that can handle a file|Asks the user which application to use if there is more than one that can handle a file|Handled by `launch`|
+|Open files with whatever application if there is more than one that can handle a file|Asks the user which application to use if there is more than one that can handle a file|Handled by `launch`|
 |Do not know which application created a file|Knows which application created a file and by default opens it with that application|TODO; how? Using DTrace or similar?|
 |Do not allow drag-and-drop of files onto applications|Allows drag-and-drop of files onto applications|TODO|
 |No animation when applications, documents, or folders are opened|Animation when applications, documents, or folders are opened|Implemented (using QTimeLine Property Animation)|
