@@ -1,0 +1,35 @@
+name: Build for Ubuntu
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y git curl wget zip cmake pkgconf libqt5widgets5 qttools5-dev
+
+      - name: Build and package
+        run: |
+          git submodule update --init --recursive
+          mkdir build ; cd build
+          cmake .. -DCMAKE_BUILD_TYPE=Release
+          make -j$(nproc)
+          make DESTDIR=. install
+          find Filer.app/
+          zip --symlinks -r ./Filer_Ubuntu.zip Filer.app/
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: filer-artifact
+          path: build/Filer_Ubuntu.zip
