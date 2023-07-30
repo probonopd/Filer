@@ -1,4 +1,4 @@
-# Filer [![Build Status](https://api.cirrus-ci.com/probonopd/helloSystem/Filer.svg)](https://cirrus-ci.com/github/helloSystem/Filer) 
+# Filer [![Build Status](https://api.cirrus-ci.com/probonopd/helloSystem/Filer.svg)](https://cirrus-ci.com/github/probonopd/Filer) [![Ubuntu Build Status](https://img.shields.io/github/actions/workflow/status/probonopd/Filer/ubuntu.yml?branch=main)](https://github.com/probonopd/Filer/actions/workflows/ubuntu.yml)
 
 A clean rewrite of the Filer for helloSystem, inspired by [John Siracusa's descriptions of "Spatial Orientation"](https://arstechnica.com/gadgets/2003/04/finder/).
 
