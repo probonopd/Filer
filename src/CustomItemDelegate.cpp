@@ -137,9 +137,12 @@ void CustomItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
     m_currentIndex = index;
     m_currentOption = customizedOption;
 
-    // Set the color of the text in the option to white if the desktop is drawn
+    // For the desktop
     if (isFirstInstance) {
+        // White text for the desktop
         customizedOption.palette.setColor(QPalette::Text, Qt::white);
+        // Bold font for the desktop
+        customizedOption.font.setBold(true);
     } else {
         customizedOption.palette.setColor(QPalette::Text, Qt::black);
     }
