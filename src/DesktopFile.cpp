@@ -57,9 +57,7 @@ QString DesktopFile::getIcon() const
     // Print error message if icon is not found
     if (icon.isEmpty()) {
         qDebug() << "Icon= not found in" << m_filename;
-    } else {
-        qDebug() << "Searching typical xdg locations for" << icon;
     }
-
+    
     return icon;
 }
