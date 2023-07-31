@@ -707,70 +707,36 @@ void FileManagerMainWindow::createMenus()
 
     goMenu->addSeparator();
 
-    goMenu->addAction(tr("Home"));
-    goMenu->actions().last()->setShortcut(QKeySequence("Ctrl+Home"));
-    connect(goMenu->actions().last(), &QAction::triggered, this,
-            [this]() { openFolderInNewWindow(QDir::homePath()); });
+    // Create a data structure to hold the information about the menu items
+    struct MenuItem {
+        QString name;
+        QString shortcut;
+        QStandardPaths::StandardLocation location;
+    };
 
-    goMenu->addAction(tr("Documents"));
-    goMenu->actions().last()->setShortcut(QKeySequence("Ctrl+Shift+D"));
-    connect(goMenu->actions().last(), &QAction::triggered, this, [this]() {
-        // Create if it doesn't exist
-        QDir dir(QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation));
-        if (!dir.exists())
-            dir.mkpath(".");
-        openFolderInNewWindow(QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation));
-    });
+    // Define the menu items
+    const QList<MenuItem> menuItems = {
+        {tr("Home"), "Ctrl+Shift+H", QStandardPaths::HomeLocation},
+        {tr("Documents"), "Ctrl+Shift+D", QStandardPaths::DocumentsLocation},
+        {tr("Downloads"), "Ctrl+Shift+L", QStandardPaths::DownloadLocation},
+        {tr("Music"), "Ctrl+Shift+M", QStandardPaths::MusicLocation},
+        {tr("Pictures"), "Ctrl+Shift+P", QStandardPaths::PicturesLocation},
+        {tr("Videos"), "Ctrl+Shift+V", QStandardPaths::MoviesLocation},
+        {tr("Temporary"), "Ctrl+Shift+E", QStandardPaths::TempLocation}
+    };
 
-    goMenu->addAction(tr("Downloads"));
-    goMenu->actions().last()->setShortcut(QKeySequence("Ctrl+Shift+L"));
-    connect(goMenu->actions().last(), &QAction::triggered, this, [this]() {
-        // Create if it doesn't exist
-        QDir dir(QStandardPaths::writableLocation(QStandardPaths::DownloadLocation));
-        if (!dir.exists())
-            dir.mkpath(".");
-        openFolderInNewWindow(QStandardPaths::writableLocation(QStandardPaths::DownloadLocation));
-    });
-
-    goMenu->addAction(tr("Music"));
-    goMenu->actions().last()->setShortcut(QKeySequence("Ctrl+Shift+M"));
-    connect(goMenu->actions().last(), &QAction::triggered, this, [this]() {
-        // Create if it doesn't exist
-        QDir dir(QStandardPaths::writableLocation(QStandardPaths::MusicLocation));
-        if (!dir.exists())
-            dir.mkpath(".");
-        openFolderInNewWindow(QStandardPaths::writableLocation(QStandardPaths::MusicLocation));
-    });
-
-    goMenu->addAction(tr("Pictures"));
-    goMenu->actions().last()->setShortcut(QKeySequence("Ctrl+Shift+P"));
-    connect(goMenu->actions().last(), &QAction::triggered, this, [this]() {
-        // Create if it doesn't exist
-        QDir dir(QStandardPaths::writableLocation(QStandardPaths::PicturesLocation));
-        if (!dir.exists())
-            dir.mkpath(".");
-        openFolderInNewWindow(QStandardPaths::writableLocation(QStandardPaths::PicturesLocation));
-    });
-
-    goMenu->addAction(tr("Videos"));
-    goMenu->actions().last()->setShortcut(QKeySequence("Ctrl+Shift+V"));
-    connect(goMenu->actions().last(), &QAction::triggered, this, [this]() {
-        // Create if it doesn't exist
-        QDir dir(QStandardPaths::writableLocation(QStandardPaths::MoviesLocation));
-        if (!dir.exists())
-            dir.mkpath(".");
-        openFolderInNewWindow(QStandardPaths::writableLocation(QStandardPaths::MoviesLocation));
-    });
-
-    goMenu->addAction(tr("Temporary"));
-    goMenu->actions().last()->setShortcut(QKeySequence("Ctrl+Shift+E"));
-    connect(goMenu->actions().last(), &QAction::triggered, this, [this]() {
-        // Create if it doesn't exist
-        QDir dir(QStandardPaths::writableLocation(QStandardPaths::TempLocation));
-        if (!dir.exists())
-            dir.mkpath(".");
-        openFolderInNewWindow(QStandardPaths::writableLocation(QStandardPaths::TempLocation));
-    });
+    // Loop through the menu items and create corresponding actions and connections
+    for (const MenuItem& menuItem : menuItems) {
+        QAction* action = goMenu->addAction(tr(menuItem.name.toUtf8()));
+        action->setShortcut(QKeySequence(menuItem.shortcut));
+        connect(action, &QAction::triggered, this, [this, location = menuItem.location]() {
+            // Create if it doesn't exist
+            QDir dir(QStandardPaths::writableLocation(location));
+            if (!dir.exists())
+                dir.mkpath(".");
+            openFolderInNewWindow(QStandardPaths::writableLocation(location));
+        });
+    }
 
     goMenu->addSeparator();
 
