@@ -264,12 +264,24 @@ bool CustomItemDelegate::editorEvent(QEvent *event, QAbstractItemModel *model,
         // Create a context menu with the given actions
         QMenu menu;
 
-        FileManagerMainWindow *mainWindow = static_cast<FileManagerMainWindow *>(parent());
+        // From parent, go up until we have a FileManagerMainWindow
+        // it could be the parent, the parent of the parent, etc.
+        FileManagerMainWindow *mainWindow;
+        auto *parent = this->parent();
+        while (parent) {
+            mainWindow = qobject_cast<FileManagerMainWindow *>(parent);
+            if (mainWindow) {
+                break;
+            }
+            parent = parent->parent();
+        }
 
         // Open
         QAction *openAction = new QAction("Open", &menu);
         openAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_O));
-        connect(openAction, &QAction::triggered, [=]() { mainWindow->open(filePath); });
+        connect(openAction, &QAction::triggered, [=]() { 
+            mainWindow->open(filePath); 
+        });
         menu.addAction(openAction);
 
         // If is not a directory, add the Open With... action
@@ -296,7 +308,9 @@ bool CustomItemDelegate::editorEvent(QEvent *event, QAbstractItemModel *model,
         menu.addSeparator();
 
         QAction *renameAction = new QAction(tr("Rename..."), this);
-        connect(renameAction, &QAction::triggered, [=]() { mainWindow->renameSelectedItem(); });
+        connect(renameAction, &QAction::triggered, [=]() { 
+            mainWindow->renameSelectedItem(); 
+        });
         menu.addAction(renameAction);
 
         QAction *duplicateAction = new QAction(tr("Duplicate"), this);

@@ -63,6 +63,7 @@
 #include <QDialogButtonBox>
 #include <QFileSystemModel>
 #include <QCompleter>
+#include <QRegExpValidator>
 
 /*
  * This creates a FileManagerMainWindow object with a QTreeView and QListView widget.
@@ -769,6 +770,7 @@ void FileManagerMainWindow::createMenus()
         QDialog dialog(this);
         dialog.setWindowTitle(tr("Go to Folder..."));
         dialog.setWindowIcon(QIcon::fromTheme("folder"));
+        dialog.setFixedWidth(400);
         QVBoxLayout *layout = new QVBoxLayout(&dialog);
         QLabel *label = new QLabel(tr("Folder:"), &dialog);
         layout->addWidget(label);
@@ -1285,15 +1287,45 @@ void FileManagerMainWindow::renameSelectedItem()
     // Get the current name of the selected item
     const QString currentName = m_fileSystemModel->fileName(selectedIndex);
 
-    // Use the QInputDialog class to ask the user for the new name for the selected item
+    // Prevent the user from using "/" anywhere in the new name
+    QRegExpValidator validator(QRegExp("[^/]*"));
     bool ok;
-    const QString newName = QInputDialog::getText(nullptr, tr("Rename"), tr("New name:"),
-                                                  QLineEdit::Normal, currentName, &ok);
-    if (!ok)
-        return;
 
-    // Use the QFileSystemModel's setData() function to rename the selected item in the file system
-    m_fileSystemModel->setData(selectedIndex, newName, Qt::EditRole);
+    QLineEdit* lineEdit = new QLineEdit();
+    lineEdit->setValidator(&validator);
+    // Construct a dialog using this QLineEdit
+    QDialog dialog(this);
+    dialog.setWindowTitle(tr("Rename"));
+    dialog.setLayout(new QVBoxLayout());
+    dialog.layout()->addWidget(lineEdit);
+    QDialogButtonBox* buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, &dialog);
+    connect(buttonBox, &QDialogButtonBox::accepted, &dialog, &QDialog::accept);
+    connect(buttonBox, &QDialogButtonBox::rejected, &dialog, &QDialog::reject);
+    dialog.layout()->addWidget(buttonBox);
+    dialog.adjustSize();
+    dialog.setFixedWidth(400);
+    lineEdit->setText(currentName);
+    lineEdit->selectAll();
+    lineEdit->setFocus();
+    ok = dialog.exec();
+
+    // Get the new name of the selected item
+    const QString newName = lineEdit->text();
+
+    if (!ok || newName.isEmpty() || newName == currentName) {
+        // The user canceled the dialog or didn't enter a new name
+        return;
+    }
+
+    // Rename the selected item in the file system
+    const QString currentPath = m_fileSystemModel->filePath(selectedIndex);
+    const QString newPath = currentPath.left(currentPath.lastIndexOf("/") + 1) + newName;
+    if(!QFile::rename(currentPath, newPath)) {
+        QMessageBox::critical(this, tr("Error"), tr("Could not rename %1 to %2").arg(currentPath).arg(newPath));
+    } else {
+        qDebug() << "Renamed" << currentPath << "to" << newPath;
+        // The view will automatically update itself; works
+    }
 }
 
 void FileManagerMainWindow::updateMenus()
