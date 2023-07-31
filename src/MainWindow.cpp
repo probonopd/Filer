@@ -1225,9 +1225,9 @@ void FileManagerMainWindow::open(const QString &filePath)
         }
     }
 
-    // Check if the file path ends with ".app", ".AppDir", or ".AppImage"
+    // Check if the file path ends with ".app", ".AppDir", or ".AppImage" or ".desktop"
     if (filePath.endsWith(".app") || filePath.endsWith(".AppDir")
-        || filePath.endsWith(".AppImage")) {
+        || filePath.endsWith(".AppImage" || filePath.endsWith(".desktop")) {
         // Use the "launch" command to open the file
         qDebug() << "Launching:" << filePath;
         QProcess process;
