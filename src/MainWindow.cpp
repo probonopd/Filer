@@ -59,6 +59,10 @@
 #include <QSortFilterProxyModel>
 #include <QMimeData>
 #include <QThread>
+#include <QLabel>
+#include <QDialogButtonBox>
+#include <QFileSystemModel>
+#include <QCompleter>
 
 /*
  * This creates a FileManagerMainWindow object with a QTreeView and QListView widget.
@@ -667,7 +671,17 @@ void FileManagerMainWindow::createMenus()
     goMenu->addAction(tr("Applications"));
     goMenu->actions().last()->setShortcut(QKeySequence("Ctrl+Shift+A"));
     connect(goMenu->actions().last(), &QAction::triggered, this,
-            [this]() { openFolderInNewWindow("/Applications"); });
+            [this]() {
+                if (QFileInfo("/Applications").exists()) {
+                    openFolderInNewWindow("/Applications");
+                } else if (QFileInfo("/usr/local/share/applications").exists()) {
+                    openFolderInNewWindow("/usr/local/share/applications");
+                } else if (QFileInfo("/usr/share/applications").exists()) {
+                    openFolderInNewWindow("/usr/share/applications");
+                } else {
+                    QMessageBox::information(nullptr, (" "), tr("No applications folder found."));
+                }
+            });
 
     goMenu->addSeparator();
 
@@ -751,26 +765,34 @@ void FileManagerMainWindow::createMenus()
     goMenu->actions().last()->setShortcut(QKeySequence("Ctrl+Shift+G"));
     connect(goMenu->actions().last(), &QAction::triggered, this, [this]() {
         bool ok;
-        QString text = QInputDialog::getText(this, tr("Go to Folder..."), tr("Folder:"), QLineEdit::Normal, "", &ok);
-        // Autocomplete
-        if (ok && !text.isEmpty()) {
+
+        QDialog dialog(this);
+        dialog.setWindowTitle(tr("Go to Folder..."));
+        dialog.setWindowIcon(QIcon::fromTheme("folder"));
+        QVBoxLayout *layout = new QVBoxLayout(&dialog);
+        QLabel *label = new QLabel(tr("Folder:"), &dialog);
+        layout->addWidget(label);
+        QLineEdit *lineEdit = new QLineEdit(&dialog);
+        auto completer = new QCompleter(this);
+        completer->setCompletionMode(QCompleter::InlineCompletion);
+        QFileSystemModel *fsModel = new QFileSystemModel(completer);
+        fsModel->setFilter(QDir::Dirs|QDir::Drives|QDir::NoDotAndDotDot|QDir::AllDirs); // Only directories, no files
+        completer->setModel(fsModel);
+        fsModel->setRootPath(QString());
+        lineEdit->setCompleter(completer);
+        lineEdit->setPlaceholderText(tr("Enter a folder path..."));
+        lineEdit->setClearButtonEnabled(true);
+        layout->addWidget(lineEdit);
+        QDialogButtonBox *buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, &dialog);
+        layout->addWidget(buttonBox);
+        connect(buttonBox, &QDialogButtonBox::accepted, &dialog, &QDialog::accept);
+        connect(buttonBox, &QDialogButtonBox::rejected, &dialog, &QDialog::reject);
+        if (dialog.exec() == QDialog::Accepted) {
+            QString text = lineEdit->text();
             QDir dir(text);
-            if (dir.exists())
+            if (dir.exists()) {
                 openFolderInNewWindow(text);
-            else {
-                // Try to autocomplete
-                QString path = text;
-                QString last = path.section('/', -1);
-                path.chop(last.length());
-                dir = QDir(path);
-                QStringList entries = dir.entryList(QDir::AllEntries | QDir::NoDotAndDotDot);
-                for (int i = 0; i < entries.size(); ++i) {
-                    if (entries.at(i).startsWith(last)) {
-                        path += entries.at(i);
-                        openFolderInNewWindow(path);
-                        return;
-                    }
-                }
+            } else {
                 QMessageBox::warning(this, tr("Go to Folder..."), tr("The folder does not exist."));
             }
         }
