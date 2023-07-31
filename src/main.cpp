@@ -27,6 +27,7 @@
 #include <QApplication>
 #include <QCoreApplication>
 #include <QCommandLineParser>
+#include <QMessageBox>
 
 #include "MainWindow.h"
 #include "FileManager.h"
@@ -46,6 +47,36 @@ int main(int argc, char *argv[])
     parser.addHelpOption();
     parser.addVersionOption();
     parser.process(app);
+
+    // On the $PATH check for the existence of the following commands:
+    // - open
+    // - launch
+    QStringList neededCommands = QStringList() << "open" << "launch";
+    foreach (QString neededCommand, neededCommands) {
+        if (!QStandardPaths::findExecutable(neededCommand).isEmpty()) {
+            // Found
+        } else {
+            // Not found
+            QMessageBox::critical(0, "Filer", QString("The '%1' command is missing. Please install it.").arg(neededCommand));
+            return 1;
+        }
+    }
+
+    // Run "open" without arguments and get its output; check
+    // whether it is our version of open and not e.g., xdg-open
+    QProcess openProcess;
+    openProcess.setProcessChannelMode(QProcess::MergedChannels);
+    openProcess.start("open");
+    openProcess.waitForFinished();
+    QString openOutput = openProcess.readAllStandardOutput();
+    qDebug() << openOutput;
+    if (openOutput.contains("pen <document to be opened>")) {
+        // Found
+    } else {
+        // Not found
+        QMessageBox::critical(0, "Filer", QString("The 'open' command is not the one from https://github.com/helloSystem/launch/. Please install it."));
+        return 1;
+    }
 
     /*
      * FIXME: Why does this cause a crash?
