@@ -287,7 +287,7 @@ bool CustomItemDelegate::editorEvent(QEvent *event, QAbstractItemModel *model,
         // If is not a directory, add the Open With... action
         if (!QFileInfo(filePath).isDir()) {
             QAction *openWithAction = new QAction("Open With...", &menu);
-            openWithAction->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_O));
+            openWithAction->setShortcut(QKeySequence(Qt::CTRL + Qt::ALT + Qt::Key_O));
             connect(openWithAction, &QAction::triggered, [=]() { mainWindow->openWith(filePath); });
             menu.addAction(openWithAction);
         }

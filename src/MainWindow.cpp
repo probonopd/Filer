@@ -525,12 +525,24 @@ void FileManagerMainWindow::createMenus()
     fileMenu->actions().last()->setShortcut(QKeySequence("Ctrl+N"));
     fileMenu->actions().last()->setEnabled(false);
 
+    // Open
     fileMenu->addAction(tr("Open"));
+    m_openAction = fileMenu->actions().last();
     fileMenu->actions().last()->setShortcut(QKeySequence("Ctrl+O"));
     connect(fileMenu->actions().last(), &QAction::triggered, this, [this]() {
         QModelIndex index = m_treeView->currentIndex();
         QString filePath = m_fileSystemModel->filePath(index);
         open(filePath);
+    });
+
+    // Open With...
+    fileMenu->addAction(tr("Open With..."));
+    m_openWithAction = fileMenu->actions().last();
+    fileMenu->actions().last()->setShortcut(QKeySequence(Qt::CTRL + Qt::ALT + Qt::Key_O));
+    connect(fileMenu->actions().last(), &QAction::triggered, this, [this]() {
+        QModelIndex index = m_treeView->currentIndex();
+        QString filePath = m_fileSystemModel->filePath(index);
+        openWith(filePath);
     });
 
     // Open and close current
@@ -1344,6 +1356,15 @@ void FileManagerMainWindow::updateMenus()
     } else {
         // Disable the Rename action
         m_renameAction->setEnabled(false);
+    }
+
+    // If not at least one item is selected, disable the Open and Open With actions
+    if (selectedIndexes.isEmpty()) {
+        m_openAction->setEnabled(false);
+        m_openWithAction->setEnabled(false);
+    } else {
+        m_openAction->setEnabled(true);
+        m_openWithAction->setEnabled(true);
     }
 }
 
