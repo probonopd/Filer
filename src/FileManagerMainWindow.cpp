@@ -604,6 +604,7 @@ void FileManagerMainWindow::createMenus()
         }
     });
     m_moveToTrashAction = editMenu->actions().last();
+    m_moveToTrashAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Backspace));
     editMenu->addSeparator();
     QAction *selectAllAction = new QAction(tr("Select All"), this);
     selectAllAction->setShortcut(QKeySequence("Ctrl+A"));

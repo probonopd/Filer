@@ -2,6 +2,9 @@
 #include <QCoreApplication>
 #include <QLocale>
 #include <QTranslator>
+#include <QStorageInfo>
+#include <QDebug>
+#include <QProcess>
 
 TrashHandler::TrashHandler(QObject *parent) : QObject(parent) {
     m_trashPath = QDir::homePath() + "/.local/share/Trash/files";
@@ -9,6 +12,34 @@ TrashHandler::TrashHandler(QObject *parent) : QObject(parent) {
 
 bool TrashHandler::moveToTrash(const QString& path) {
     QFileInfo fileInfo(path);
+
+    // Check if the path is a mount point using QStorageInfo
+    QStringList mountPoints;
+    for (const QStorageInfo &storage : QStorageInfo::mountedVolumes()) {
+        mountPoints << storage.rootPath();
+    }
+
+    QString absoluteFilePathWithSymlinksResolved = fileInfo.absoluteFilePath();
+    if (fileInfo.isSymLink()) {
+        absoluteFilePathWithSymlinksResolved = fileInfo.symLinkTarget();
+    }
+
+    if (mountPoints.contains(absoluteFilePathWithSymlinksResolved)) {
+        // Unmount the mount point
+        // TODO: Might be necessary to call with sudo -A -E
+        QProcess umount;
+        umount.start("umount", QStringList() << absoluteFilePathWithSymlinksResolved);
+        umount.waitForFinished(-1);
+        if (umount.exitCode() == 0) {
+            // Successfully unmounted the mount point, now remove the mount point
+            QDir mountPointDir(absoluteFilePathWithSymlinksResolved);
+            // Remove the mount point directory but not recursively
+            if (!mountPointDir.rmdir(".")) {
+                return false;
+            }
+        }
+        return true;
+    }
 
     if (!fileInfo.exists()) {
         QMessageBox::warning(nullptr, tr("File not found"),
@@ -44,7 +75,7 @@ bool TrashHandler::moveToTrash(const QString& path) {
         QFile::rename(newFilePath, path);
 
         QMessageBox::critical(nullptr, tr("Error"),
-                         tr("Failed to move the file/directory to Trash. Please check file permissions."));
+                         tr("Failed to move to Trash. Please check file permissions."));
         return false;
     }
 
