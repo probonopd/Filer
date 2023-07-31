@@ -82,7 +82,7 @@ QColor CombinedIconCreator::findDominantColor(const QPixmap& pixmap) const {
 }
 
 QIcon CombinedIconCreator::createCombinedIcon(const QIcon& applicationIcon) const {
-    qDebug() << "Creating combined icon";
+    // qDebug() << "Creating combined icon";
     // Try to load the document icon from the path ./Resources/document.png relative to the application executable path
     // If the icon cannot be loaded, use the default document icon from the icon theme
     QString applicationPath = QApplication::applicationDirPath();
@@ -122,6 +122,6 @@ QIcon CombinedIconCreator::createCombinedIcon(const QIcon& applicationIcon) cons
     painter.drawPixmap(8, 8-5, application_pixmap);
 
     painter.end();
-    qDebug() << "Combined icon created";
+    // qDebug() << "Combined icon created";
     return QIcon(combined_icon);
 }

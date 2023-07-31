@@ -80,7 +80,7 @@ QString CustomFileSystemModel::openWith(const QFileInfo& fileInfo) const {
 
     if (index.isValid()) {
         // If we found it, store it in the model for future use
-        qDebug() << "Updating model with open-with attribute for " << filePath << ": " << attributeValue;
+        // qDebug() << "Updating model with open-with attribute for " << filePath << ": " << attributeValue;
         openWithAttributes[index] = attributeValue.toUtf8();
     } else {
         qDebug() << "Did not find " << filePath << " in the model. FIXME: Find the reason why this happens. Working around for now.";

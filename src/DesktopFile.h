@@ -33,6 +33,9 @@
  * a desktop file and using it in a graphical user interface.
  */
 
+//ifndef DESKTOPFILE_H
+//define DESKTOPFILE_H
+
 #include <QString>
 
 class DesktopFile
@@ -44,3 +47,5 @@ public:
 private:
     QString m_filename;
 };
+
+//endif // DESKTOPFILE_H

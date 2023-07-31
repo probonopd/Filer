@@ -58,6 +58,7 @@
 #include <QColor>
 #include <QSortFilterProxyModel>
 #include <QMimeData>
+#include <QThread>
 
 /*
  * This creates a FileManagerMainWindow object with a QTreeView and QListView widget.
@@ -74,41 +75,6 @@ QList<FileManagerMainWindow *> &FileManagerMainWindow::instances()
 {
     static QList<FileManagerMainWindow *> instances;
     return instances;
-}
-
-/*
- * This is the paint event for the main window.
- * We draw the desktop picture.
- * We also draw a gradient at the top of the window.
- */
-void FileManagerMainWindow::paintEvent(QPaintEvent *event)
-{
-
-    // Check if WA_TranslucentBackground is set
-    // because we only want to draw the desktop background in the first instance
-    if (!testAttribute(Qt::WA_TranslucentBackground)) {
-        return;
-    }
-
-    qDebug() << "FileManagerMainWindow::paintEvent()";
-
-    // Draw the background image
-    QPixmap background("/usr/local/share/slim/themes/default/background.jpg");
-    background = background.scaled(this->size(), Qt::KeepAspectRatioByExpanding);
-    QPainter painter(this);
-    painter.drawPixmap(0, 0, background);
-
-    // Draw a grey background over it to make it more muted
-    painter.fillRect(this->rect(), QColor(128, 128, 128, 128));
-
-    // Draw a rectangle with a gradient at the top of the window
-    QPen pen(Qt::NoPen);
-    painter.setPen(pen);
-    QRect rect(0, 0, this->width(), 44);
-    QLinearGradient gradient(0, 22, 0, 44);
-    gradient.setColorAt(0, QColor(0, 0, 0, 50));
-    gradient.setColorAt(1, QColor(0, 0, 0, 0));
-    painter.fillRect(rect, gradient);
 }
 
 FileManagerMainWindow::FileManagerMainWindow(QWidget *parent, const QString &initialDirectory)
@@ -133,21 +99,14 @@ FileManagerMainWindow::FileManagerMainWindow(QWidget *parent, const QString &ini
             homeDir.mkdir("Desktop");
         }
 
+        // Set the object name to "Desktop" so that we can find it later
+        setObjectName("Desktop");
+
         // Set the root path to ~/Desktop
         setDirectory(QDir::homePath() + "/Desktop");
 
         qDebug() << "First instance, show the desktop";
-
-        // setWindowFlags(Qt::FramelessWindowHint);
         setFixedSize(QApplication::desktop()->screenGeometry(0).size());
-
-        // Make the background of the window transparent; this works
-        // Since we are defining our own paintEvent, we need to paint the background ourselves
-        setStyleSheet("background-color: transparent;"); // Without this, the background is
-                                                         // white-ish like a normal window
-        setAttribute(Qt::WA_TranslucentBackground); // Without this, the background is black
-
-        // Make the window a desktop window
         setAttribute(Qt::WA_X11NetWmWindowTypeDesktop, true);
 
     } else {
@@ -214,6 +173,11 @@ FileManagerMainWindow::FileManagerMainWindow(QWidget *parent, const QString &ini
     // No frame around the views
     m_treeView->setFrameStyle(QFrame::NoFrame);
     m_iconView->setFrameStyle(QFrame::NoFrame);
+
+    // Draw the desktop picture for the first instance
+    if (m_is_first_instance) {
+        m_iconView->requestDesktopPictureToBePainted(true);
+    }
 
     // Create an instance of our custom QFileIconProvider
     CustomFileIconProvider provider;
@@ -519,6 +483,16 @@ FileManagerMainWindow::~FileManagerMainWindow()
     if (instances().isEmpty()) {
         qDebug() << "Last window closed, quitting application";
         qApp->quit();
+    } else {
+        // Check if only one window is left
+        if (instances().size() == 1) {
+            // Activate the first window so that the focus
+            // does not go to another application but to the desktop
+            // FIXME: Sometimes the menu bar is mixed up with the menu bar of the other application
+            // that was previously active
+            qDebug() << "Activating first window";
+            instances().first()->activateWindow();
+        }
     }
 
     // Tell all windows that they should be redrawn
@@ -535,6 +509,9 @@ FileManagerMainWindow::~FileManagerMainWindow()
 
 void FileManagerMainWindow::createMenus()
 {
+    // Remove any previous menus
+    menuBar()->clear();
+
     // Create the File menu
     QMenu *fileMenu = new QMenu(tr("File"));
 
@@ -749,6 +726,16 @@ void FileManagerMainWindow::createMenus()
         openFolderInNewWindow(QStandardPaths::writableLocation(QStandardPaths::MoviesLocation));
     });
 
+    goMenu->addAction(tr("Temporary"));
+    goMenu->actions().last()->setShortcut(QKeySequence("Ctrl+Shift+E"));
+    connect(goMenu->actions().last(), &QAction::triggered, this, [this]() {
+        // Create if it doesn't exist
+        QDir dir(QStandardPaths::writableLocation(QStandardPaths::TempLocation));
+        if (!dir.exists())
+            dir.mkpath(".");
+        openFolderInNewWindow(QStandardPaths::writableLocation(QStandardPaths::TempLocation));
+    });
+
     goMenu->addSeparator();
 
     goMenu->addAction(tr("Trash"));
@@ -756,6 +743,37 @@ void FileManagerMainWindow::createMenus()
     connect(goMenu->actions().last(), &QAction::triggered, this, [this]() {
         // XDG Trash path
         openFolderInNewWindow(QDir::homePath() + "/.local/share/Trash/files");
+    });
+
+    goMenu->addSeparator();
+
+    goMenu->addAction(tr("Go to Folder..."));
+    goMenu->actions().last()->setShortcut(QKeySequence("Ctrl+Shift+G"));
+    connect(goMenu->actions().last(), &QAction::triggered, this, [this]() {
+        bool ok;
+        QString text = QInputDialog::getText(this, tr("Go to Folder..."), tr("Folder:"), QLineEdit::Normal, "", &ok);
+        // Autocomplete
+        if (ok && !text.isEmpty()) {
+            QDir dir(text);
+            if (dir.exists())
+                openFolderInNewWindow(text);
+            else {
+                // Try to autocomplete
+                QString path = text;
+                QString last = path.section('/', -1);
+                path.chop(last.length());
+                dir = QDir(path);
+                QStringList entries = dir.entryList(QDir::AllEntries | QDir::NoDotAndDotDot);
+                for (int i = 0; i < entries.size(); ++i) {
+                    if (entries.at(i).startsWith(last)) {
+                        path += entries.at(i);
+                        openFolderInNewWindow(path);
+                        return;
+                    }
+                }
+                QMessageBox::warning(this, tr("Go to Folder..."), tr("The folder does not exist."));
+            }
+        }
     });
 
     // Add the Go menu to the menu bar
@@ -1133,12 +1151,6 @@ void FileManagerMainWindow::dragMoveEvent(QDragMoveEvent *event)
     }
 }
 
-bool FileManagerMainWindow::isTreeView()
-{
-    return m_treeView->isVisible();
-
-}
-
 void FileManagerMainWindow::open(const QString &filePath)
 {
     // Print the name of the called function
@@ -1319,4 +1331,21 @@ bool FileManagerMainWindow::instanceExists(const QString &directory)
         }
     }
     return false;
+}
+
+QWidget* FileManagerMainWindow::getCurrentView() const
+{
+    QWidget* currentActiveView = nullptr;
+
+    // Check which view is currently visible in the stacked widget
+    if (m_stackedWidget->currentWidget() == m_treeView)
+    {
+        currentActiveView = m_treeView;
+    }
+    else if (m_stackedWidget->currentWidget() == m_iconView)
+    {
+        currentActiveView = m_iconView;
+    }
+
+    return currentActiveView;
 }

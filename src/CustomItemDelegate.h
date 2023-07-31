@@ -44,6 +44,7 @@ public slots:
     void animationFinished();
     void stopAnimation();
     void startAnimation(const QModelIndex& index);
+    bool isAnimationRunning() const;
 
 signals:
     // Define a signal to emit the file path and icon coordinates when a file is dropped

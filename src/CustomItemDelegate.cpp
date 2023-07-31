@@ -117,7 +117,8 @@ void CustomItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
     FileManagerMainWindow *mainWindow = static_cast<FileManagerMainWindow *>(view->parent()->parent());
     // Assert that the parent of the parent of the view is a FileManagerMainWindow
     Q_ASSERT(mainWindow);
-    bool isTreeView = mainWindow->isTreeView();
+
+    bool isTreeView =  mainWindow->getCurrentView()->metaObject()->className() == QString("QTreeView");
 
     // Check if it is the first instance
     bool isFirstInstance = mainWindow->m_is_first_instance;
@@ -372,8 +373,7 @@ void CustomItemDelegate::animationValueChanged(double value)
     {
         // Print the class name of the stacked widget that the view is in
         qDebug() << "Parent widget class name:" << view->parentWidget()->metaObject()->className();
-        // Given that view->parentWidget() is a QStackedWidget, we can cast it to that type
-        QStackedWidget* stackedWidget = static_cast<QStackedWidget*>(view->parentWidget());
+        QWidget* stackedWidget = view->parentWidget();
         // Update the widget in the stacked widget
         stackedWidget->update();
     } else {
@@ -433,4 +433,9 @@ void CustomItemDelegate::startAnimation(const QModelIndex& index)
 void CustomItemDelegate::setSelectionModel(QItemSelectionModel* selectionModel)
 {
     m_selectionModel = selectionModel;
+}
+
+bool CustomItemDelegate::isAnimationRunning() const
+{
+    return animationTimeline->state() == QTimeLine::Running;
 }

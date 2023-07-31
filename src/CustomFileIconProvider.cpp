@@ -115,9 +115,9 @@ QIcon CustomFileIconProvider::icon(const QFileInfo &info) const
 
     // Retrieve the "open-with" attribute from the stored attributes in the model.
     QString openWith = QString(m_model->openWith(filePath)); // NOTE: We would like to do this with the index, but we don't have a valid index at this point for unknown reasons
-    qDebug() << "openWith: " << openWith;
+    // qDebug() << "openWith: " << openWith;
     if (!openWith.isEmpty()) {
-        qDebug() << "-> xxxxxxxxxxx, openWith:" << openWith << "for" << info.absoluteFilePath();
+        // qDebug() << "-> openWith:" << openWith << "for" << info.absoluteFilePath();
         ApplicationBundle bundle(openWith);
         if (bundle.isValid()) {
             qDebug("Info: %s is a valid application bundle", qPrintable(openWith));
