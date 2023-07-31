@@ -69,6 +69,8 @@ private:
     QAction *m_openAction;
     QAction *m_openWithAction;
     QAction *m_renameAction;
+    
+    QAction *m_showHideStatusBarAction;
 
     QStringList readFilenamesFromHiddenFile(const QString &filePath);
 

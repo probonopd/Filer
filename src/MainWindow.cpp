@@ -393,6 +393,11 @@ FileManagerMainWindow::FileManagerMainWindow(QWidget *parent, const QString &ini
         showIconView();
     }
 
+    // If this is the first instance, disable m_showHideStatusBarAction
+    if (instanceCount == 0) {
+        m_showHideStatusBarAction->setEnabled(false);
+    }
+
     // Call destructor and destroy the window immediately when the window is closed
     // Only this way the window will be destroyed immediately and not when the event loop is
     // finished and we can remove the window from the list of child windows of the parent window
@@ -626,8 +631,11 @@ void FileManagerMainWindow::createMenus()
     if (m_is_first_instance)
         viewMenu->actions().last()->setEnabled(false);
 
+    viewMenu->addSeparator();
+
     // Create the Show/Hide Status Bar action
     QAction *showHideStatusBarAction = new QAction(tr("Show/Hide Status Bar"), this);
+    m_showHideStatusBarAction = showHideStatusBarAction;
 
     // Add the Show/Hide Status Bar action to the View menu
     viewMenu->addAction(showHideStatusBarAction);
