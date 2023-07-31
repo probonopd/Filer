@@ -10,6 +10,7 @@
 #include "CustomFileSystemModel.h"
 #include <QTimeLine>
 #include <QItemSelectionModel>
+#include <QStandardItemModel>
 
 // Add a custom role to store the delegate position
 enum CustomItemDelegateRole {
@@ -38,6 +39,11 @@ public:
 
     // We need to know the selection model to be able to animate the selected item instead of all items
     void setSelectionModel(QItemSelectionModel* selectionModel);
+
+    // Override the sizeHint method to set the size for the delegate to the size available in the view
+    QSize sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const override {
+        return QSize(option.rect.width(), option.rect.height());
+    }
 
 public slots:
     void animationValueChanged(double value);
