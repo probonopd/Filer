@@ -25,21 +25,6 @@ void CustomListView::paintEvent(QPaintEvent* event)
         return;
     }
 
-    // setContentsMargins(0, 10, 0, 0);
-    setContentsMargins(0, 10, 0, 0);
-    setSpacing(10);
-
-    // Add 1cm of padding to the top, so that the items
-    // are 1cm below the top of the window and won't get
-    // covered by the Menu
-
-    // Get the viewport of the list view
-    viewport()->setContentsMargins(0, 10, 0, 0);
-    // Why does this not work?
-    // Because the viewport is not a QWidget, but a QAbstractScrollArea
-    // So we need to use setContentsMargins on the viewport instead
-    setContentsMargins(0, 10, 0, 0);
-    
     QPainter painter(viewport());
 
     // Save the painter state
