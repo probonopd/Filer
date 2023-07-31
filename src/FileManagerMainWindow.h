@@ -75,13 +75,10 @@ public slots:
     void open(const QString &filePath);
     void openWith(const QString &filePath);
     void openFolderInNewWindow(const QString &rootPath);
-    void dragEnterEvent(QDragEnterEvent *event);
-    void dragMoveEvent(QDragMoveEvent *event);
     void renameSelectedItem();
     void resizeEvent(QResizeEvent *event);
 
     void moveEvent(QMoveEvent *event);
-    void dropEvent(QDropEvent *event);
 
 private:
     QStackedWidget *m_stackedWidget;
@@ -113,8 +110,6 @@ private:
     void updateStatusBar();
     void copySelectedItems(const QString &destinationPath);
     void moveSelectedItems(const QString &destinationPath);
-    void onItemDropped(const QModelIndex &targetIndex);
-    void enableDropOnFolder(const QModelIndex &index);
     void updateMenus();
 
     void saveWindowGeometry();

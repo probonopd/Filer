@@ -24,66 +24,80 @@
  * SUCH DAMAGE.
  */
 
+/* The MoverCopier class provides two public methods:
+ * copy() and move() which can be used to copy or move a file or a directory from one location to
+ * another. The copy() and move() methods take three arguments: The source file or directory path.
+ * The destination file or directory path.
+ * A boolean flag indicating whether to recursively copy or move subdirectories (defaults to true).
+ * Internally, the MoverCopier class uses the copyFile(), copyDirectory(), moveFile(), and
+ * moveDirectory() methods to perform the actual copying or moving of files and directories. These
+ * methods also update a QProgressDialog instance to show the progress and estimated time remaining
+ * for the operation. A QTimer instance is also used to periodically reset the progress dialog to
+ * update the estimated time remaining.
+ */
+
 #include "MoverCopier.h"
+#include <QMessageBox>
 
-#include <QObject>
-#include <QString>
-#include <QFile>
-#include <QDir>
-#include <QProgressDialog>
-#include <QTimer>
-#include <QDebug>
-#include <QPushButton>
-#include <QKeyEvent>
-
-#include "MoverCopier.h"
-
-MoverCopier::MoverCopier(QObject *parent) : QObject(parent)
+// Custom exception class for file operation errors
+class FileOperationException : public std::exception
 {
-    // Create a progress dialog with a cancel button
-    progressDialog = new QProgressDialog;
-    progressDialog->setLabelText(tr("Moving/copying files..."));
-    progressDialog->setMinimumDuration(0); // Show the dialog immediately
-    progressDialog->setWindowModality(Qt::WindowModal); // Block input to other windows
-    progressDialog->setValue(0); // Initialize the progress to 0
+public:
+    FileOperationException(const QString &message) : errorMessage(message.toStdString()) {}
 
-    // Connect the cancel button to the cancel slot
-    connect(progressDialog, SIGNAL(canceled()), this, SLOT(cancel()));
+    const char *what() const noexcept override
+    {
+        return errorMessage.c_str();
+    }
+
+private:
+    std::string errorMessage;
+};
+
+
+MoverCopier::MoverCopier(QObject *parent) : QObject(parent), isCanceled(false)
+{
+    progressDialog.setLabelText(tr("Moving/copying files..."));
+    progressDialog.setMinimumDuration(0);
+    progressDialog.setWindowModality(Qt::WindowModal);
+    progressDialog.setValue(0);
+
+    connect(&progressDialog, &QProgressDialog::canceled, this, &MoverCopier::cancel);
 }
 
 void MoverCopier::copy(const QString &source, const QString &destination, bool recursive)
 {
-    // Get the total size of all files in the source directory
+    isCanceled = false;
     qint64 totalSize = getTotalSize(source, recursive);
-    progressDialog->setMaximum(totalSize); // Set the maximum value of the progress indicator
+    progressDialog.setMaximum(totalSize);
 
-    // Copy the files
-    copyFiles(source, destination, recursive);
-
-    // Close the progress dialog when the operation is complete
-    progressDialog->close();
+    try {
+        copyFiles(source, destination, recursive);
+        progressDialog.close();
+    } catch (const FileOperationException &e) {
+        progressDialog.close();
+        showErrorMessage(tr("Copy Error"), QString::fromStdString(e.what()));
+    }
 }
 
 void MoverCopier::move(const QString &source, const QString &destination, bool recursive)
 {
-    // Get the total size of all files in the source directory
+    isCanceled = false;
     qint64 totalSize = getTotalSize(source, recursive);
-    progressDialog->setMaximum(totalSize); // Set the maximum value of the progress indicator
+    progressDialog.setMaximum(totalSize);
 
-    // Move the files
-    moveFiles(source, destination, recursive);
-
-    // Close the progress dialog when the operation is complete
-    progressDialog->close();
+    try {
+        moveFiles(source, destination, recursive);
+        progressDialog.close();
+    } catch (const FileOperationException &e) {
+        progressDialog.close();
+        showErrorMessage(tr("Move Error"), QString::fromStdString(e.what()));
+    }
 }
 
 void MoverCopier::cancel()
 {
-    // Stop the current operation
-    stopOperation();
-
-    // Close the progress dialog
-    progressDialog->close();
+    isCanceled = true;
 }
 
 qint64 MoverCopier::getTotalSize(const QString &source, bool recursive)
@@ -96,18 +110,18 @@ qint64 MoverCopier::getTotalSize(const QString &source, bool recursive)
             dir.entryInfoList(QDir::NoDotAndDotDot | QDir::Files | QDir::Dirs | QDir::NoSymLinks);
 
     // Iterate over the entries
-    foreach (const QFileInfo &entry, entries) {
-        // If the entry is a file, add its size to the total
-        if (entry.isFile()) {
-            totalSize += entry.size();
-        }
+            foreach (const QFileInfo &entry, entries) {
+            // If the entry is a file, add its size to the total
+            if (entry.isFile()) {
+                totalSize += entry.size();
+            }
 
-        // If the entry is a directory and recursive copying/moving is enabled,
-        // recursively get the total size of the files in the directory
-        if (entry.isDir() && recursive) {
-            totalSize += getTotalSize(entry.absoluteFilePath(), recursive);
+            // If the entry is a directory and recursive copying/moving is enabled,
+            // recursively get the total size of the files in the directory
+            if (entry.isDir() && recursive) {
+                totalSize += getTotalSize(entry.absoluteFilePath(), recursive);
+            }
         }
-    }
 
     return totalSize;
 }
@@ -125,23 +139,28 @@ void MoverCopier::copyFiles(const QString &source, const QString &destination, b
     }
 
     // Iterate over the entries
-    foreach (const QFileInfo &entry, entries) {
-        // If the entry is a file, copy it to the destination
-        if (entry.isFile()) {
-            QFile::copy(entry.absoluteFilePath(),
-                        destination + QDir::separator() + entry.fileName());
+            foreach (const QFileInfo &entry, entries) {
+            // Check if the operation has been canceled
+            if (isCanceled) {
+                return;
+            }
 
-            // Update the progress
-            progressDialog->setValue(progressDialog->value() + entry.size());
-        }
+            // If the entry is a file, copy it to the destination
+            if (entry.isFile()) {
+                QFile::copy(entry.absoluteFilePath(),
+                            destination + QDir::separator() + entry.fileName());
 
-        // If the entry is a directory and recursive copying is enabled,
-        // recursively copy the files in the directory
-        if (entry.isDir() && recursive) {
-            copyFiles(entry.absoluteFilePath(), destination + QDir::separator() + entry.fileName(),
-                      recursive);
+                // Update the progress
+                updateProgress(entry.size());
+            }
+
+            // If the entry is a directory and recursive copying is enabled,
+            // recursively copy the files in the directory
+            if (entry.isDir() && recursive) {
+                copyFiles(entry.absoluteFilePath(), destination + QDir::separator() + entry.fileName(),
+                          recursive);
+            }
         }
-    }
 }
 
 void MoverCopier::moveFiles(const QString &source, const QString &destination, bool recursive)
@@ -157,26 +176,35 @@ void MoverCopier::moveFiles(const QString &source, const QString &destination, b
     }
 
     // Iterate over the entries
-    foreach (const QFileInfo &entry, entries) {
-        // If the entry is a file, move it to the destination
-        if (entry.isFile()) {
-            QFile::rename(entry.absoluteFilePath(),
-                          destination + QDir::separator() + entry.fileName());
+            foreach (const QFileInfo &entry, entries) {
+            // Check if the operation has been canceled
+            if (isCanceled) {
+                return;
+            }
 
-            // Update the progress
-            progressDialog->setValue(progressDialog->value() + entry.size());
-        }
+            // If the entry is a file, move it to the destination
+            if (entry.isFile()) {
+                QFile::rename(entry.absoluteFilePath(),
+                              destination + QDir::separator() + entry.fileName());
 
-        // If the entry is a directory and recursive moving is enabled,
-        // recursively move the files in the directory
-        if (entry.isDir() && recursive) {
-            moveFiles(entry.absoluteFilePath(), destination + QDir::separator() + entry.fileName(),
-                      recursive);
+                // Update the progress
+                updateProgress(entry.size());
+            }
+
+            // If the entry is a directory and recursive moving is enabled,
+            // recursively move the files in the directory
+            if (entry.isDir() && recursive) {
+                moveFiles(entry.absoluteFilePath(), destination + QDir::separator() + entry.fileName(),
+                          recursive);
+            }
         }
-    }
 }
 
-// Set Shortcut Command+. to cancel the current operation
+void MoverCopier::updateProgress(qint64 value)
+{
+    progressDialog.setValue(progressDialog.value() + value);
+}
+
 void MoverCopier::keyPressEvent(QKeyEvent *event)
 {
     if (event->key() == Qt::Key_Period && event->modifiers() == Qt::ControlModifier) {
@@ -186,5 +214,10 @@ void MoverCopier::keyPressEvent(QKeyEvent *event)
 
 void MoverCopier::stopOperation()
 {
-    cancel();
+    isCanceled = true;
+}
+
+void MoverCopier::showErrorMessage(const QString &title, const QString &message)
+{
+    QMessageBox::critical(nullptr, title, message, QMessageBox::Ok);
 }

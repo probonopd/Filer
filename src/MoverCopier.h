@@ -41,46 +41,61 @@
 
 #include <QObject>
 #include <QString>
+#include <QIODevice>
 #include <QProgressDialog>
-#include <QObject>
+#include <QKeyEvent>
 #include <QDir>
+#include <QFile>
 #include <QFileInfo>
-#include <QProgressDialog>
+#include <QDebug>
 
 class MoverCopier : public QObject
 {
     Q_OBJECT
 
 public:
-    MoverCopier(QObject *parent = nullptr);
+    explicit MoverCopier(QObject *parent = nullptr);
 
-    // Copy a file or directory from one location to another
-    void copy(const QString &source, const QString &destination, bool recursive = true);
+    // Function to copy files and directories
+    void copy(const QString &source, const QString &destination, bool recursive);
 
-    // Move a file or directory from one location to another
-    void move(const QString &source, const QString &destination, bool recursive = true);
-
-    // Cancel the current operation
-    void cancel();
+    // Function to move files and directories
+    void move(const QString &source, const QString &destination, bool recursive);
 
 public slots:
-    void keyPressEvent(QKeyEvent *event);
+    // Function to cancel the ongoing operation
+    void cancel();
+
+signals:
+    // Signal emitted when the operation is canceled
+    void canceled();
 
 private:
-    // Helper function to recursively get the total size of all files in a directory
+    // Helper function to get the total size of files in a directory (including subdirectories)
     qint64 getTotalSize(const QString &source, bool recursive);
 
-    // Helper function to copy a file or directory
+    // Helper function to copy files and directories recursively
     void copyFiles(const QString &source, const QString &destination, bool recursive);
 
-    // Helper function to move a file or directory
+    // Helper function to move files and directories recursively
     void moveFiles(const QString &source, const QString &destination, bool recursive);
 
-    // Helper function to stop the current operation
+    // Progress dialog to show the progress of the operation
+    QProgressDialog progressDialog;
+
+    // Flag to indicate if the operation is canceled
+    bool isCanceled = false;
+
+    // Function to update the progress dialog value
+    void updateProgress(qint64 value);
+
+    // Function to handle key press events, used for cancelling the operation
+    void keyPressEvent(QKeyEvent *event);
+
+    // Function to stop the current operation
     void stopOperation();
 
-    // Progress dialog to show the progress of the operation
-    QProgressDialog *progressDialog;
+    void showErrorMessage(const QString &title, const QString &message);
 };
 
 #endif // MOVERCOPIER_H

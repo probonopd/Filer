@@ -252,18 +252,6 @@ FileManagerMainWindow::FileManagerMainWindow(QWidget *parent, const QString &ini
 
     customItemDelegate->setSelectionModel(m_selectionModel); // Set the selection model
 
-    // Enable drag-and-drop
-    m_treeView->setDragEnabled(true);
-    m_iconView->setDragEnabled(true);
-    m_treeView->setAcceptDrops(true);
-    m_iconView->setAcceptDrops(true);
-
-    // Enable dropping on folders that are writable by the user
-    m_treeView->setDropIndicatorShown(true);
-    m_iconView->setDropIndicatorShown(true);
-    connect(m_treeView, &QTreeView::entered, this, &FileManagerMainWindow::enableDropOnFolder);
-    connect(m_iconView, &QListView::entered, this, &FileManagerMainWindow::enableDropOnFolder);
-
     // Create the menu bar
     m_menuBar = new QMenuBar(this);
 
@@ -1010,35 +998,6 @@ void FileManagerMainWindow::openFolderInNewWindow(const QString &rootPath)
     }
 }
 
-void FileManagerMainWindow::onItemDropped(const QModelIndex &targetIndex)
-{
-    // Check if the target index is valid and if it is a directory
-    if (!targetIndex.isValid() || !m_fileSystemModel->isDir(targetIndex))
-        return;
-
-    // Create the context menu
-    QMenu contextMenu;
-
-    // Create the actions
-    QAction *copyAction = contextMenu.addAction("Copy here");
-    QAction *moveAction = contextMenu.addAction("Move here");
-
-    // Execute the context menu and get the selected action
-    QAction *selectedAction = contextMenu.exec(QCursor::pos());
-
-    // Get the file path of the target index
-    QString targetPath = m_fileSystemModel->filePath(targetIndex);
-
-    // Handle the selected action
-    if (selectedAction == copyAction) {
-        // Copy the selected items to the target folder
-        copySelectedItems(targetPath);
-    } else if (selectedAction == moveAction) {
-        // Move the selected items to the target folder
-        moveSelectedItems(targetPath);
-    }
-}
-
 void FileManagerMainWindow::copySelectedItems(const QString &destinationPath)
 {
     // Print the name of the called function
@@ -1049,110 +1008,6 @@ void FileManagerMainWindow::moveSelectedItems(const QString &destinationPath)
 {
     // Print the name of the called function
     qDebug() << Q_FUNC_INFO;
-}
-
-/* This function checks if the specified index is valid, if the item at the index is a directory,
- * and if the directory is writable by the user. If all these conditions are met,
- * it enables the drop indicator for the tree view and the icon view, allowing
- * the user to drop items onto the folder.
- * Otherwise, it disables the drop indicator, preventing the user from dropping items onto the
- * folder.
- */
-void FileManagerMainWindow::enableDropOnFolder(const QModelIndex &index)
-{
-    /*
-     * This code is commented out because it made the TreeView crash when the user used the scroll
-    wheel
-     *
-    // Print the name of the called function
-    qDebug() << Q_FUNC_INFO;
-
-    if (index.isValid() && m_fileSystemModel->isDir(index))
-    {
-        // Get the permissions for the folder
-        QFile::Permissions permissions = m_fileSystemModel->permissions(index);
-
-        // Check if the WriteUser flag is set
-        if (permissions & QFile::WriteUser) {
-            // The folder is writable by the user
-            qDebug() << "The folder is writable by the user";
-            m_treeView->setDropIndicatorShown(true);
-            m_iconView->setDropIndicatorShown(true);
-
-            return;
-        }
-    }
-
-    m_treeView->setDropIndicatorShown(false);
-    m_iconView->setDropIndicatorShown(false);
-    qDebug() << "The folder is not writable by the user";
-     */
-}
-
-void FileManagerMainWindow::dragEnterEvent(QDragEnterEvent *event)
-{
-    // Print the name of the called function
-    qDebug() << Q_FUNC_INFO;
-
-    // Get the model index of the item the drag is over
-    const QModelIndex targetIndex = m_iconView->indexAt(event->pos());
-
-    // Create a QFileInfo object for the target folder
-    QFileInfo targetFolderInfo(m_fileSystemModel->filePath(targetIndex));
-
-    // Check if the target folder is writable
-    if (targetFolderInfo.isWritable()) {
-        qDebug() << "The target folder is writable";
-        // Accept the drag and drop event
-        event->accept();
-
-        // Show the drop indicator
-        m_treeView->setDropIndicatorShown(true);
-        m_iconView->setDropIndicatorShown(true);
-
-        // Accept the event
-        event->acceptProposedAction();
-    } else {
-        qDebug() << "The target folder is not writable";
-        // Reject the event
-        event->ignore();
-
-        // Don't sShow the drop indicator
-        m_treeView->setDropIndicatorShown(false);
-        m_iconView->setDropIndicatorShown(false);
-    }
-}
-
-void FileManagerMainWindow::dragMoveEvent(QDragMoveEvent *event)
-{
-    // Print the name of the called function
-    qDebug() << Q_FUNC_INFO;
-
-    // Get the model index of the item the drag is over
-    const QModelIndex targetIndex = m_iconView->indexAt(event->pos());
-
-    // Get the file path of the item
-    const QString filePath = m_fileSystemModel->filePath(targetIndex);
-
-    // Create a QFileInfo object for the item
-    QFileInfo fileInfo(filePath);
-
-    // Check if the item is a folder and is writable by the user
-    if (fileInfo.isDir() && fileInfo.isWritable()) {
-        // Accept the drag and drop event
-        event->accept();
-
-        // Show the drop indicator
-        m_treeView->setDropIndicatorShown(true);
-        m_iconView->setDropIndicatorShown(true);
-    } else {
-        // Ignore the drag and drop event
-        event->ignore();
-
-        // Don't sShow the drop indicator
-        m_treeView->setDropIndicatorShown(false);
-        m_iconView->setDropIndicatorShown(false);
-    }
 }
 
 void FileManagerMainWindow::open(const QString &filePath)
@@ -1395,12 +1250,6 @@ QStringList FileManagerMainWindow::readFilenamesFromHiddenFile(const QString &fi
     qDebug() << "Hidden files:" << filenames;
 
     return filenames;
-}
-
-void FileManagerMainWindow::dropEvent(QDropEvent *event)
-{
-
-    qDebug() << "TODO: Save position for file:" << event->mimeData()->urls().first().toLocalFile();
 }
 
 bool FileManagerMainWindow::instanceExists(const QString &directory)
