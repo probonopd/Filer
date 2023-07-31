@@ -64,6 +64,7 @@
 #include <QFileSystemModel>
 #include <QCompleter>
 #include <QRegExpValidator>
+#include "ApplicationBundle.h"
 
 /*
  * This creates a FileManagerMainWindow object with a QTreeView and QListView widget.
@@ -1239,9 +1240,9 @@ void FileManagerMainWindow::open(const QString &filePath)
         }
     }
 
-    // Check if the file path ends with ".app", ".AppDir", or ".AppImage" or ".desktop"
-    if (filePath.endsWith(".app") || filePath.endsWith(".AppDir")
-        || filePath.endsWith(".AppImage" || filePath.endsWith(".desktop"))) {
+    // Check if filePath ends with ".app" or ".AppDir" or ".AppImage" or ".desktop"
+    ApplicationBundle bundle(filePath);
+    if (bundle.isValid()) {
         // Use the "launch" command to open the file
         qDebug() << "Launching:" << filePath;
         QProcess process;
