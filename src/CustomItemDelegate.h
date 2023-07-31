@@ -40,9 +40,11 @@ public:
     // We need to know the selection model to be able to animate the selected item instead of all items
     void setSelectionModel(QItemSelectionModel* selectionModel);
 
-    // Override the sizeHint method to set the size for the delegate to the size available in the view
+    // Override the sizeHint method to set the size for the delegate to the width available in the view
     QSize sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const override {
-        return QSize(option.rect.width(), option.rect.height());
+        // Get current size
+        QSize size = QStyledItemDelegate::sizeHint(option, index);
+        return QSize(option.rect.width(), size.height());
     }
 
 public slots:

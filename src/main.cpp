@@ -63,7 +63,10 @@ int main(int argc, char *argv[])
     }
 
     // Run "open" without arguments and get its output; check
-    // whether it is our version of open and not e.g., xdg-open
+    // whether it is our version of open and not e.g., xdg-open.
+    // Running the "open" command without arguments also populates
+    // the launch "database", which is needed for the "launch"
+    // command to work and for Filer to be able to draw proper document icons.
     QProcess openProcess;
     openProcess.setProcessChannelMode(QProcess::MergedChannels);
     openProcess.start("open");
