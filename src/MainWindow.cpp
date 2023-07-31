@@ -895,15 +895,8 @@ void FileManagerMainWindow::showAboutBox()
 
 void FileManagerMainWindow::selectAll()
 {
-    // Get the parent index of the current index
-    QModelIndex parentIndex = m_treeView->currentIndex().parent();
-
-
-    // Select all items in the parent directory
-    m_selectionModel->select(
-            QItemSelection(parentIndex.child(0, 0),
-                           parentIndex.child(parentIndex.model()->rowCount() - 1, 0)),
-            QItemSelectionModel::Select);
+    m_treeView->selectAll();
+    m_iconView->selectAll();   
 }
 
 // Show the tree view
