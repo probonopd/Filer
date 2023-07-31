@@ -1245,10 +1245,12 @@ void FileManagerMainWindow::open(const QString &filePath)
                 // Let the tree view do its thing
             } else {
                 // Open the folder in a new window
+                qDebug() << "Opening folder in new window:" << rootPath;
                 openFolderInNewWindow(rootPath);
             }
         } else {
             // Use the "open" command to open the file
+            qDebug() << "Opening:" << filePath;
             QProcess process;
             process.setProgram("open");
             process.setArguments({ filePath });
