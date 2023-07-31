@@ -28,7 +28,7 @@ set(PROJECT_SOURCES
         ExtendedAttributes.cpp ExtendedAttributes.h
         MoverCopier.cpp MoverCopier.h
         CustomFileIconProvider.cpp CustomFileIconProvider.h
-        FileManager.cpp FileManager.h LaunchDB.cpp LaunchDB.h CombinedIconCreator.cpp CombinedIconCreator.h CustomFileSystemModel.cpp CustomFileSystemModel.h CustomListView.cpp CustomListView.h)
+        FileManager.cpp FileManager.h LaunchDB.cpp LaunchDB.h CombinedIconCreator.cpp CombinedIconCreator.h CustomFileSystemModel.cpp CustomFileSystemModel.h CustomListView.cpp CustomListView.h TrashHandler.cpp TrashHandler.h)
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(Filer

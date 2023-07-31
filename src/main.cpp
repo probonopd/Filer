@@ -72,7 +72,6 @@ int main(int argc, char *argv[])
     openProcess.start("open");
     openProcess.waitForFinished();
     QString openOutput = openProcess.readAllStandardOutput();
-    qDebug() << openOutput;
     if (openOutput.contains("pen <document to be opened>")) {
         // Found
     } else {

@@ -42,6 +42,7 @@
 #include "ExtendedAttributes.h"
 #include <QSize>
 #include "ApplicationBundle.h"
+#include "TrashHandler.h"
 
 // Constructor that takes a QObject pointer and a QFileSystemModel pointer as arguments
 CustomItemDelegate::CustomItemDelegate(QObject* parent, CustomFileSystemModel* fileSystemModel)
@@ -329,8 +330,16 @@ bool CustomItemDelegate::editorEvent(QEvent *event, QAbstractItemModel *model,
         menu.addAction(duplicateAction);
 
         QAction *moveToTrashAction = new QAction(tr("Move to Trash"), this);
-        moveToTrashAction->setEnabled(false);
         menu.addAction(moveToTrashAction);
+
+        connect(moveToTrashAction, &QAction::triggered, [=]() {
+            TrashHandler trashHandler;
+            trashHandler.moveToTrash(filePath);
+        });
+        TrashHandler trashHandler;
+        if (filePath.startsWith(trashHandler.getTrashPath())) {
+            moveToTrashAction->setEnabled(false);
+        }
 
         menu.addSeparator();
 

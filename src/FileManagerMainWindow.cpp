@@ -65,6 +65,7 @@
 #include <QCompleter>
 #include <QRegExpValidator>
 #include "ApplicationBundle.h"
+#include "TrashHandler.h"
 
 /*
  * This creates a FileManagerMainWindow object with a QTreeView and QListView widget.
@@ -582,8 +583,27 @@ void FileManagerMainWindow::createMenus()
     editMenu->actions().last()->setShortcut(QKeySequence("Ctrl+C"));
     editMenu->addAction(tr("Paste"));
     editMenu->actions().last()->setShortcut(QKeySequence("Ctrl+V"));
-    editMenu->addAction(tr("Delete"));
+    editMenu->addAction(tr("Move to Trash"));
     editMenu->actions().last()->setShortcut(QKeySequence("Ctrl-Backspace"));
+    connect(editMenu->actions().last(), &QAction::triggered, this, [this]() {
+        // Get all selected indexes
+        QModelIndexList selectedIndexes = m_treeView->selectionModel()->selectedIndexes();
+        // Get the file paths of the selected indexes
+        QStringList filePaths;
+                for (const QModelIndex &index : selectedIndexes) {
+            filePaths.append(m_fileSystemModel->filePath(index));
+        }
+        qDebug() << "Moving to trash the following files:";
+        for (const QString &filePath : filePaths) {
+            qDebug() << filePath;
+        }
+        // Move the files to the trash
+        TrashHandler trashHandler;
+        for (const QString &filePath : filePaths) {
+            trashHandler.moveToTrash(filePath);
+        }
+    });
+    m_moveToTrashAction = editMenu->actions().last();
     editMenu->addSeparator();
     QAction *selectAllAction = new QAction(tr("Select All"), this);
     selectAllAction->setShortcut(QKeySequence("Ctrl+A"));
@@ -731,8 +751,18 @@ void FileManagerMainWindow::createMenus()
     goMenu->addAction(tr("Trash"));
     goMenu->actions().last()->setShortcut(QKeySequence("Ctrl+Shift+T"));
     connect(goMenu->actions().last(), &QAction::triggered, this, [this]() {
-        // XDG Trash path
-        openFolderInNewWindow(QDir::homePath() + "/.local/share/Trash/files");
+        TrashHandler trashHandler;
+        QString trashPath = trashHandler.getTrashPath();
+        if (!QFileInfo(trashPath).exists()) {
+            // Create if it doesn't exist
+            QDir dir(trashPath);
+            dir.mkpath(".");
+            if (!dir.exists()) {
+                QMessageBox::information(nullptr, (" "), tr("Could not find the Trash."));
+                return;
+            }
+        }
+        openFolderInNewWindow(trashPath);
     });
 
     goMenu->addSeparator();
@@ -1221,9 +1251,11 @@ void FileManagerMainWindow::updateMenus()
     if (selectedIndexes.isEmpty()) {
         m_openAction->setEnabled(false);
         m_openWithAction->setEnabled(false);
+        m_moveToTrashAction->setEnabled(false);
     } else {
         m_openAction->setEnabled(true);
         m_openWithAction->setEnabled(true);
+        m_moveToTrashAction->setEnabled(true);
     }
 }
 
