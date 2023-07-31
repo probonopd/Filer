@@ -1226,9 +1226,23 @@ void FileManagerMainWindow::open(const QString &filePath)
             if (m_treeView->isVisible()) {
                 // Let the tree view do its thing
             } else {
-                // Open the folder in a new window
-                qDebug() << "Opening folder in new window:" << rootPath;
-                openFolderInNewWindow(rootPath);
+                // Check if we already have a window open for the folder
+                if (instanceExists(filePath)) {
+                    // Get the window
+                    qDebug() << "Window already exists:" << filePath;
+                    FileManagerMainWindow* window = getInstanceForDirectory(filePath);
+                    // Activate the window
+                    window->activateWindow();
+                    window->raise();
+                    // If it is minimized, restore it
+                    if (window->isMinimized()) {
+                        window->showNormal();
+                    }
+                } else {
+                    // If we don't, open a new window
+                    qDebug() << "Opening new window:" << filePath;
+                    openFolderInNewWindow(rootPath);
+                }
             }
         } else {
             // Use the "open" command to open the file
@@ -1239,6 +1253,28 @@ void FileManagerMainWindow::open(const QString &filePath)
             process.startDetached();
         }
     }
+}
+
+QString FileManagerMainWindow::getPath() const {
+    return m_currentDir;
+}
+
+FileManagerMainWindow* FileManagerMainWindow::getInstanceForDirectory(const QString &directory)
+{
+    // Print the name of the called function
+    qDebug() << Q_FUNC_INFO;
+
+    // Iterate over the list of instances
+    for (FileManagerMainWindow* instance : instances() ) {
+        // Check if the instance's directory is the same as the given directory
+        if (instance->getPath() == directory) {
+            // Return the instance
+            return instance;
+        }
+    }
+
+    // Return null if no instance was found
+    return nullptr;
 }
 
 void FileManagerMainWindow::openWith(const QString &filePath)

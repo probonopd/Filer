@@ -17,6 +17,8 @@ class FileManagerMainWindow : public QMainWindow
 
 public:
     static QList<FileManagerMainWindow *> & instances();
+    QString getPath() const;
+    
 
     bool instanceExists(const QString &directory);
 
@@ -41,6 +43,8 @@ public:
 
     QWidget* getCurrentView() const;
 
+    FileManagerMainWindow* getInstanceForDirectory(const QString &directory);
+
 public slots:
     void open(const QString &filePath);
     void openWith(const QString &filePath);
@@ -57,6 +61,7 @@ private:
     QStackedWidget *m_stackedWidget;
 
     QString m_currentDir;
+    
     QTreeView *m_treeView;
     CustomListView *m_iconView;
     QItemSelectionModel *m_selectionModel;
@@ -69,7 +74,7 @@ private:
     QAction *m_openAction;
     QAction *m_openWithAction;
     QAction *m_renameAction;
-    
+
     QAction *m_showHideStatusBarAction;
 
     QStringList readFilenamesFromHiddenFile(const QString &filePath);
