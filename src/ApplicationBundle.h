@@ -60,6 +60,9 @@ public:
     // Returns the icon of the bundle
     QIcon icon() const;
 
+    // Returns the name of the icon of the bundle
+    QString iconName() const;
+
     // Returns the executable of the bundle
     QString executable() const;
 

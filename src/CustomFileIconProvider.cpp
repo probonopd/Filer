@@ -58,7 +58,7 @@ QIcon CustomFileIconProvider::icon(const QFileInfo &info) const
     ApplicationBundle bundle(info.absoluteFilePath());
     if (bundle.isValid()) {
         // qDebug() << "Bundle is valid: " << info.absoluteFilePath();
-        return (QIcon(bundle.icon()));
+        return (bundle.icon());
     }
 
     // If it is not a bundle but a directory, then we always want to show the folder icon

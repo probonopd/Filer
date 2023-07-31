@@ -152,5 +152,13 @@ bool ApplicationBundle::isAppImage() const
 QIcon ApplicationBundle::icon() const
 {
     qDebug() << "m_icon:" << m_icon;
-    return QIcon(m_icon);
+    // Get the icon from the theme
+    QIcon icon = QIcon::fromTheme(m_icon);
+    return icon;
+}
+
+QString ApplicationBundle::iconName() const
+{
+    qDebug() << "m_icon:" << m_icon;
+    return m_icon;
 }

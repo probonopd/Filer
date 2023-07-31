@@ -61,57 +61,5 @@ QString DesktopFile::getIcon() const
         qDebug() << "Searching typical xdg locations for" << icon;
     }
 
-    if (!icon.isEmpty()) {
-        // Search for the icon in directories that may contain icons
-        QStringList iconPaths;
-        QString currentThemeName = QIcon::themeName();
-        // qDebug() << "currentThemeName: " << currentThemeName;
-        iconPaths << "/usr/share/pixmaps"
-                  << QString("/usr/share/icons") + QDir::separator() + currentThemeName
-                  << QString("/usr/share/icons") + QDir::separator() + "hicolor" // Fallback icon theme
-                  << "/usr/local/share/pixmaps"
-                  << QString("/usr/local/share/icons") + QDir::separator() + currentThemeName
-                  << QString("/usr/local/share/icons") + QDir::separator() + "hicolor" // Fallback icon theme
-                  << QDir::homePath() + QDir::separator() + ".icons" // User's icon directory
-                  << QDir::homePath() + QDir::separator() + ".local/share/pixmaps" // User's pixmap directory
-                  << QDir::homePath() + QDir::separator() + ".local/share/icons"; // User's icon theme directory
-
-        // List of allowed icon suffixes
-        QStringList allowedSuffixes;
-        allowedSuffixes << ".png"
-                        << ".svg"
-                        << ".xpm"
-                        << ".ico"
-                        << ".icns";
-
-        // List of additional sizes based on XDG icon theme specification
-        QStringList iconSizes;
-        iconSizes << ""
-                  << "32x32"
-                  << "48x48"
-                  << "64x64"
-                  << "512x512"
-                  << "256x256"
-                  << "128x128"
-                  << "scalable"
-                  << "24x24"
-                  << "22x22"
-                  << "16x16";
-
-        // Check each directory in iconPaths and for each size
-        for (const QString &path : iconPaths) {
-            for (const QString &size : iconSizes) {
-                for (const QString &suffix : allowedSuffixes) {
-                    QString iconFile = path + "/" + size + "/apps/" + icon + suffix;
-                    if (QFile::exists(iconFile)) {
-                        icon = iconFile;
-                        // qDebug() << "Found icon" << icon;
-                        return icon;
-                    }
-                }
-            }
-        }
-    }
-
     return icon;
 }
