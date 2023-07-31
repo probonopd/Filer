@@ -40,7 +40,7 @@ public:
 
     // We are subclassing QListView to access the protected function setPositionForIndex
     // which is used to set the icon coordinates for the icon view.
-    // Also we can paint the desktop picture behind the icons.
+    // Also we paint the desktop picture behind the icons if requested.
 
     // Access the protected function setPositionForIndex directly
     inline void setPositionForIndex(const QPoint& position, const QModelIndex& index) {

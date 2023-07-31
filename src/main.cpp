@@ -29,7 +29,7 @@
 #include <QCommandLineParser>
 #include <QMessageBox>
 
-#include "MainWindow.h"
+#include "FileManagerMainWindow.h"
 #include "FileManager.h"
 
 int main(int argc, char *argv[])

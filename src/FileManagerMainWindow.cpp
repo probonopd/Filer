@@ -24,7 +24,7 @@
  * SUCH DAMAGE.
  */
 
-#include "MainWindow.h"
+#include "FileManagerMainWindow.h"
 #include "CustomItemDelegate.h"
 #include "CustomFileIconProvider.h"
 #include "ExtendedAttributes.h"
@@ -97,7 +97,7 @@ FileManagerMainWindow::FileManagerMainWindow(QWidget *parent, const QString &ini
     qDebug() << "instanceCount:" << instanceCount;
 
     if (instanceCount == 0) {
-        m_is_first_instance = true;
+        m_isFirstInstance = true;
         // If this is the first window, set this window as the root window of the main screen
         // Check if ~/Desktop exists; create it if it doesn't
         QDir homeDir(QDir::homePath());
@@ -116,7 +116,7 @@ FileManagerMainWindow::FileManagerMainWindow(QWidget *parent, const QString &ini
         setAttribute(Qt::WA_X11NetWmWindowTypeDesktop, true);
 
     } else {
-        m_is_first_instance = false;
+        m_isFirstInstance = false;
         setDirectory(initialDirectory);
 
         // Read extended attributes describing the window geometry
@@ -181,7 +181,7 @@ FileManagerMainWindow::FileManagerMainWindow(QWidget *parent, const QString &ini
     m_iconView->setFrameStyle(QFrame::NoFrame);
 
     // Draw the desktop picture for the first instance
-    if (m_is_first_instance) {
+    if (m_isFirstInstance) {
         m_iconView->requestDesktopPictureToBePainted(true);
     }
 
@@ -560,7 +560,7 @@ void FileManagerMainWindow::createMenus()
         open(filePath);
         close();
     });
-    if (m_is_first_instance) {
+    if (m_isFirstInstance) {
         fileMenu->actions().last()->setEnabled(false);
     }
 
@@ -570,7 +570,7 @@ void FileManagerMainWindow::createMenus()
     closeAction->setShortcut(QKeySequence("Ctrl+W"));
     fileMenu->addAction(closeAction);
     connect(closeAction, &QAction::triggered, this, &FileManagerMainWindow::close);
-    if (m_is_first_instance) {
+    if (m_isFirstInstance) {
         closeAction->setEnabled(false);
     }
 
@@ -625,10 +625,10 @@ void FileManagerMainWindow::createMenus()
 
     // Add the Tree View and Icon View actions to the View menu
     viewMenu->addAction(m_treeViewAction);
-    if (m_is_first_instance)
+    if (m_isFirstInstance)
         viewMenu->actions().last()->setEnabled(false);
     viewMenu->addAction(m_iconViewAction);
-    if (m_is_first_instance)
+    if (m_isFirstInstance)
         viewMenu->actions().last()->setEnabled(false);
 
     viewMenu->addSeparator();
@@ -658,7 +658,7 @@ void FileManagerMainWindow::createMenus()
     connect(goMenu->actions().last(), &QAction::triggered, this, [this]() {
         openFolderInNewWindow(QFileInfo(m_currentDir + "/../").canonicalFilePath());
     });
-    if (m_is_first_instance)
+    if (m_isFirstInstance)
         goMenu->actions().last()->setEnabled(false);
 
     goMenu->addAction(tr("Go Up and Close Current"));
@@ -670,7 +670,7 @@ void FileManagerMainWindow::createMenus()
         openFolderInNewWindow(QFileInfo(m_currentDir + "/../").canonicalFilePath());
         close();
     });
-    if (m_is_first_instance)
+    if (m_isFirstInstance)
         goMenu->actions().last()->setEnabled(false);
 
     goMenu->addSeparator();
@@ -833,7 +833,7 @@ void FileManagerMainWindow::createMenus()
                 QModelIndex index = m_treeView->currentIndex();
                 QString filePath = m_fileSystemModel->filePath(index);
                 open(filePath);
-                if (!m_is_first_instance)
+                if (!m_isFirstInstance)
                     close();
             },
             Qt::QueuedConnection);
@@ -1429,4 +1429,9 @@ QWidget* FileManagerMainWindow::getCurrentView() const
     }
 
     return currentActiveView;
+}
+
+bool FileManagerMainWindow::isFirstInstance() const
+{
+    return m_isFirstInstance;
 }

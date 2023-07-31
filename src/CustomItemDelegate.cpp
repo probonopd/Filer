@@ -26,7 +26,7 @@
 
 #include "ApplicationBundle.h"
 #include "CustomItemDelegate.h"
-#include "MainWindow.h"
+#include "FileManagerMainWindow.h"
 #include "CustomFileIconProvider.h"
 
 #include <QFileIconProvider>
@@ -121,7 +121,7 @@ void CustomItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
     bool isTreeView =  mainWindow->getCurrentView()->metaObject()->className() == QString("QTreeView");
 
     // Check if it is the first instance
-    bool isFirstInstance = mainWindow->m_is_first_instance;
+    bool isFirstInstance = mainWindow->isFirstInstance();
 
     // Cast the sender to a QFileSystemModel
     QFileSystemModel *model = this->m_fileSystemModel;

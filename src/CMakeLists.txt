@@ -20,8 +20,8 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets DBus)
 
 set(PROJECT_SOURCES
         main.cpp
-        MainWindow.cpp
-        MainWindow.h
+        FileManagerMainWindow.cpp
+        FileManagerMainWindow.h
         ApplicationBundle.h ApplicationBundle.cpp
         DesktopFile.h DesktopFile.cpp
         CustomItemDelegate.h CustomItemDelegate.cpp
