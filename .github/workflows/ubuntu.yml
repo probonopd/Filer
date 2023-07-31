@@ -24,7 +24,6 @@ jobs:
           mkdir build ; cd build
           cmake .. -DCMAKE_BUILD_TYPE=Release
           make -j$(nproc)
-          mkdir -p launch/usr/local/bin/
           make DESTDIR=. install
           find Filer.app/
           zip --symlinks -r ./Filer_Ubuntu.zip Filer.app/
