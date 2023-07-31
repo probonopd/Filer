@@ -24,8 +24,8 @@
  * SUCH DAMAGE.
  */
 
-//ifndef CUSTOMLISTVIEW_H
-//define CUSTOMLISTVIEW_H
+#ifndef CUSTOMLISTVIEW_H
+#define CUSTOMLISTVIEW_H
 
 #include <QListView>
 #include <QPainter>
@@ -61,4 +61,4 @@ private:
     bool should_paint_desktop_picture = false;
 };
 
-//endif // CUSTOMLISTVIEW_H
+#endif // CUSTOMLISTVIEW_H
