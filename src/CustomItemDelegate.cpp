@@ -41,6 +41,7 @@
 #include <QTreeWidgetItem>
 #include "ExtendedAttributes.h"
 #include <QSize>
+#include "ApplicationBundle.h"
 
 // Constructor that takes a QObject pointer and a QFileSystemModel pointer as arguments
 CustomItemDelegate::CustomItemDelegate(QObject* parent, CustomFileSystemModel* fileSystemModel)
@@ -296,6 +297,13 @@ bool CustomItemDelegate::editorEvent(QEvent *event, QAbstractItemModel *model,
 
         QAction *showContentsAction = new QAction(tr("Show Contents"), this);
         showContentsAction->setEnabled(false);
+        ApplicationBundle bundle = ApplicationBundle(filePath);
+        if (bundle.isValid() && !bundle.isDesktopFile()) {
+            showContentsAction->setEnabled(true);
+        }
+        connect(showContentsAction, &QAction::triggered, [=]() {
+            mainWindow->openFolderInNewWindow(filePath);
+        });
         menu.addAction(showContentsAction);
 
         menu.addSeparator();

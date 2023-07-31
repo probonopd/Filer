@@ -149,6 +149,11 @@ bool ApplicationBundle::isAppImage() const
     return m_isAppImage;
 }
 
+bool ApplicationBundle::isDesktopFile() const
+{
+    return m_isDesktopFile;
+}
+
 QIcon ApplicationBundle::icon() const
 {
     qDebug() << "m_icon:" << m_icon;

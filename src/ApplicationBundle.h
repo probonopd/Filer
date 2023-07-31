@@ -54,6 +54,9 @@ public:
     // Returns true if the bundle is an AppImage
     bool isAppImage() const;
 
+    // Returns true if the bundle is a .desktop file
+    bool isDesktopFile() const;
+
     // Returns the name of the bundle
     QString name() const;
 
