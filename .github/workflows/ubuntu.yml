@@ -40,7 +40,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          curl -L -o continuous-release-manager-amd64 https://github.com/probonopd/continuous-release-manager/releases/download/continuous/continuous-release-manager-linux
+          curl -L -o continuous-release-manager-linux https://github.com/probonopd/continuous-release-manager/releases/download/continuous/continuous-release-manager-linux
           chmod +x continuous-release-manager-linux
           ./continuous-release-manager-linux
 
