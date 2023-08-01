@@ -33,3 +33,18 @@ jobs:
         with:
           name: filer-artifact
           path: build/Filer_Ubuntu.zip
+
+      - name: Create GitHub Release using Continuous Release Manager
+        run: |
+          curl -L -o continuous-release-manager-amd64 https://github.com/probonopd/continuous-release-manager/releases/download/continuous/continuous-release-manager-amd64
+          chmod +x continuous-release-manager-amd64
+          ./continuous-release-manager-amd64
+
+      - name: Upload to GitHub Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          curl -H "Authorization: token $GITHUB_TOKEN" \
+               -H "Content-Type: $(file -b --mime-type build/Filer_Ubuntu.zip)" \
+               --data-binary "@build/Filer_Ubuntu.zip" \
+               "https://uploads.github.com/repos/${GITHUB_REPOSITORY}/releases/${GITHUB_RUN_ID}/assets?name=Filer_Ubuntu.zip"
