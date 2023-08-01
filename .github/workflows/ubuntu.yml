@@ -35,6 +35,7 @@ jobs:
           path: build/Filer_Ubuntu.zip
 
       - name: Create GitHub Release using Continuous Release Manager
+        if: github.event_name == 'push'  # Only run for push events, not pull requests
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -43,6 +44,7 @@ jobs:
           ./continuous-release-manager-amd64
 
       - name: Upload to GitHub Release
+        if: github.event_name == 'push'  # Only run for push events, not pull requests
         run: |
           gh release upload continuous ./build/Filer_Ubuntu.zip
         env:
