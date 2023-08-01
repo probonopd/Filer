@@ -43,10 +43,7 @@ jobs:
           ./continuous-release-manager-amd64
 
       - name: Upload to GitHub Release
+        run: |
+          gh release upload continuous ./build/Filer_Ubuntu.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          curl -H "Authorization: token $GITHUB_TOKEN" \
-               -H "Content-Type: $(file -b --mime-type build/Filer_Ubuntu.zip)" \
-               --data-binary "@build/Filer_Ubuntu.zip" \
-               "https://uploads.github.com/repos/${GITHUB_REPOSITORY}/releases/${GITHUB_RUN_ID}/assets?name=Filer_Ubuntu.zip"
