@@ -35,6 +35,8 @@ jobs:
           path: build/Filer_Ubuntu.zip
 
       - name: Create GitHub Release using Continuous Release Manager
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           curl -L -o continuous-release-manager-amd64 https://github.com/probonopd/continuous-release-manager/releases/download/continuous/continuous-release-manager-amd64
           chmod +x continuous-release-manager-amd64
