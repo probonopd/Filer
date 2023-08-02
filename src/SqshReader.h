@@ -25,9 +25,13 @@
  */
 
 /*
- * Example usage (in the real world, should use "this" instead of deleting the reader object):
-    const char* sqsh_file = "/tmp/appimagetool-x86_64.AppImage";
-    SqshArchiveReader *reader = new SqshArchiveReader(631200);
+ * Example usage (in the real world, should use "this" instead of deleting the reader and elfBinary objects):
+   const char* sqsh_file = "/tmp/appimagetool-x86_64.AppImage";
+
+    ElfBinary* elfBinary = new ElfBinary();
+    qint64 offset = elfBinary->getElfSize(sqsh_file);
+    SqshArchiveReader *reader = new SqshArchiveReader(offset);
+
     QStringList results = reader->readSqshArchive(sqsh_file);
     qDebug() << results;
 
@@ -41,6 +45,9 @@
     QStringList desktopEntries = desktopFile.split("\n");
     desktopEntries.removeAll("");
     qDebug() << desktopEntries;
+
+    delete reader;
+    delete elfBinary;
 
  (".DirIcon", "AppRun", "appimagetool.desktop", "appimagetool.png", "usr")
  (QSize(128, 128))
