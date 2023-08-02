@@ -30,8 +30,10 @@
 #include <QString>
 #include <QStringList>
 #include <QIcon>
+#include <QObject>
 
-class ApplicationBundle {
+class ApplicationBundle : public QObject {
+    Q_OBJECT
 public:
     enum class Type {
         Unknown,

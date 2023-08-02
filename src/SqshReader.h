@@ -68,8 +68,8 @@ public:
     explicit SqshArchiveReader(uint64_t archive_offset = 0, QObject* parent = nullptr);
 
     void setArchiveOffset(uint64_t offset);
-    QStringList readSqshArchive(const char* sqsh_file);
-    QByteArray readFileFromArchive(const char* sqsh_file, const char* file_path);
+    QStringList readSqshArchive(const QString& sqsh_file);
+    QByteArray readFileFromArchive(const QString& sqsh_file, const QString& file_path);
 
 private:
     uint64_t archive_offset_;

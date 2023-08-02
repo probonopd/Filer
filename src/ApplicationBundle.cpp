@@ -35,6 +35,9 @@
 #include <QStandardPaths>
 #include <QDebug>
 
+#include "ElfBinary.h"
+#include "SqshReader.h"
+
 #include <DesktopFile.h>
 
 ApplicationBundle::ApplicationBundle(const QString& path)
@@ -130,6 +133,23 @@ QIcon ApplicationBundle::icon() const
     if (m_type == Type::DesktopFile) {
         // Get the icon from the theme if it is a desktop file
         QIcon icon = QIcon::fromTheme(m_icon);
+        return icon;
+    } else if (m_type == Type::AppImage) {
+        // Determine the ELF offset
+        ElfBinary* elfBinary = new ElfBinary();
+        qint64 offset = elfBinary->getElfSize(m_path);
+        // Get the data of the .DirIcon file from the squashfs
+        SqshArchiveReader *reader = new SqshArchiveReader(offset);
+        delete elfBinary;
+        QByteArray fileData = reader->readFileFromArchive(m_path, ".DirIcon");
+        delete reader;
+        // If fileData is empty, return default icon
+        if (fileData.isEmpty()) {
+            return QIcon::fromTheme("application-x-executable");
+        }
+        // Turn the data of the .DirIcon into a QIcon
+        QIcon icon;
+        icon.addPixmap(QPixmap::fromImage(QImage::fromData(fileData)), QIcon::Normal, QIcon::Off);
         return icon;
     } else {
         // Get the icon from the icon file if it exists

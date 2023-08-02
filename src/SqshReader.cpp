@@ -37,37 +37,40 @@ void SqshArchiveReader::setArchiveOffset(uint64_t offset) {
     archive_offset_ = offset;
 }
 
-QStringList SqshArchiveReader::readSqshArchive(const char* sqsh_file) {
+QStringList SqshArchiveReader::readSqshArchive(const QString& sqsh_file) {
+    QByteArray sqsh_file_bytes = sqsh_file.toUtf8();
+    const void* sqsh_file_source = sqsh_file_bytes.constData();
+
     QStringList names;
     int error_code = 0;
     struct SqshConfig config = {
             .archive_offset = archive_offset_,
-            .source_mapper = sqsh_mapper_impl_mmap,
+            .source_mapper = sqsh_mapper_impl_mmap, // Function pointer initialization
             .source_size = 0,
             .mapper_block_size = 0,
             .mapper_lru_size = 0,
             .compression_lru_size = 0,
     };
-    struct SqshArchive *archive = sqsh_archive_new(sqsh_file, &config, &error_code);
+    struct SqshArchive* archive = sqsh_archive_new(sqsh_file_source, &config, &error_code);
 
     if (error_code != 0) {
         sqsh_perror(error_code, "sqsh_archive_new");
         return names;
     }
-    const struct SqshSuperblock *superblock = sqsh_archive_superblock(archive);
+    const struct SqshSuperblock* superblock = sqsh_archive_superblock(archive);
     uint64_t inode_root_ref = sqsh_superblock_inode_root_ref(superblock);
-    struct SqshInode *inode = sqsh_inode_new(archive, inode_root_ref, &error_code);
+    struct SqshInode* inode = sqsh_inode_new(archive, inode_root_ref, &error_code);
     if (error_code != 0) {
         sqsh_perror(error_code, "sqsh_inode_new");
         return names;
     }
-    struct SqshDirectoryIterator *iterator = sqsh_directory_iterator_new(inode, &error_code);
+    struct SqshDirectoryIterator* iterator = sqsh_directory_iterator_new(inode, &error_code);
     if (error_code != 0) {
         sqsh_perror(error_code, "sqsh_directory_iterator_new");
         return names;
     }
     while (sqsh_directory_iterator_next(iterator) > 0) {
-        const char *name = sqsh_directory_iterator_name(iterator);
+        const char* name = sqsh_directory_iterator_name(iterator);
         size_t size = sqsh_directory_iterator_name_size(iterator);
         // Null-terminate the name before creating the QString
         char* null_terminated_name = (char*)malloc(size + 1);
@@ -86,37 +89,44 @@ QStringList SqshArchiveReader::readSqshArchive(const char* sqsh_file) {
     return names;
 }
 
-QByteArray SqshArchiveReader::readFileFromArchive(const char* sqsh_file, const char* file_path) {
-    QByteArray data;
+QByteArray SqshArchiveReader::readFileFromArchive(const QString& sqsh_file, const QString& file_path) {
+    QByteArray sqsh_file_bytes = sqsh_file.toUtf8();
+    const void* sqsh_file_source = sqsh_file_bytes.constData();
+
+    QByteArray file_path_bytes = file_path.toUtf8();
+    const char* file_path_cstr = file_path_bytes.constData();
+
+    QByteArray data; // Declare the 'data' variable here
     int error_code = 0;
     struct SqshConfig config = {
-            .source_mapper = sqsh_mapper_impl_mmap,
+            .archive_offset = archive_offset_,
+            .source_mapper = sqsh_mapper_impl_mmap, // Function pointer initialization
             .source_size = 0,
             .mapper_block_size = 0,
             .mapper_lru_size = 0,
             .compression_lru_size = 0,
-            .archive_offset = archive_offset_,
     };
-    struct SqshArchive *archive = sqsh_archive_new(sqsh_file, &config, &error_code);
+    struct SqshArchive* archive = sqsh_archive_new(sqsh_file_source, &config, &error_code);
+
     if (error_code != 0) {
         sqsh_perror(error_code, "sqsh_archive_new");
-        return data;
+        return data; // Return 'data' here
     }
-    struct SqshInode *inode = sqsh_open(archive, file_path, &error_code);
+    struct SqshInode* inode = sqsh_open(archive, file_path_cstr, &error_code); // Use 'file_path_cstr' here
     if (error_code != 0) {
         sqsh_perror(error_code, "sqsh_open");
         sqsh_archive_close(archive);
-        return data;
+        return data; // Return 'data' here
     }
-    struct SqshFileIterator *iterator = sqsh_file_iterator_new(inode, &error_code);
+    struct SqshFileIterator* iterator = sqsh_file_iterator_new(inode, &error_code);
     if (error_code != 0) {
         sqsh_perror(error_code, "sqsh_file_iterator_new");
         sqsh_inode_free(inode);
         sqsh_archive_close(archive);
-        return data;
+        return data; // Return 'data' here
     }
     while (sqsh_file_iterator_next(iterator, SIZE_MAX) > 0) {
-        const uint8_t *file_data = sqsh_file_iterator_data(iterator);
+        const uint8_t* file_data = sqsh_file_iterator_data(iterator);
         size_t size = sqsh_file_iterator_size(iterator);
         data.append(reinterpret_cast<const char*>(file_data), size);
     }
