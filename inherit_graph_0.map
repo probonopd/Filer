@@ -1,0 +1,8 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" title=" " alt="" coords="5,107,80,133"/>
+<area shape="rect" id="node2" href="$classApplicationBundle.html" title=" " alt="" coords="132,5,272,32"/>
+<area shape="rect" id="node3" href="$classElfBinary.html" title=" " alt="" coords="161,56,243,83"/>
+<area shape="rect" id="node4" href="$classMoverCopier.html" title=" " alt="" coords="149,107,255,133"/>
+<area shape="rect" id="node5" href="$classSqshArchiveReader.html" title=" " alt="" coords="128,157,276,184"/>
+<area shape="rect" id="node6" href="$classTrashHandler.html" title=" " alt="" coords="149,208,255,235"/>
+</map>
