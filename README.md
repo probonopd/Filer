@@ -35,7 +35,7 @@ My conclusion is that most "desktop environments" are made by people who don't a
 
 ## Developer documentation (Doxygen)
 
-https://probonopd.github.io/Filer/
+https://probonopd.github.io/Filer/annotated.html
 
 ## References
 
