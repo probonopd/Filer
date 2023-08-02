@@ -45,8 +45,8 @@ QStringList SqshArchiveReader::readSqshArchive(const QString& sqsh_file) {
     int error_code = 0;
     struct SqshConfig config = {
             .archive_offset = archive_offset_,
-            .source_mapper = sqsh_mapper_impl_mmap, // Function pointer initialization
             .source_size = 0,
+            .source_mapper = sqsh_mapper_impl_mmap, // Function pointer initialization
             .mapper_block_size = 0,
             .mapper_lru_size = 0,
             .compression_lru_size = 0,
@@ -100,8 +100,8 @@ QByteArray SqshArchiveReader::readFileFromArchive(const QString& sqsh_file, cons
     int error_code = 0;
     struct SqshConfig config = {
             .archive_offset = archive_offset_,
-            .source_mapper = sqsh_mapper_impl_mmap, // Function pointer initialization
             .source_size = 0,
+            .source_mapper = sqsh_mapper_impl_mmap, // Function pointer initialization
             .mapper_block_size = 0,
             .mapper_lru_size = 0,
             .compression_lru_size = 0,

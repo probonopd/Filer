@@ -15,12 +15,15 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets DBus)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets DBus)
 
-# Set the path to libsqsh static library (modify this to the correct path on your system)
-set(LIBSQSH_STATIC_PATH /usr/local)
+# Find libsqsh using PkgConfig
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(LIBSQSH REQUIRED IMPORTED_TARGET libsqsh)
 
-# Add the include directories for libsqsh
-include_directories(${LIBSQSH_STATIC_PATH}/include/sqsh)
+# Find libsqsh.a; could be in /usr/local/lib or /usr/lib or /usr/local/lib/*/
+find_library(LIBSQSH_STATIC_PATH libsqsh.a)
 
+# Fix: fatal error: 'sqsh.h' file not found
+include_directories(/usr/local/include/sqsh)
 
 # Add the path to the libqxdg library
 # include_directories(/usr/include/qt5xdg /usr/local/include/qt5xdg)
@@ -69,7 +72,7 @@ endif()
 target_link_libraries(Filer PRIVATE
         Qt${QT_VERSION_MAJOR}::Widgets
         Qt${QT_VERSION_MAJOR}::DBus
-        ${LIBSQSH_STATIC_PATH}/lib/libsqsh.a
+        ${LIBSQSH_STATIC_PATH}
         z        # Link dynamically to zlib
         zstd     # Link dynamically to zstd
         )
