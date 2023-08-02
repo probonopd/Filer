@@ -15,8 +15,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets DBus)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets DBus)
 
-# Find libsqsh using PkgConfig
 find_package(PkgConfig REQUIRED)
+pkg_check_modules(ZSTD REQUIRED IMPORTED_TARGET libzstd)
+pkg_check_modules(ZLIB REQUIRED IMPORTED_TARGET zlib)
 pkg_check_modules(LIBSQSH REQUIRED IMPORTED_TARGET libsqsh)
 
 # Find libsqsh.a; could be in /usr/local/lib or /usr/lib or /usr/local/lib/*/
