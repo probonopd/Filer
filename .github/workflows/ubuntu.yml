@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-20.04
 
     steps:
       - name: Check out code
@@ -22,7 +22,7 @@ jobs:
         run: |
            git clone https://github.com/Gottox/libsqsh
            cd libsqsh
-           git checkout ac21643
+           git checkout d9b0e49
            # sed -i -e 's|=0.57|=0.53|g' meson.build
            meson setup build \
             -Dwerror=false \
@@ -33,10 +33,10 @@ jobs:
             -Dlzma=disabled  \
             -Dzstd=enabled  \
             -Dthreads=enabled \
-            -Ddoc=false
+            -Ddoc=false \
+            -Dtest=false
            cd build
-           ls
-           meson compile
+           ninja # 'meson build' fails on 20.04, works on 22.04
            sudo meson install
            cd ../../
 
