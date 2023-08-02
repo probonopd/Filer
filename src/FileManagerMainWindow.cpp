@@ -1217,6 +1217,12 @@ void FileManagerMainWindow::renameSelectedItem()
     // Get the new name of the selected item
     const QString newName = lineEdit->text();
 
+    if (result == QDialog::Accepted) {
+        ok = true;
+    } else {
+        ok = false;
+    }
+
     if (!ok || newName.isEmpty() || newName == currentName) {
         // The user canceled the dialog or didn't enter a new name
         return;
