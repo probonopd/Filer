@@ -35,7 +35,6 @@
 class ApplicationBundle
 {
 public:
-    // Constructs a new ApplicationBundle object with the given path
     ApplicationBundle(const QString &path);
 
     // Returns the path of the bundle
@@ -73,16 +72,16 @@ public:
     QStringList arguments() const;
 
 private:
-    QString m_path;
+    const QString m_path;
     bool m_isValid;
-    bool m_isApp;
-    bool m_isAppDir;
-    bool m_isAppImage;
-    bool m_isDesktopFile;
+    mutable bool m_isApp;
+    mutable bool m_isAppDir;
+    mutable bool m_isAppImage;
+    mutable bool m_isDesktopFile;
     QString m_name;
     QString m_icon;
     QString m_executable;
-    QStringList m_arguments;
+    const QStringList m_arguments;
 };
 
 #endif // APPLICATIONBUNDLE_H

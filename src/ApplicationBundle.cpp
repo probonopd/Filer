@@ -38,15 +38,16 @@
 #include <DesktopFile.h>
 
 ApplicationBundle::ApplicationBundle(const QString &path)
-    : m_path(path),
-      m_isValid(false),
-      m_isApp(false),
-      m_isAppDir(false),
-      m_isAppImage(false),
-      m_name(),
-      m_icon(),
-      m_executable(),
-      m_arguments()
+        : m_path(path),
+          m_isValid(false), // Initialize const bool members in the constructor's initializer list
+          m_isApp(false),
+          m_isAppDir(false),
+          m_isAppImage(false),
+          m_isDesktopFile(false),
+          m_name(),
+          m_icon(),
+          m_executable(),
+          m_arguments()
 {
     // Check if the path is a valid file or directory
     QFileInfo fileInfo(path);
@@ -166,4 +167,20 @@ QString ApplicationBundle::iconName() const
 {
     qDebug() << "m_icon:" << m_icon;
     return m_icon;
+}
+
+
+QString ApplicationBundle::name() const
+{
+    return m_name;
+}
+
+QString ApplicationBundle::executable() const
+{
+    return m_executable;
+}
+
+QStringList ApplicationBundle::arguments() const
+{
+    return m_arguments;
 }
