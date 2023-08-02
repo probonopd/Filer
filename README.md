@@ -1,12 +1,15 @@
 # Filer [![Build Status](https://api.cirrus-ci.com/probonopd/helloSystem/Filer.svg)](https://cirrus-ci.com/github/probonopd/Filer) [![Ubuntu Build Status](https://img.shields.io/github/actions/workflow/status/probonopd/Filer/ubuntu.yml?branch=main)](https://github.com/probonopd/Filer/actions/workflows/ubuntu.yml)
 
-A clean rewrite of the Filer for helloSystem, inspired by [John Siracusa's descriptions of "Spatial Orientation"](https://arstechnica.com/gadgets/2003/04/finder/).
+A clean rewrite of the Filer for [helloSystem](https://hellosystem.github.io/) (but not limited to it), inspired by [John Siracusa's descriptions of "Spatial Orientation"](https://arstechnica.com/gadgets/2003/04/finder/).
 
 ![](https://user-images.githubusercontent.com/2480569/206650534-a035fc64-5993-41dd-8753-1076f47598c5.png)
 
 * No GLib dependency
 * No libfm dependency
+* Minimal dependencies other than Qt
 * No inherited code
+* Uses [launch](https://github.com/helloSystem/launch/) "database"
+* Runs on FreeBSD (developed for [helloSystem](https://hellosystem.github.io/)) and on Linux (occasionally tested on Lubutnu)
 
 ## Features
 
@@ -14,8 +17,8 @@ A clean rewrite of the Filer for helloSystem, inspired by [John Siracusa's descr
 |---|---|---|
 |Do not natively support `.app` bundles, `.AppDir` and `.AppImage` formats | Natively supports `.app` bundles, `.AppDir` and `.AppImage` formats|WIP|
 |Use XDG standards that have prevented *nix desktops from working well for all too long|Engineered from first principles to be a great desktop file manager|WIP|
-|Assume applications are at fixed locations, e.g., in `/usr/bin`|Assumes applications can be anywhere including external disks and file shares, and can be freely moved around|WIP|
-|Show icons for files based on their MIME type|Show icons for files based on the application that opens them|WIP based on `launch` "database"|
+|Assume applications are at fixed locations, e.g., in `/usr/bin`|Assumes applications can be anywhere including external disks and file shares, and can be freely moved around|WIP based on `launch` "database"|
+|Show icons for files based on their MIME type|Show icons for files based on the application that opens them|Implemented based on `launch` "database"|
 |Do not allow individual files of the same MIME type to be opened with different applications|Allows individual files of the same MIME type to be opened with different applications (using the `can-open` extended attribute)|Handled by `launch`|
 |Do not persist window location and size for each window|Persists window location and size for each window|Implemented|
 |Do not persist the view type for each window|Persists the view type for each window|Implemented|
