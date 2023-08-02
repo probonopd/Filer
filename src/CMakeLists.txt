@@ -15,6 +15,13 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets DBus)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets DBus)
 
+# Set the path to libsqsh static library (modify this to the correct path on your system)
+set(LIBSQSH_STATIC_PATH /usr/local)
+
+# Add the include directories for libsqsh
+include_directories(${LIBSQSH_STATIC_PATH}/include/sqsh)
+
+
 # Add the path to the libqxdg library
 # include_directories(/usr/include/qt5xdg /usr/local/include/qt5xdg)
 
@@ -33,7 +40,8 @@ set(PROJECT_SOURCES
         CustomFileSystemModel.cpp CustomFileSystemModel.h
         CustomListView.cpp CustomListView.h
         TrashHandler.cpp TrashHandler.h
-        SqshArchiveReader.cpp SqshArchiveReader.h)
+        ElfBinary.cpp ElfBinary.h
+        SqshReader.cpp SqshReader.h)
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(Filer
@@ -58,7 +66,14 @@ else()
     endif()
 endif()
 
-target_link_libraries(Filer PRIVATE Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::DBus)
+target_link_libraries(Filer PRIVATE
+        Qt${QT_VERSION_MAJOR}::Widgets
+        Qt${QT_VERSION_MAJOR}::DBus
+        ${LIBSQSH_STATIC_PATH}/lib/libsqsh.a
+        z        # Link dynamically to zlib
+        zstd     # Link dynamically to zstd
+        )
+
 
 set_target_properties(Filer PROPERTIES
     MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com

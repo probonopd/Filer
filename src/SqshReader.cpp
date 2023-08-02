@@ -25,10 +25,10 @@
  */
 
 #include "SqshReader.h"
-#include <sqsh.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <sqsh.h>
 
 SqshArchiveReader::SqshArchiveReader(uint64_t archive_offset, QObject* parent)
         : QObject(parent), archive_offset_(archive_offset) {}
