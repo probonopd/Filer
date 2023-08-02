@@ -69,12 +69,17 @@ $(function() {
 <div class="title">ElfBinary Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p>The <a class="el" href="classElfBinary.html" title="The ElfBinary class provides functionality to read information from ELF binary files.">ElfBinary</a> class provides functionality to read information from ELF binary files.  
+ <a href="classElfBinary.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="ElfBinary_8h_source.html">ElfBinary.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for ElfBinary:</div>
 <div class="dyncontent">
 <div class="center"><img src="classElfBinary__inherit__graph.png" border="0" usemap="#aElfBinary_inherit__map" alt="Inheritance graph"/></div>
 <map name="aElfBinary_inherit__map" id="aElfBinary_inherit__map">
-<area shape="rect" title=" " alt="" coords="5,80,87,107"/>
+<area shape="rect" title="The ElfBinary class provides functionality to read information from ELF binary files." alt="" coords="5,80,87,107"/>
 <area shape="rect" title=" " alt="" coords="9,5,83,32"/>
 </map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
@@ -83,20 +88,86 @@ Collaboration diagram for ElfBinary:</div>
 <div class="dyncontent">
 <div class="center"><img src="classElfBinary__coll__graph.png" border="0" usemap="#aElfBinary_coll__map" alt="Collaboration graph"/></div>
 <map name="aElfBinary_coll__map" id="aElfBinary_coll__map">
-<area shape="rect" title=" " alt="" coords="5,80,87,107"/>
+<area shape="rect" title="The ElfBinary class provides functionality to read information from ELF binary files." alt="" coords="5,80,87,107"/>
 <area shape="rect" title=" " alt="" coords="9,5,83,32"/>
 </map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a113092796e43d3f8d23a68d7a7b6de52"><td class="memItemLeft" align="right" valign="top"><a id="a113092796e43d3f8d23a68d7a7b6de52"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>ElfBinary</b> (QObject *parent=nullptr)</td></tr>
+<tr class="memitem:a113092796e43d3f8d23a68d7a7b6de52"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classElfBinary.html#a113092796e43d3f8d23a68d7a7b6de52">ElfBinary</a> (QObject *parent=nullptr)</td></tr>
+<tr class="memdesc:a113092796e43d3f8d23a68d7a7b6de52"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs an <a class="el" href="classElfBinary.html" title="The ElfBinary class provides functionality to read information from ELF binary files.">ElfBinary</a> object.  <a href="classElfBinary.html#a113092796e43d3f8d23a68d7a7b6de52">More...</a><br /></td></tr>
 <tr class="separator:a113092796e43d3f8d23a68d7a7b6de52"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a34813c12aeebbaacadb38e98a49738d9"><td class="memItemLeft" align="right" valign="top"><a id="a34813c12aeebbaacadb38e98a49738d9"></a>
-Q_INVOKABLE qint64&#160;</td><td class="memItemRight" valign="bottom"><b>getElfSize</b> (const QString &amp;filePath)</td></tr>
+<tr class="memitem:a34813c12aeebbaacadb38e98a49738d9"><td class="memItemLeft" align="right" valign="top">Q_INVOKABLE qint64&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classElfBinary.html#a34813c12aeebbaacadb38e98a49738d9">getElfSize</a> (const QString &amp;filePath)</td></tr>
+<tr class="memdesc:a34813c12aeebbaacadb38e98a49738d9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the size of the ELF file specified by the file path.  <a href="classElfBinary.html#a34813c12aeebbaacadb38e98a49738d9">More...</a><br /></td></tr>
 <tr class="separator:a34813c12aeebbaacadb38e98a49738d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>The <a class="el" href="classElfBinary.html" title="The ElfBinary class provides functionality to read information from ELF binary files.">ElfBinary</a> class provides functionality to read information from ELF binary files. </p>
+<p>The class allows reading the size of ELF files, supporting both 32-bit and 64-bit ELF formats. </p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a113092796e43d3f8d23a68d7a7b6de52"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a113092796e43d3f8d23a68d7a7b6de52">&#9670;&nbsp;</a></span>ElfBinary()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">ElfBinary::ElfBinary </td>
+          <td>(</td>
+          <td class="paramtype">QObject *&#160;</td>
+          <td class="paramname"><em>parent</em> = <code>nullptr</code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Constructs an <a class="el" href="classElfBinary.html" title="The ElfBinary class provides functionality to read information from ELF binary files.">ElfBinary</a> object. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">parent</td><td>The parent QObject (default is nullptr). </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a34813c12aeebbaacadb38e98a49738d9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a34813c12aeebbaacadb38e98a49738d9">&#9670;&nbsp;</a></span>getElfSize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">qint64 ElfBinary::getElfSize </td>
+          <td>(</td>
+          <td class="paramtype">const QString &amp;&#160;</td>
+          <td class="paramname"><em>filePath</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Gets the size of the ELF file specified by the file path. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">filePath</td><td>The path to the ELF file. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The size of the ELF file in bytes, or -1 if an error occurred. </dd></dl>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li><a class="el" href="ElfBinary_8h_source.html">ElfBinary.h</a></li>
 <li>ElfBinary.cpp</li>

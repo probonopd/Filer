@@ -68,12 +68,17 @@ $(function() {
 <div class="title">SqshArchiveReader Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p>The <a class="el" href="classSqshArchiveReader.html" title="The SqshArchiveReader class provides functionality to read files from a SquashFS archive.">SqshArchiveReader</a> class provides functionality to read files from a SquashFS archive.  
+ <a href="classSqshArchiveReader.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="SqshReader_8h_source.html">SqshReader.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for SqshArchiveReader:</div>
 <div class="dyncontent">
 <div class="center"><img src="classSqshArchiveReader__inherit__graph.png" border="0" usemap="#aSqshArchiveReader_inherit__map" alt="Inheritance graph"/></div>
 <map name="aSqshArchiveReader_inherit__map" id="aSqshArchiveReader_inherit__map">
-<area shape="rect" title=" " alt="" coords="5,80,153,107"/>
+<area shape="rect" title="The SqshArchiveReader class provides functionality to read files from a SquashFS archive." alt="" coords="5,80,153,107"/>
 <area shape="rect" title=" " alt="" coords="42,5,117,32"/>
 </map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
@@ -82,26 +87,138 @@ Collaboration diagram for SqshArchiveReader:</div>
 <div class="dyncontent">
 <div class="center"><img src="classSqshArchiveReader__coll__graph.png" border="0" usemap="#aSqshArchiveReader_coll__map" alt="Collaboration graph"/></div>
 <map name="aSqshArchiveReader_coll__map" id="aSqshArchiveReader_coll__map">
-<area shape="rect" title=" " alt="" coords="5,80,153,107"/>
+<area shape="rect" title="The SqshArchiveReader class provides functionality to read files from a SquashFS archive." alt="" coords="5,80,153,107"/>
 <area shape="rect" title=" " alt="" coords="42,5,117,32"/>
 </map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a6140f2a86e0a9470bd74320ba4e23a2b"><td class="memItemLeft" align="right" valign="top"><a id="a6140f2a86e0a9470bd74320ba4e23a2b"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>SqshArchiveReader</b> (uint64_t archive_offset=0, QObject *parent=nullptr)</td></tr>
+<tr class="memitem:a6140f2a86e0a9470bd74320ba4e23a2b"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSqshArchiveReader.html#a6140f2a86e0a9470bd74320ba4e23a2b">SqshArchiveReader</a> (uint64_t archive_offset=0, QObject *parent=nullptr)</td></tr>
+<tr class="memdesc:a6140f2a86e0a9470bd74320ba4e23a2b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs a <a class="el" href="classSqshArchiveReader.html" title="The SqshArchiveReader class provides functionality to read files from a SquashFS archive.">SqshArchiveReader</a> object with the specified archive offset.  <a href="classSqshArchiveReader.html#a6140f2a86e0a9470bd74320ba4e23a2b">More...</a><br /></td></tr>
 <tr class="separator:a6140f2a86e0a9470bd74320ba4e23a2b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aca05679344d7b8c91e65f78ca93e915d"><td class="memItemLeft" align="right" valign="top"><a id="aca05679344d7b8c91e65f78ca93e915d"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setArchiveOffset</b> (uint64_t offset)</td></tr>
-<tr class="separator:aca05679344d7b8c91e65f78ca93e915d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8e94ea1f5fe9dabc211910752847c4c7"><td class="memItemLeft" align="right" valign="top"><a id="a8e94ea1f5fe9dabc211910752847c4c7"></a>
-QStringList&#160;</td><td class="memItemRight" valign="bottom"><b>readSqshArchive</b> (const QString &amp;sqsh_file)</td></tr>
+<tr class="memitem:a8e94ea1f5fe9dabc211910752847c4c7"><td class="memItemLeft" align="right" valign="top">QStringList&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSqshArchiveReader.html#a8e94ea1f5fe9dabc211910752847c4c7">readSqshArchive</a> (const QString &amp;sqsh_file)</td></tr>
+<tr class="memdesc:a8e94ea1f5fe9dabc211910752847c4c7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reads and returns the list of files present in the SquashFS archive.  <a href="classSqshArchiveReader.html#a8e94ea1f5fe9dabc211910752847c4c7">More...</a><br /></td></tr>
 <tr class="separator:a8e94ea1f5fe9dabc211910752847c4c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3e80c89957e5f18a3c1adc67e480e347"><td class="memItemLeft" align="right" valign="top"><a id="a3e80c89957e5f18a3c1adc67e480e347"></a>
-QByteArray&#160;</td><td class="memItemRight" valign="bottom"><b>readFileFromArchive</b> (const QString &amp;sqsh_file, const QString &amp;file_path)</td></tr>
+<tr class="memitem:a3e80c89957e5f18a3c1adc67e480e347"><td class="memItemLeft" align="right" valign="top">QByteArray&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classSqshArchiveReader.html#a3e80c89957e5f18a3c1adc67e480e347">readFileFromArchive</a> (const QString &amp;sqsh_file, const QString &amp;file_path)</td></tr>
+<tr class="memdesc:a3e80c89957e5f18a3c1adc67e480e347"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reads the contents of a specific file from the SquashFS archive.  <a href="classSqshArchiveReader.html#a3e80c89957e5f18a3c1adc67e480e347">More...</a><br /></td></tr>
 <tr class="separator:a3e80c89957e5f18a3c1adc67e480e347"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>The <a class="el" href="classSqshArchiveReader.html" title="The SqshArchiveReader class provides functionality to read files from a SquashFS archive.">SqshArchiveReader</a> class provides functionality to read files from a SquashFS archive. </p>
+<p>The class allows reading the contents of a SquashFS archive and individual files from it. It provides methods to list all the files in the archive and read the contents of specific files. </p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a6140f2a86e0a9470bd74320ba4e23a2b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6140f2a86e0a9470bd74320ba4e23a2b">&#9670;&nbsp;</a></span>SqshArchiveReader()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">SqshArchiveReader::SqshArchiveReader </td>
+          <td>(</td>
+          <td class="paramtype">uint64_t&#160;</td>
+          <td class="paramname"><em>archive_offset</em> = <code>0</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">QObject *&#160;</td>
+          <td class="paramname"><em>parent</em> = <code>nullptr</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Constructs a <a class="el" href="classSqshArchiveReader.html" title="The SqshArchiveReader class provides functionality to read files from a SquashFS archive.">SqshArchiveReader</a> object with the specified archive offset. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">archive_offset</td><td>The offset at which the SquashFS archive starts in the source file (default is 0). </td></tr>
+    <tr><td class="paramname">parent</td><td>The parent QObject (default is nullptr). </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a3e80c89957e5f18a3c1adc67e480e347"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3e80c89957e5f18a3c1adc67e480e347">&#9670;&nbsp;</a></span>readFileFromArchive()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">QByteArray SqshArchiveReader::readFileFromArchive </td>
+          <td>(</td>
+          <td class="paramtype">const QString &amp;&#160;</td>
+          <td class="paramname"><em>sqsh_file</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const QString &amp;&#160;</td>
+          <td class="paramname"><em>file_path</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Reads the contents of a specific file from the SquashFS archive. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">sqsh_file</td><td>The path to the SquashFS archive file. </td></tr>
+    <tr><td class="paramname">file_path</td><td>The path of the file to read from the archive. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>QByteArray containing the data of the requested file. </dd></dl>
+
+</div>
+</div>
+<a id="a8e94ea1f5fe9dabc211910752847c4c7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8e94ea1f5fe9dabc211910752847c4c7">&#9670;&nbsp;</a></span>readSqshArchive()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">QStringList SqshArchiveReader::readSqshArchive </td>
+          <td>(</td>
+          <td class="paramtype">const QString &amp;&#160;</td>
+          <td class="paramname"><em>sqsh_file</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Reads and returns the list of files present in the SquashFS archive. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">sqsh_file</td><td>The path to the SquashFS archive file. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>QStringList containing the names of all the files in the archive. </dd></dl>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li><a class="el" href="SqshReader_8h_source.html">SqshReader.h</a></li>
 <li>SqshReader.cpp</li>

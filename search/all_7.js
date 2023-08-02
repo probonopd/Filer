@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['movercopier_14',['MoverCopier',['../classMoverCopier.html',1,'']]]
+  ['launchdb_15',['LaunchDB',['../classLaunchDB.html',1,'']]]
 ];
