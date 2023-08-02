@@ -23,7 +23,5 @@ FILE_PATTERNS = *.h *.hpp *.hxx *.cpp *.cxx
 # In this example, /path/to/your/cpp/code/ will be removed from the documentation paths.
 STRIP_FROM_PATH = ../src
 
-HTML_FOOTER = ./empty_footer.html
-
 # Enable the generation of include dependency graphs.
 HAVE_DOT = YES
