@@ -13,9 +13,6 @@ PROJECT_NAME = "Filer"
 GENERATE_HTML = YES
 GENERATE_LATEX = NO
 
-# Enable the generation of class diagrams.
-GENERATE_UML = YES
-
 # Specify the file extensions that Doxygen will consider as C++ files.
 FILE_PATTERNS = *.h *.hpp *.hxx *.cpp *.cxx
 
