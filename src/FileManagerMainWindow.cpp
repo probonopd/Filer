@@ -245,7 +245,7 @@ FileManagerMainWindow::FileManagerMainWindow(QWidget *parent, const QString &ini
     m_treeView->setItemDelegate(customItemDelegate);
 
     // Create the selection model for the tree view and icon view
-    m_selectionModel = new QItemSelectionModel(m_fileSystemModel);
+    m_selectionModel = new QItemSelectionModel(m_fileSystemModel, this);
 
     // Set the selection model for the tree view and icon view
     m_treeView->setSelectionModel(m_selectionModel);
@@ -513,7 +513,7 @@ void FileManagerMainWindow::createMenus()
     menuBar()->clear();
 
     // Create the File menu
-    QMenu *fileMenu = new QMenu(tr("File"));
+    QMenu *fileMenu = new QMenu(tr("File"), this);
 
     // Add the usual menu items to the File menu
     fileMenu->addAction(tr("New..."));
@@ -569,7 +569,7 @@ void FileManagerMainWindow::createMenus()
     m_menuBar->addMenu(fileMenu);
 
     // Create the Edit menu
-    QMenu *editMenu = new QMenu(tr("Edit"));
+    QMenu *editMenu = new QMenu(tr("Edit"), this);
 
     // Add the usual menu items to the Edit menu
     editMenu->addAction(tr("Undo"));
@@ -626,7 +626,7 @@ void FileManagerMainWindow::createMenus()
     m_menuBar->addMenu(editMenu);
 
     // Create the View menu
-    QMenu *viewMenu = new QMenu(tr("View"));
+    QMenu *viewMenu = new QMenu(tr("View"), this);
 
     // Connect the triggered() signals of the Tree View and Icon View actions to slots
     connect(m_treeViewAction, &QAction::triggered, this, &FileManagerMainWindow::showTreeView);
@@ -657,7 +657,7 @@ void FileManagerMainWindow::createMenus()
     m_menuBar->addMenu(viewMenu);
 
     // Create the Go menu
-    QMenu *goMenu = new QMenu(tr("Go"));
+    QMenu *goMenu = new QMenu(tr("Go"), this);
 
     goMenu->addAction(tr("Go Up"));
     goMenu->actions().last()->setShortcut(QKeySequence("Ctrl+Up"));
@@ -810,10 +810,10 @@ void FileManagerMainWindow::createMenus()
     m_menuBar->addMenu(goMenu);
 
     // Create the Help menu
-    QMenu *helpMenu = new QMenu("Help");
+    QMenu *helpMenu = new QMenu(tr("Help"), this);
 
     // Add an action to the Help menu
-    QAction *a = helpMenu->addAction("About Filer");
+    QAction *a = helpMenu->addAction(tr("About Filer"));
 
     // Add the Help menu to the menu bar
     m_menuBar->addMenu(helpMenu);
@@ -1193,10 +1193,11 @@ void FileManagerMainWindow::renameSelectedItem()
     QRegExpValidator validator(QRegExp("[^/]*"));
     bool ok;
 
-    QLineEdit* lineEdit = new QLineEdit();
-    lineEdit->setValidator(&validator);
+
     // Construct a dialog using this QLineEdit
     QDialog dialog(this);
+    QLineEdit* lineEdit = new QLineEdit(&dialog);
+    lineEdit->setValidator(&validator);
     dialog.setWindowTitle(tr("Rename"));
     dialog.setLayout(new QVBoxLayout());
     dialog.layout()->addWidget(lineEdit);

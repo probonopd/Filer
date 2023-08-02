@@ -11,6 +11,7 @@
 #include <QTimeLine>
 #include <QItemSelectionModel>
 #include <QStandardItemModel>
+#include "CustomFileIconProvider.h"
 
 // Add a custom role to store the delegate position
 enum CustomItemDelegateRole {
@@ -80,6 +81,8 @@ private:
     QMenu menu;
 
     QTimeLine* animationTimeline;
+
+    CustomFileIconProvider* iconProvider;
 
     qreal currentAnimationValue;
 

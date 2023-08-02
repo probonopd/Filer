@@ -27,7 +27,6 @@
 #include "ApplicationBundle.h"
 #include "CustomItemDelegate.h"
 #include "FileManagerMainWindow.h"
-#include "CustomFileIconProvider.h"
 
 #include <QFileIconProvider>
 #include <QFileInfo>
@@ -53,7 +52,7 @@ CustomItemDelegate::CustomItemDelegate(QObject* parent, CustomFileSystemModel* f
     m_fileSystemModel = fileSystemModel;
 
     // Create an instance of the custom icon provider
-    CustomFileIconProvider *iconProvider = new CustomFileIconProvider();
+    iconProvider = new CustomFileIconProvider();
 
     // Set the custom file system model in the file icon provider.
     iconProvider->setModel(m_fileSystemModel);
@@ -76,10 +75,17 @@ CustomItemDelegate::CustomItemDelegate(QObject* parent, CustomFileSystemModel* f
 
 }
 
-// Implement the destructor of the CustomItemDelegate class
+// Memory management rule of thumb for Qt:
+// Try using a parent whenever using new.
+// This way, the parent will take care of deleting the child.
+// When this is not possible, then we need to declare the instance
+// created with new as a member variable of the class and delete it
+// in the destructor of the class.
+// QUESTION: Which book teaches this?
 CustomItemDelegate::~CustomItemDelegate()
 {
-    // Clean up any allocated resources or objects if needed
+    delete animationTimeline;
+    delete iconProvider;
 }
 
 // Reimplement the displayText() function of the CustomItemDelegate class
