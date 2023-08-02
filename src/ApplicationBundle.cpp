@@ -138,29 +138,35 @@ QIcon ApplicationBundle::icon() const
         // Determine the ELF offset
         ElfBinary* elfBinary = new ElfBinary();
         qint64 offset = elfBinary->getElfSize(m_path);
+        qDebug() << "offset:" << offset << "for file" << m_path;
         // Get the data of the .DirIcon file from the squashfs
         SqshArchiveReader *reader = new SqshArchiveReader(offset);
         delete elfBinary;
+        qDebug() << "Extracting AppImage icon for file" << m_path;
         QByteArray fileData = reader->readFileFromArchive(m_path, ".DirIcon");
+        qDebug() << "Finished extracting AppImage icon data for file" << m_path;
         delete reader;
         // If fileData is empty, return default icon
         if (fileData.isEmpty()) {
             return QIcon::fromTheme("application-x-executable");
+            qDebug() << "Icon fileData is empty for file" << m_path;
         }
         // Turn the data of the .DirIcon into a QIcon
-        QIcon icon;
-        icon.addPixmap(QPixmap::fromImage(QImage::fromData(fileData)), QIcon::Normal, QIcon::Off);
-        return icon;
+        QImage image = QImage::fromData(fileData);
+        if (image.isNull()) {
+            return QIcon::fromTheme("application-x-executable");
+            qDebug() << "Icon image is null for file" << m_path;
+        } else {
+            return QIcon(QPixmap::fromImage(image));
+        }
     } else {
         // Get the icon from the icon file if it exists
         QFile file(m_icon);
         if (file.exists()) {
-            QIcon icon(m_icon);
-            return icon;
+            return QIcon(m_icon);
         } else {
             // Get the default icon if the icon file does not exist
-            QIcon icon = QIcon::fromTheme("application-x-executable");
-            return icon;
+            return QIcon::fromTheme("application-x-executable");
         }
     }
 }
