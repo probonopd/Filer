@@ -17,7 +17,9 @@ jobs:
       run: sudo apt-get update && sudo apt-get install -y doxygen graphviz
 
     - name: Generate Documentation
-      run: doxygen docs/Doxyfile
+      run: |
+           cd docs/
+           doxygen Doxyfile
 
     - name: Publish Documentation
       uses: peaceiris/actions-gh-pages@v3
@@ -26,4 +28,4 @@ jobs:
         publish_dir: ./docs/html
 
     - name: List files in publish directory
-       run: ls ./docs/html
+      run: ls ./docs/html
