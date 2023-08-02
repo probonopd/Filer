@@ -307,10 +307,11 @@ bool CustomItemDelegate::editorEvent(QEvent *event, QAbstractItemModel *model,
 
         QAction *showContentsAction = new QAction(tr("Show Contents"), this);
         showContentsAction->setEnabled(false);
-        ApplicationBundle bundle = ApplicationBundle(filePath);
-        if (bundle.isValid() && !bundle.isDesktopFile()) {
-            showContentsAction->setEnabled(true);
-        }
+//        ApplicationBundle* bundle = new ApplicationBundle(filePath);
+//        if (bundle->isValid() && bundle->type() != ApplicationBundle::Type::DesktopFile) {
+//            showContentsAction->setEnabled(true);
+//        }
+//        delete bundle;
         connect(showContentsAction, &QAction::triggered, [=]() {
             mainWindow->openFolderInNewWindow(filePath);
         });

@@ -27,61 +27,38 @@
 #ifndef APPLICATIONBUNDLE_H
 #define APPLICATIONBUNDLE_H
 
-#include <QIcon>
 #include <QString>
 #include <QStringList>
+#include <QIcon>
 
-// Represents an application bundle, AppDir, AppImage, or .desktop file
-class ApplicationBundle
-{
+class ApplicationBundle {
 public:
-    ApplicationBundle(const QString &path);
+    enum class Type {
+        Unknown,
+        AppBundle,
+        AppDir,
+        AppImage,
+        DesktopFile
+    };
 
-    // Returns the path of the bundle
+    ApplicationBundle(const QString& path);
     QString path() const;
-
-    // Returns true if the bundle is valid, i.e. it is an application bundle, AppDir, AppImage, or
-    // .desktop file
     bool isValid() const;
-
-    // Returns true if the bundle is an application bundle
-    bool isAppBundle() const;
-
-    // Returns true if the bundle is an AppDir
-    bool isAppDir() const;
-
-    // Returns true if the bundle is an AppImage
-    bool isAppImage() const;
-
-    // Returns true if the bundle is a .desktop file
-    bool isDesktopFile() const;
-
-    // Returns the name of the bundle
-    QString name() const;
-
-    // Returns the icon of the bundle
+    Type type() const;
     QIcon icon() const;
-
-    // Returns the name of the icon of the bundle
     QString iconName() const;
-
-    // Returns the executable of the bundle
+    QString name() const;
     QString executable() const;
-
-    // Returns the arguments of the bundle
     QStringList arguments() const;
 
 private:
-    const QString m_path;
+    QString m_path;
     bool m_isValid;
-    mutable bool m_isApp;
-    mutable bool m_isAppDir;
-    mutable bool m_isAppImage;
-    mutable bool m_isDesktopFile;
+    Type m_type;
     QString m_name;
     QString m_icon;
     QString m_executable;
-    const QStringList m_arguments;
+    QStringList m_arguments;
 };
 
 #endif // APPLICATIONBUNDLE_H
