@@ -36,6 +36,7 @@
 #include <QStackedWidget>
 #include "CustomFileSystemModel.h"
 #include "CustomListView.h"
+#include "ExtendedAttributes.h"
 
 class FileManagerMainWindow : public QMainWindow
 {
@@ -115,6 +116,8 @@ private:
     void updateMenus();
 
     void saveWindowGeometry();
+
+    ExtendedAttributes *m_extendedAttributes;
 };
 
 #endif // FILEMANAGERMAINWINDOW_H

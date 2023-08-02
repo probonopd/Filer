@@ -27,7 +27,6 @@
 #include "FileManagerMainWindow.h"
 #include "CustomItemDelegate.h"
 #include "CustomFileIconProvider.h"
-#include "ExtendedAttributes.h"
 
 #include <QMenuBar>
 #include <QMenu>
@@ -91,7 +90,7 @@ FileManagerMainWindow::FileManagerMainWindow(QWidget *parent, const QString &ini
 
     m_currentDir = initialDirectory;
 
-    ExtendedAttributes extendedAttributes(m_currentDir);
+    m_extendedAttributes = new ExtendedAttributes(m_currentDir);
 
     // Get number of instances
     int instanceCount = instances().count();
@@ -123,7 +122,7 @@ FileManagerMainWindow::FileManagerMainWindow(QWidget *parent, const QString &ini
         // Read extended attributes describing the window geometry
         qDebug() << "Reading extended attributes";
 
-        QByteArray positionAndGeometry = extendedAttributes.read("positionAndGeometry");
+        QByteArray positionAndGeometry =  m_extendedAttributes->read("positionAndGeometry");
         // from qbytearray to qstring
         QString positionAndGeometryString = QString::fromUtf8(positionAndGeometry);
         qDebug() << "positionAndGeometryString:" << positionAndGeometryString;
@@ -367,7 +366,7 @@ FileManagerMainWindow::FileManagerMainWindow(QWidget *parent, const QString &ini
 
     if (instanceCount != 0) {
         // Read extended attribute describing the view mode
-        QByteArray viewMode = extendedAttributes.read("WindowView");
+        QByteArray viewMode = m_extendedAttributes->read("WindowView");
         int viewModeInt = viewMode.toInt();
         qDebug() << "viewModeString:" << viewModeInt;
         if (viewModeInt == 1) {
@@ -408,9 +407,6 @@ void FileManagerMainWindow::saveWindowGeometry()
     QString currentDir =
             m_fileSystemModel->filePath(m_fileSystemModel->index(m_fileSystemModel->rootPath()));
 
-    // Write extended attribute to the current directory
-    ExtendedAttributes ea = ExtendedAttributes(currentDir);
-
     // Writing the window position and geometry directly as a QByteArray does not work because it
     // contains null bytes, so we convert it to a string
     QString positionAndGeometry = QString::number(geometry().x()) + "," + QString::number(geometry().y())
@@ -419,14 +415,14 @@ void FileManagerMainWindow::saveWindowGeometry()
     QByteArray positionAndGeometryByteArray = positionAndGeometry.toUtf8();
 
     // Write the window positionAndGeometry to an extended attribute
-    ea.write("positionAndGeometry", positionAndGeometryByteArray);
+    m_extendedAttributes->write("positionAndGeometry", positionAndGeometryByteArray);
 
     // If "Tree View" is checked in the "View" menu, write "1" to the extended attribute,
     // otherwise write "2" to the extended attribute
     if (m_treeViewAction->isChecked()) {
-        ea.write("WindowView", "1");
+        m_extendedAttributes->write("WindowView", "1");
     } else {
-        ea.write("WindowView", "2");
+        m_extendedAttributes->write("WindowView", "2");
     }
 }
 
@@ -505,6 +501,8 @@ FileManagerMainWindow::~FileManagerMainWindow()
             window->refresh();
         }
     });
+
+    delete m_extendedAttributes;
 }
 
 void FileManagerMainWindow::createMenus()
