@@ -33,6 +33,10 @@ A clean rewrite of the Filer for [helloSystem](https://hellosystem.github.io/) (
 
 My conclusion is that most "desktop environments" are made by people who don't actually love the desktop. Or else, those basic things would work.
 
+## Developer documentation (Doxygen)
+
+https://probonopd.github.io/Filer/
+
 ## References
 
 * https://arstechnica.com/gadgets/2003/04/finder/
