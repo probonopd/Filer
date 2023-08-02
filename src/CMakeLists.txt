@@ -74,8 +74,8 @@ target_link_libraries(Filer PRIVATE
         Qt${QT_VERSION_MAJOR}::Widgets
         Qt${QT_VERSION_MAJOR}::DBus
         ${LIBSQSH_STATIC_PATH}
-        z        # Link dynamically to zlib
-        zstd     # Link dynamically to zstd
+        PkgConfig::ZSTD    # Link dynamically to libzstd
+        PkgConfig::ZLIB    # Link dynamically to zlib
         pthread  # Link dynamically to pthread
         )
 
