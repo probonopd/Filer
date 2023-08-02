@@ -1016,6 +1016,11 @@ void FileManagerMainWindow::openFolderInNewWindow(const QString &rootPath)
         if (window->m_fileSystemModel->rootPath() == rootPath) {
             // A window for the specified root path already exists, so raise it and return
             window->raise();
+            window->activateWindow();
+            // If it is minimized, restore it
+            if (window->isMinimized()) {
+                window->showNormal();
+            }
             windowExists = true;
             break;
         }
