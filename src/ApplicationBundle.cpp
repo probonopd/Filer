@@ -158,9 +158,22 @@ bool ApplicationBundle::isDesktopFile() const
 QIcon ApplicationBundle::icon() const
 {
     qDebug() << "m_icon:" << m_icon;
-    // Get the icon from the theme
-    QIcon icon = QIcon::fromTheme(m_icon);
-    return icon;
+    if (m_isDesktopFile) {
+        // Get the icon from the theme if it is a desktop file
+        QIcon icon = QIcon::fromTheme(m_icon);
+        return icon;
+    } else {
+        // Get the icon from the icon file if it exists
+        QFile file(m_icon);
+        if (file.exists()) {
+            QIcon icon(m_icon);
+            return icon;
+        } else {
+            // Get the default icon if the icon file does not exist
+            QIcon icon = QIcon::fromTheme("application-x-executable");
+            return icon;
+        }
+    }
 }
 
 QString ApplicationBundle::iconName() const
