@@ -32,7 +32,16 @@ task:
     - git clone https://github.com/Gottox/libsqsh
     - cd libsqsh
     - git checkout ac21643
-    - meson setup build
+    - meson setup build  \
+          -Dwerror=false \
+          -Dexamples=false  \
+          -Dcurl=disabled  \
+          -Dzlib=enabled \
+          -Dlz4=disabled \
+          -Dlzma=disabled  \
+          -Dzstd=enabled  \
+          -Dthreads=enabled \
+          -Ddoc=false
     - cd build
     - meson compile
     - sudo meson install
