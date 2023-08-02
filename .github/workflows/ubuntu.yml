@@ -22,7 +22,7 @@ jobs:
         run: |
            git clone https://github.com/Gottox/libsqsh
            cd libsqsh
-           git checkout d9b0e49
+           git checkout 0310019
            # sed -i -e 's|=0.57|=0.53|g' meson.build
            meson setup build \
             -Dwerror=false \
