@@ -30,13 +30,27 @@
 #include <QObject>
 #include <QFile>
 
+/**
+ * @brief The ElfBinary class provides functionality to read information from ELF binary files.
+ *
+ * The class allows reading the size of ELF files, supporting both 32-bit and 64-bit ELF formats.
+ */
 class ElfBinary : public QObject
 {
 Q_OBJECT
 
 public:
+    /**
+     * @brief Constructs an ElfBinary object.
+     * @param parent The parent QObject (default is nullptr).
+     */
     explicit ElfBinary(QObject *parent = nullptr);
 
+    /**
+     * @brief Gets the size of the ELF file specified by the file path.
+     * @param filePath The path to the ELF file.
+     * @return The size of the ELF file in bytes, or -1 if an error occurred.
+     */
     Q_INVOKABLE qint64 getElfSize(const QString &filePath);
 
 private:
@@ -44,6 +58,9 @@ private:
     qint64 readElf32(QFile &file);
     quint64 bytesToHostByteOrder(const uchar *bytes, int size = sizeof(quint64));
 
+    /**
+     * @brief Structure representing the ELF header for 64-bit format.
+     */
     typedef struct {
         uchar e_ident[16];
         quint16 e_type;
@@ -61,6 +78,9 @@ private:
         quint16 e_shstrndx;
     } Elf64_Ehdr;
 
+    /**
+     * @brief Structure representing the ELF header for 32-bit format.
+     */
     typedef struct {
         uchar e_ident[16];
         quint16 e_type;
@@ -78,6 +98,9 @@ private:
         quint16 e_shstrndx;
     } Elf32_Ehdr;
 
+    /**
+     * @brief Structure representing the ELF section header for 64-bit format.
+     */
     typedef struct elf64_shdr {
         quint32 sh_name;
         quint32 sh_type;
@@ -91,6 +114,9 @@ private:
         quint64 sh_entsize;
     } Elf64_Shdr;
 
+    /**
+     * @brief Structure representing the ELF section header for 32-bit format.
+     */
     typedef struct elf32_shdr {
         quint32 sh_name;
         quint32 sh_type;

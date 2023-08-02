@@ -23,7 +23,6 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-
 #ifndef FILER_LAUNCHDB_H
 #define FILER_LAUNCHDB_H
 
@@ -32,11 +31,26 @@
 #include <QMimeDatabase>
 #include <QMimeType>
 
+/**
+ * @brief The LaunchDB class provides functionality to retrieve the default application associated with a file.
+ *
+ * The class represents the launch database that holds information about known applications,
+ * which MIME types they support, and which default application should be used for which MIME type.
+ * The launch database is implemented using directories and symlinks (e.g. ~/.local/share/launch/MIME/).
+ * It is populated and managed by the 'launch' and `open` command line tools from
+ * https://github.com/helloSystem/launch/.
+ */
 class LaunchDB {
 public:
-    LaunchDB(); // Constructor
-    ~LaunchDB(); // Destructor
+    LaunchDB();
 
+    ~LaunchDB();
+
+    /**
+     * @brief Retrieves the default application associated with the specified file.
+     * @param fileInfo The QFileInfo object representing the file.
+     * @return The path to the default application for the file, or an empty QString if not found.
+     */
     QString applicationForFile(const QFileInfo &fileInfo) const;
 
 private:

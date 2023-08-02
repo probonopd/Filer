@@ -62,17 +62,40 @@
 #include <QString>
 #include <QByteArray>
 
+/**
+ * @brief The SqshArchiveReader class provides functionality to read files from a SquashFS archive.
+ *
+ * The class allows reading the contents of a SquashFS archive and individual files from it.
+ * It provides methods to list all the files in the archive and read the contents of specific files.
+ */
 class SqshArchiveReader : public QObject {
 Q_OBJECT
+
 public:
+    /**
+     * @brief Constructs a SqshArchiveReader object with the specified archive offset.
+     * @param archive_offset The offset at which the SquashFS archive starts in the source file (default is 0).
+     * @param parent The parent QObject (default is nullptr).
+     */
     explicit SqshArchiveReader(uint64_t archive_offset = 0, QObject* parent = nullptr);
 
-    void setArchiveOffset(uint64_t offset);
+    /**
+     * @brief Reads and returns the list of files present in the SquashFS archive.
+     * @param sqsh_file The path to the SquashFS archive file.
+     * @return QStringList containing the names of all the files in the archive.
+     */
     QStringList readSqshArchive(const QString& sqsh_file);
+
+    /**
+     * @brief Reads the contents of a specific file from the SquashFS archive.
+     * @param sqsh_file The path to the SquashFS archive file.
+     * @param file_path The path of the file to read from the archive.
+     * @return QByteArray containing the data of the requested file.
+     */
     QByteArray readFileFromArchive(const QString& sqsh_file, const QString& file_path);
 
 private:
-    uint64_t archive_offset_;
+    uint64_t archive_offset_; ///< The offset at which the SquashFS archive starts in the source file.
 };
 
 #endif // SQSHARCHIVEREADER_H

@@ -33,10 +33,6 @@
 SqshArchiveReader::SqshArchiveReader(uint64_t archive_offset, QObject* parent)
         : QObject(parent), archive_offset_(archive_offset) {}
 
-void SqshArchiveReader::setArchiveOffset(uint64_t offset) {
-    archive_offset_ = offset;
-}
-
 QStringList SqshArchiveReader::readSqshArchive(const QString& sqsh_file) {
     QByteArray sqsh_file_bytes = sqsh_file.toUtf8();
     const void* sqsh_file_source = sqsh_file_bytes.constData();
