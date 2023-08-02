@@ -75,6 +75,7 @@ target_link_libraries(Filer PRIVATE
         ${LIBSQSH_STATIC_PATH}
         z        # Link dynamically to zlib
         zstd     # Link dynamically to zstd
+        pthread  # Link dynamically to pthread
         )
 
 
