@@ -29,8 +29,8 @@ task:
   test_script:
     - git submodule update --init --recursive
     - git clone https://github.com/Gottox/libsqsh
-    - git checkout ac21643
     - cd libsqsh
+    - git checkout ac21643
     - meson setup build
     - cd build
     - meson compile
