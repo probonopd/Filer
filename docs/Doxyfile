@@ -1,0 +1,35 @@
+# Doxyfile
+
+# Set the source code directory to be parsed by Doxygen.
+INPUT = ../src
+
+# Specify the directory where the generated documentation will be placed.
+OUTPUT_DIRECTORY = .
+
+# Specify the project name.
+PROJECT_NAME = "Filer"
+
+# Set the desired output format (HTML, LaTex, etc.).
+GENERATE_HTML = YES
+GENERATE_LATEX = NO
+
+# Enable the generation of class diagrams.
+GENERATE_UML = YES
+
+# Specify the file extensions that Doxygen will consider as C++ files.
+FILE_PATTERNS = *.h *.hpp *.hxx *.cpp *.cxx
+
+# Exclude some directories or files from being processed (optional).
+# EXCLUDE_PATTERNS = */path/to/exclude/*
+
+# Specify the path prefix to be stripped from file paths.
+# In this example, /path/to/your/cpp/code/ will be removed from the documentation paths.
+STRIP_FROM_PATH = ../src
+
+HTML_FOOTER = ./empty_footer.html
+
+# Enable the generation of class diagrams.
+GENERATE_UML = YES
+
+# Enable the generation of include dependency graphs.
+HAVE_DOT = YES
