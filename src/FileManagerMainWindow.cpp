@@ -773,15 +773,18 @@ void FileManagerMainWindow::createMenus()
     connect(goMenu->actions().last(), &QAction::triggered, this, [this]() {
         bool ok;
 
-        QDialog dialog(this);
-        dialog.setWindowTitle(tr("Go to Folder..."));
-        dialog.setWindowIcon(QIcon::fromTheme("folder"));
-        dialog.setFixedWidth(400);
-        QVBoxLayout *layout = new QVBoxLayout(&dialog);
-        QLabel *label = new QLabel(tr("Folder:"), &dialog);
+        // QDialog dialog(this); // Never do this
+        QDialog* dialog = new QDialog(this); // Do this instead
+        dialog->setWindowTitle(tr("Go to Folder..."));
+        dialog->setWindowIcon(QIcon::fromTheme("folder"));
+        dialog->setFixedWidth(400);
+        QVBoxLayout *layout = new QVBoxLayout(dialog);
+        QLabel *label = new QLabel(tr("Folder:"), dialog);
         layout->addWidget(label);
-        QLineEdit *lineEdit = new QLineEdit(&dialog);
+        QLineEdit *lineEdit = new QLineEdit(dialog);
         auto completer = new QCompleter(this);
+        lineEdit->setCompleter(completer);
+        layout->addWidget(lineEdit);
         completer->setCompletionMode(QCompleter::InlineCompletion);
         QFileSystemModel *fsModel = new QFileSystemModel(completer);
         fsModel->setFilter(QDir::Dirs|QDir::Drives|QDir::NoDotAndDotDot|QDir::AllDirs); // Only directories, no files
@@ -791,11 +794,11 @@ void FileManagerMainWindow::createMenus()
         lineEdit->setPlaceholderText(tr("Enter a folder path..."));
         lineEdit->setClearButtonEnabled(true);
         layout->addWidget(lineEdit);
-        QDialogButtonBox *buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, &dialog);
+        QDialogButtonBox *buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, dialog);
         layout->addWidget(buttonBox);
-        connect(buttonBox, &QDialogButtonBox::accepted, &dialog, &QDialog::accept);
-        connect(buttonBox, &QDialogButtonBox::rejected, &dialog, &QDialog::reject);
-        if (dialog.exec() == QDialog::Accepted) {
+        connect(buttonBox, &QDialogButtonBox::accepted, dialog, &QDialog::accept);
+        connect(buttonBox, &QDialogButtonBox::rejected, dialog, &QDialog::reject);
+        if (dialog->exec() == QDialog::Accepted) {
             QString text = lineEdit->text();
             QDir dir(text);
             if (dir.exists()) {
@@ -1195,22 +1198,23 @@ void FileManagerMainWindow::renameSelectedItem()
 
 
     // Construct a dialog using this QLineEdit
-    QDialog dialog(this);
-    QLineEdit* lineEdit = new QLineEdit(&dialog);
+    // QDialog dialog(this); // Never do this
+    QDialog* dialog = new QDialog(this); // Do this instead
+    QLineEdit* lineEdit = new QLineEdit(dialog);
     lineEdit->setValidator(&validator);
-    dialog.setWindowTitle(tr("Rename"));
-    dialog.setLayout(new QVBoxLayout());
-    dialog.layout()->addWidget(lineEdit);
-    QDialogButtonBox* buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, &dialog);
-    connect(buttonBox, &QDialogButtonBox::accepted, &dialog, &QDialog::accept);
-    connect(buttonBox, &QDialogButtonBox::rejected, &dialog, &QDialog::reject);
-    dialog.layout()->addWidget(buttonBox);
-    dialog.adjustSize();
-    dialog.setFixedWidth(400);
+    dialog->setWindowTitle(tr("Rename"));
+    dialog->setLayout(new QVBoxLayout());
+    dialog->layout()->addWidget(lineEdit);
+    QDialogButtonBox* buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, dialog);
+    connect(buttonBox, &QDialogButtonBox::accepted, dialog, &QDialog::accept);
+    connect(buttonBox, &QDialogButtonBox::rejected, dialog, &QDialog::reject);
+    dialog->layout()->addWidget(buttonBox);
+    dialog->adjustSize();
+    dialog->setFixedWidth(400);
     lineEdit->setText(currentName);
     lineEdit->selectAll();
     lineEdit->setFocus();
-    ok = dialog.exec();
+    int result = dialog->exec();
 
     // Get the new name of the selected item
     const QString newName = lineEdit->text();
