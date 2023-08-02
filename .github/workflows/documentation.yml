@@ -24,3 +24,6 @@ jobs:
       with:
         personal_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: ./docs/html
+
+    - name: List files in publish directory
+       run: ls ./docs/html
