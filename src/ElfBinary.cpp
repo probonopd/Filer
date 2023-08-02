@@ -29,71 +29,10 @@
 #include <QDataStream>
 #include <QDebug>
 
-typedef struct {
-    uchar e_ident[16];
-    quint16 e_type;
-    quint16 e_machine;
-    quint32 e_version;
-    quint64 e_entry;
-    quint64 e_phoff;
-    quint64 e_shoff;
-    quint32 e_flags;
-    quint16 e_ehsize;
-    quint16 e_phentsize;
-    quint16 e_phnum;
-    quint16 e_shentsize;
-    quint16 e_shnum;
-    quint16 e_shstrndx;
-} Elf64_Ehdr;
-
-typedef struct {
-    uchar e_ident[16];
-    quint16 e_type;
-    quint16 e_machine;
-    quint32 e_version;
-    quint32 e_entry;
-    quint32 e_phoff;
-    quint32 e_shoff;
-    quint32 e_flags;
-    quint16 e_ehsize;
-    quint16 e_phentsize;
-    quint16 e_phnum;
-    quint16 e_shentsize;
-    quint16 e_shnum;
-    quint16 e_shstrndx;
-} Elf32_Ehdr;
-
 #define EI_NIDENT 16
 #define ELFCLASS64  2
 #define ELFCLASS32  1
 #define EI_CLASS    4
-
-typedef struct elf64_shdr {
-    quint32 sh_name;
-    quint32 sh_type;
-    quint64 sh_flags;
-    quint64 sh_addr;
-    quint64 sh_offset;
-    quint64 sh_size;
-    quint32 sh_link;
-    quint32 sh_info;
-    quint64 sh_addralign;
-    quint64 sh_entsize;
-} Elf64_Shdr;
-
-typedef struct elf32_shdr {
-    quint32 sh_name;
-    quint32 sh_type;
-    quint32 sh_flags;
-    quint32 sh_addr;
-    quint32 sh_offset;
-    quint32 sh_size;
-    quint32 sh_link;
-    quint32 sh_info;
-    quint32 sh_addralign;
-    quint32 sh_entsize;
-} Elf32_Shdr;
-
 #define ELFDATA2LSB 1
 #define ELFDATA2MSB 2
 #define EI_DATA     5
