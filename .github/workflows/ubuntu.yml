@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
 
     steps:
       - name: Check out code
@@ -16,7 +16,29 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y git curl wget zip cmake pkgconf libqt5widgets5 qttools5-dev
+          sudo apt-get install -y git curl wget zip cmake pkgconf libqt5widgets5 qttools5-dev meson libzstd-dev zlib1g-dev
+
+      - name: Build Gottox/libsqsh
+        run: |
+           git clone https://github.com/Gottox/libsqsh
+           cd libsqsh
+           git checkout ac21643
+           # sed -i -e 's|=0.57|=0.53|g' meson.build
+           meson setup build \
+            -Dwerror=false \
+            -Dexamples=false  \
+            -Dcurl=disabled  \
+            -Dzlib=enabled \
+            -Dlz4=disabled \
+            -Dlzma=disabled  \
+            -Dzstd=enabled  \
+            -Dthreads=enabled \
+            -Ddoc=false
+           cd build
+           ls
+           meson compile
+           sudo meson install
+           cd ../../
 
       - name: Build and package
         run: |

@@ -1,5 +1,5 @@
 freebsd_instance:
-  image: freebsd-12-1-release-amd64
+  image: freebsd-12-3-release-amd64
   
 env:
   CIRRUS_CLONE_DEPTH: 1
@@ -18,16 +18,25 @@ pkg_cache:
   
 task:
   # This name gets reported as a build status in GitHub
-  name: freebsd-12-1-release-amd64
+  name: freebsd-12-3-release-amd64
   stateful: false
   setup_script:
-    - pkg install -y git-lite curl wget zip cmake pkgconf qt5-core qt5-widgets qt5-qmake qt5-buildtools
+    - sed -i '' -e 's|quarterly|release_3|g' "/etc/pkg/FreeBSD.conf" # https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=270940
+    - pkg install -y git-lite curl wget zip cmake pkgconf qt5-core qt5-widgets qt5-qmake qt5-buildtools meson zstd 
   ccache_setup_script:
     - env IGNORE_OSVERSION=yes pkg install -y ccache-static
     - ccache --max-size=${CCACHE_SIZE}
     - echo "WITH_CCACHE_BUILD=yes" >> /etc/make.conf
   test_script:
     - git submodule update --init --recursive
+    - git clone https://github.com/Gottox/libsqsh
+    - cd libsqsh
+    - git checkout ac21643
+    - meson setup build -Dwerror=false -Dexamples=false -Dcurl=disabled -Dzlib=enabled -Dlz4=disabled -Dlzma=disabled -Dzstd=enabled -Dthreads=enabled -Ddoc=false
+    - cd build
+    - meson compile
+    - sudo meson install
+    - cd ../../
     - mkdir build ; cd build
     - cmake .. -DCMAKE_BUILD_TYPE=Release
     - make DESTDIR=. -j$(sysctl -n hw.ncpu) install
