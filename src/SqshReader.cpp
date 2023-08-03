@@ -66,17 +66,11 @@ QStringList SqshArchiveReader::readSqshArchive(const QString& sqsh_file) {
         return names;
     }
     while (sqsh_directory_iterator_next(iterator) > 0) {
-        const char* name = sqsh_directory_iterator_name(iterator);
+        const char* name = sqsh_directory_iterator_name_dup(iterator);
         size_t size = sqsh_directory_iterator_name_size(iterator);
-        // Null-terminate the name before creating the QString
-        char* null_terminated_name = (char*)malloc(size + 1);
-        memcpy(null_terminated_name, name, size);
-        null_terminated_name[size] = '\0';
 
-        QString nameString = QString::fromUtf8(null_terminated_name);
+        QString nameString = QString::fromUtf8(name);
         names.append(nameString);
-
-        free(null_terminated_name);
     }
     sqsh_directory_iterator_free(iterator);
     sqsh_inode_free(inode);
