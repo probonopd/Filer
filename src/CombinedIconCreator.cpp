@@ -33,6 +33,7 @@
 #include <QApplication>
 #include <QFile>
 #include <QDebug>
+#include <QMessageBox>
 
 bool isVibrantColor(const QColor& color) {
     // Threshold values to define vibrant colors
@@ -87,39 +88,44 @@ QIcon CombinedIconCreator::createCombinedIcon(const QIcon& applicationIcon) cons
     // If the icon cannot be loaded, use the default document icon from the icon theme
     QString applicationPath = QApplication::applicationDirPath();
     QIcon documentIcon;
-    QString documentPath = applicationPath + "/Resources/document.png";
+    QString documentPath = applicationPath + "/Resources/Document.svg";
 
     if (QFile::exists(documentPath)) {
         documentIcon = QIcon(documentPath);
     } else {
-        documentIcon = QIcon::fromTheme("document");
+        // We may be running un uninstalled mode
+        documentPath = applicationPath + "/../../Resources/Document.svg";
+        if (QFile::exists(documentPath)) {
+            documentIcon = QIcon(documentPath);
+        } else {
+            QMessageBox msgBox;
+            msgBox.setText("Cannot find document icon.");
+            msgBox.exec();
+            // Quit the application
+            QApplication::quit();
+        }
     }
 
     QPixmap document_pixmap = documentIcon.pixmap(32, 32);
     QPixmap application_pixmap = applicationIcon.pixmap(24, 24);
 
-    QColor dominantColor = findDominantColor(application_pixmap);
+    // QColor dominantColor = findDominantColor(application_pixmap);
+    // NOTE: We could use the dominant color to colorize the document icon
 
     QPixmap combined_icon(32, 32);
     combined_icon.fill(Qt::transparent); // Fill the pixmap with transparent background
-
     QPainter painter(&combined_icon);
-
     QPixmap coloredPixmap(document_pixmap.size());
     coloredPixmap.fill(Qt::transparent);
     painter.drawPixmap(0, 0, document_pixmap);
 
-    // Draw a semi-transparent rectangle at the bottom of the icon
-    painter.setCompositionMode(QPainter::CompositionMode_Source);
-    painter.fillRect(7, document_pixmap.height() - 7, document_pixmap.width() - 14, 3, dominantColor);
-
-    // Draw the document icon with a color overlay using CompositionMode
+    // Draw the document icon
     painter.setCompositionMode(QPainter::CompositionMode_SourceOver);
     painter.drawPixmap(0, 0, coloredPixmap);
 
     // Draw the application icon
-    // Move 5 pixels up to make room for the color rectangle
-    painter.drawPixmap(8, 8-5, application_pixmap);
+    painter.setCompositionMode(QPainter::CompositionMode_SourceOver);
+    painter.drawPixmap(8, 8+2, application_pixmap);
 
     painter.end();
     // qDebug() << "Combined icon created";

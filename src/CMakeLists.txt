@@ -106,3 +106,23 @@ add_custom_command(TARGET Filer POST_BUILD
         $<TARGET_FILE:Filer>
         ${APPLICATION_BUNDLE_PATH}/Filer
 )
+
+# Copy resources into the bundle
+# Remove previous Resources directory if it exists
+add_custom_command(TARGET Filer POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E remove_directory
+        ${APPLICATION_BUNDLE_PATH}/Resources
+)
+# Copy the Resources directory into the bundle
+add_custom_command(TARGET Filer POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_SOURCE_DIR}/Resources
+        ${APPLICATION_BUNDLE_PATH}/Resources
+)
+# Until we have an icon for Filer, use the generic one
+add_custom_command(TARGET Filer POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy
+        ${APPLICATION_BUNDLE_PATH}/Resources/Application.svg
+        ${APPLICATION_BUNDLE_PATH}/Resources/Filer.svg
+)
+
