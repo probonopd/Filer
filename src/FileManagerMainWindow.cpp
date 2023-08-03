@@ -1014,13 +1014,8 @@ void FileManagerMainWindow::openFolderInNewWindow(const QString &rootPath)
     bool windowExists = false;
     for (FileManagerMainWindow *window : instances()) {
         if (window->m_fileSystemModel->rootPath() == rootPath) {
-            // A window for the specified root path already exists, so raise it and return
-            window->raise();
-            window->activateWindow();
-            // If it is minimized, restore it
-            if (window->isMinimized()) {
-                window->showNormal();
-            }
+            // A window for the specified root path already exists
+            window->bringToFront();
             windowExists = true;
             break;
         }
@@ -1123,13 +1118,7 @@ void FileManagerMainWindow::open(const QString &filePath)
                     // Get the window
                     qDebug() << "Window already exists:" << filePath;
                     FileManagerMainWindow* window = getInstanceForDirectory(filePath);
-                    // Activate the window
-                    window->activateWindow();
-                    window->raise();
-                    // If it is minimized, restore it
-                    if (window->isMinimized()) {
-                        window->showNormal();
-                    }
+                    window->bringToFront();
                 } else {
                     // If we don't, open a new window
                     qDebug() << "Opening new window:" << filePath;
@@ -1331,3 +1320,63 @@ bool FileManagerMainWindow::isFirstInstance() const
 {
     return m_isFirstInstance;
 }
+
+// Method that takes a QStringList of paths and selects the items in the view;
+// scroll to the first item in the list
+void FileManagerMainWindow::selectItems(const QStringList &paths) const
+{
+    // Print the name of the called function
+    qDebug() << Q_FUNC_INFO;
+
+    // Get the current view
+    QWidget* currentActiveView = getCurrentView();
+
+    // Check if the current view is the tree view
+    if (currentActiveView == m_treeView) {
+        // Iterate over the list of paths
+        for (const QString& path : paths) {
+            // Get the index of the item with the given path
+            qDebug("Path: %s", path.toStdString().c_str());
+            const QModelIndex index = m_fileSystemModel->index(path);
+            // Check if the index is valid
+            if (!index.isValid()) {
+                // The index is invalid, so skip it
+                qDebug() << "Skipping invalid index" << index;
+                continue;
+            }
+            qDebug() << "Selecting item with path" << path << "and index" << index;
+            // Select the item
+            m_selectionModel->select(index, QItemSelectionModel::Select);
+            // Scroll to the item
+            m_treeView->scrollTo(index);
+        }
+    } else if (currentActiveView == m_iconView) {
+        // Iterate over the list of paths
+        for (const QString& path : paths) {
+            // Get the index of the item with the given path
+            qDebug("Path: %s", path.toStdString().c_str());
+            const QModelIndex index = m_fileSystemModel->index(path);
+            // Check if the index is valid
+            if (!index.isValid()) {
+                // The index is invalid, so skip it
+                qDebug() << "Skipping invalid index" << index;
+                continue;
+            }
+            qDebug() << "Selecting item with path" << path << "and index" << index;
+            // Select the item
+            m_selectionModel->select(index, QItemSelectionModel::Select);
+            // Scroll to the item
+            m_iconView->scrollTo(index);
+        }
+    }
+}
+
+bool FileManagerMainWindow::bringToFront()
+{
+        raise(); // Bring the window to the front
+        activateWindow(); // Activate the window
+        // If it is minimized, restore it
+        if (isMinimized()) {
+            showNormal(); // Show the window normally (unminimize)
+        }
+};

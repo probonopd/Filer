@@ -72,6 +72,9 @@ public:
 
     FileManagerMainWindow* getInstanceForDirectory(const QString &directory);
 
+    void selectItems(const QStringList &paths) const;
+    bool bringToFront();
+
 public slots:
     void open(const QString &filePath);
     void openWith(const QString &filePath);
@@ -80,6 +83,8 @@ public slots:
     void resizeEvent(QResizeEvent *event);
 
     void moveEvent(QMoveEvent *event);
+
+
 
 private:
     QStackedWidget *m_stackedWidget;

@@ -32,9 +32,10 @@
 #include <QSharedMemory>
 #include <QDebug>
 #include <QTranslator>
+#include <QProcess>
 
 #include "FileManagerMainWindow.h"
-#include "FileManager.h"
+#include "DBusInterface.h"
 
 int main(int argc, char *argv[])
 {
@@ -102,14 +103,8 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    /*
-     * FIXME: Why does this cause a crash?
-     *
-    // Expose services on D-Bus
-    FileManager fileManager;
-    QDBusConnection::sessionBus().registerService("org.freedesktop.FileManager1");
-    QDBusConnection::sessionBus().registerObject("/org/freedesktop/FileManager1", &fileManager);
-     */
+    // Make FileManager1 available on D-Bus
+    DBusInterface dbusInterface;
 
     // Create a FileManagerTreeView instance at ~/Desktop
     FileManagerMainWindow mainWindow;
