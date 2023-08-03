@@ -1299,9 +1299,9 @@ bool FileManagerMainWindow::instanceExists(const QString &directory)
     return false;
 }
 
-QWidget* FileManagerMainWindow::getCurrentView() const
+QAbstractItemView* FileManagerMainWindow::getCurrentView() const
 {
-    QWidget* currentActiveView = nullptr;
+    QAbstractItemView* currentActiveView = nullptr;
 
     // Check which view is currently visible in the stacked widget
     if (m_stackedWidget->currentWidget() == m_treeView)
@@ -1323,58 +1323,48 @@ bool FileManagerMainWindow::isFirstInstance() const
 
 // Method that takes a QStringList of paths and selects the items in the view;
 // scroll to the first item in the list
-void FileManagerMainWindow::selectItems(const QStringList &paths) const
+void FileManagerMainWindow::selectItems(const QStringList &paths)
 {
     // Print the name of the called function
     qDebug() << Q_FUNC_INFO;
 
-    // Get the current view
-    QWidget* currentActiveView = getCurrentView();
+    bringToFront();
 
-    // Check if the current view is the tree view
-    if (currentActiveView == m_treeView) {
-        // Iterate over the list of paths
-        for (const QString& path : paths) {
-            // Get the index of the item with the given path
-            qDebug("Path: %s", path.toStdString().c_str());
-            const QModelIndex index = m_fileSystemModel->index(path);
-            // Check if the index is valid
-            if (!index.isValid()) {
-                // The index is invalid, so skip it
-                qDebug() << "Skipping invalid index" << index;
-                continue;
-            }
-            qDebug() << "Selecting item with path" << path << "and index" << index;
-            // Select the item
-            m_selectionModel->select(index, QItemSelectionModel::Select);
-            // Scroll to the item
-            m_treeView->scrollTo(index);
+    // Get the current view
+    QAbstractItemView* currentActiveView = getCurrentView();
+
+    // Iterate over the list of paths
+    for (const QString& path : paths) {
+        // Get the index of the item with the given path
+        qDebug("Path: %s", path.toStdString().c_str());
+        const QModelIndex index = m_fileSystemModel->index(path);
+        // Check if the index is valid
+        if (!index.isValid()) {
+            // The index is invalid, so skip it
+            qDebug() << "Skipping invalid index" << index;
+            continue;
         }
-    } else if (currentActiveView == m_iconView) {
-        // Iterate over the list of paths
-        for (const QString& path : paths) {
-            // Get the index of the item with the given path
-            qDebug("Path: %s", path.toStdString().c_str());
-            const QModelIndex index = m_fileSystemModel->index(path);
-            // Check if the index is valid
-            if (!index.isValid()) {
-                // The index is invalid, so skip it
-                qDebug() << "Skipping invalid index" << index;
-                continue;
-            }
-            qDebug() << "Selecting item with path" << path << "and index" << index;
-            // Select the item
-            m_selectionModel->select(index, QItemSelectionModel::Select);
-            // Scroll to the item
-            m_iconView->scrollTo(index);
+        qDebug() << "Selecting item with path" << path << "and index" << index;
+        // Unselect all items
+        m_selectionModel->clearSelection();
+        // Select the item
+        m_selectionModel->select(index, QItemSelectionModel::Select);
+
+        // Wait until the view is not busy
+        while (currentActiveView->property("isBusy").toBool()) {
+            qDebug() << "Waiting for view to be ready";
+            QCoreApplication::processEvents();
         }
+
+        // Scroll to the item based on the current active view
+        currentActiveView->scrollTo(index, QAbstractItemView::PositionAtCenter);
     }
+
 }
 
-bool FileManagerMainWindow::bringToFront()
+void FileManagerMainWindow::bringToFront()
 {
         raise(); // Bring the window to the front
-        activateWindow(); // Activate the window
         // If it is minimized, restore it
         if (isMinimized()) {
             showNormal(); // Show the window normally (unminimize)

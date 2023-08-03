@@ -34,6 +34,7 @@
 #include <QStatusBar>
 #include <QList>
 #include <QStackedWidget>
+#include <QAbstractItemView>
 #include "CustomFileSystemModel.h"
 #include "CustomListView.h"
 #include "ExtendedAttributes.h"
@@ -68,12 +69,12 @@ public:
 
     bool isFirstInstance() const;
 
-    QWidget* getCurrentView() const;
+    QAbstractItemView* getCurrentView() const;
 
     FileManagerMainWindow* getInstanceForDirectory(const QString &directory);
 
-    void selectItems(const QStringList &paths) const;
-    bool bringToFront();
+    void selectItems(const QStringList &paths);
+    void bringToFront();
 
 public slots:
     void open(const QString &filePath);

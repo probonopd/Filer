@@ -60,10 +60,6 @@ void DBusInterface::ShowItems(const QStringList &uriList, const QString &startUp
         }
 
         mainWindow = mainWindow->getInstanceForDirectory(parentDir);
-        mainWindow->raise();
-        if (mainWindow->isMinimized()) {
-            mainWindow->showNormal();
-        }
 
         QStringList filePathList = QStringList() << filePath;
         mainWindow->selectItems(filePathList);
