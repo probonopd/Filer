@@ -70,7 +70,7 @@ QStringList SqshArchiveReader::readSqshArchive(const QString& sqsh_file) {
         size_t size = sqsh_directory_iterator_name_size(iterator);
         QString nameString = QString::fromUtf8(name);
        names.append(nameString);
-       free(name); // https://github.com/probonopd/Filer/commit/c4928597f85ae621b5b26d7cb297f5e30cba0160#r123495184
+       free(name); // https://github.com/probonopd/Filer/commit/c4928597f85ae621b5b26d7cb297f5e30cba0160#commitcomment-123510366
     }
     sqsh_directory_iterator_free(iterator);
     sqsh_inode_free(inode);

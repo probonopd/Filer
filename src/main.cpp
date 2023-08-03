@@ -28,6 +28,10 @@
 #include <QCoreApplication>
 #include <QCommandLineParser>
 #include <QMessageBox>
+#include <QStandardPaths>
+#include <QSharedMemory>
+#include <QDebug>
+#include <QTranslator>
 
 #include "FileManagerMainWindow.h"
 #include "FileManager.h"
@@ -47,6 +51,24 @@ int main(int argc, char *argv[])
     parser.addHelpOption();
     parser.addVersionOption();
     parser.process(app);
+
+    // Check whether another instance of this application is already running
+    const QString sharedMemoryKey = qApp->applicationName();
+    QSharedMemory sharedMemory(sharedMemoryKey);
+    if (sharedMemory.attach()) {
+        // Show a message box and exit
+        // TODO: Instead of doing this, we should check whether the can invoke the running instance with D-Bus
+        // and have it open the requested file or director
+        QString text = QObject::tr("Another instance of %1 is already running.").arg(qApp->applicationName());
+        QMessageBox::critical(0, qApp->applicationName(), text);
+        return 0; // Exit the second instance of the application
+    }
+    if (!sharedMemory.create(1)) {
+        // Show a message box and exit
+        QString text = QObject::tr("Failed to create shared memory segment. Please close any other instances of %1.").arg(qApp->applicationName());
+        QMessageBox::critical(0, qApp->applicationName(), text);
+        return 1;
+    }
 
     // On the $PATH check for the existence of the following commands:
     // - open
