@@ -36,7 +36,7 @@
 #include <QDebug>
 
 #include "ElfBinary.h"
-#include "SqshReader.h"
+#include "SqshArchiveReader.h"
 
 #include <DesktopFile.h>
 

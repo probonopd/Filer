@@ -45,7 +45,7 @@ set(PROJECT_SOURCES
         CustomListView.cpp CustomListView.h
         TrashHandler.cpp TrashHandler.h
         ElfBinary.cpp ElfBinary.h
-        SqshReader.cpp SqshReader.h)
+        SqshArchiveReader.cpp SqshArchiveReader.h)
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(Filer

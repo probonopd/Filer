@@ -24,7 +24,7 @@
  * SUCH DAMAGE.
  */
 
-#include "SqshReader.h"
+#include "SqshArchiveReader.h"
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
