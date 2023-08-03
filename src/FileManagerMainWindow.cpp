@@ -596,7 +596,7 @@ void FileManagerMainWindow::createMenus()
             qDebug() << filePath;
         }
         // Move the files to the trash
-        TrashHandler trashHandler;
+        TrashHandler trashHandler(this);
         for (const QString &filePath : filePaths) {
             trashHandler.moveToTrash(filePath);
         }

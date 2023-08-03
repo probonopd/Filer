@@ -12,7 +12,7 @@
 class TrashHandler : public QObject {
 Q_OBJECT
 public:
-    TrashHandler(QObject *parent = nullptr);
+    TrashHandler(QWidget *parent = nullptr);
 
     // Move a file/directory to the "Trash" (Virtual Trash)
     bool moveToTrash(const QString& path);
@@ -25,6 +25,7 @@ public:
 
 private:
     QString m_trashPath;
+    QWidget *m_parent;
 };
 
 #endif // TRASHHANDLER_H

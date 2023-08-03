@@ -5,9 +5,11 @@
 #include <QStorageInfo>
 #include <QDebug>
 #include <QProcess>
+#include <QMessageBox>
 
-TrashHandler::TrashHandler(QObject *parent) : QObject(parent) {
+TrashHandler::TrashHandler(QWidget *parent) : QObject(parent) {
     m_trashPath = QDir::homePath() + "/.local/share/Trash/files";
+    m_parent = parent;
 }
 
 bool TrashHandler::moveToTrash(const QString& path) {
@@ -61,11 +63,72 @@ bool TrashHandler::moveToTrash(const QString& path) {
     QString fileName = fileInfo.fileName();
     QString newFilePath = m_trashPath + QDir::separator() + fileName;
 
+    // Check if the file/directory is a critical system file/directory
+    QStringList criticalSystemPaths = {"/",
+                                       "/Applications",
+                                       "/COPYRIGHT",
+                                       "/System",
+                                       "/Users",
+                                       "/bin",
+                                       "/boot",
+                                       "/compat",
+                                       "/dev",
+                                       "/entropy",
+                                       "/etc",
+                                       "/home",
+                                       "/lib",
+                                       "/libexec",
+                                       "/media",
+                                       "/mnt",
+                                       "/net",
+                                       "/proc",
+                                       "/rescue",
+                                       "/root",
+                                       "/sbin",
+                                       "/sys",
+                                       "/tmp",
+                                       "/usr",
+                                       "/usr/bin",
+                                       "/usr/home",
+                                        "/usr/lib",
+                                        "/usr/libexec",
+                                        "/usr/local",
+                                        "/usr/local/bin",
+                                        "/usr/local/etc",
+                                        "/usr/local/games",
+                                        "/usr/local/include",
+                                        "/usr/local/lib",
+                                        "/usr/local/libexec",
+                                        "/usr/local/sbin",
+                                        "/usr/local/share",
+                                        "/usr/local/src",
+                                        "/usr/obj",
+                                        "/usr/ports",
+                                        "/usr/sbin",
+                                        "/usr/share",
+                                        "/usr/src",
+                                       "/var",
+                                       "/zroot"};
+
+    if (criticalSystemPaths.contains(absoluteFilePathWithSymlinksResolved)) {
+        QMessageBox::critical(nullptr, tr("Error"),
+                              tr("This is critical for the system and cannot be moved to the trash."));
+        return false;
+    }
+
     // Check if the file/directory with the same name already exists in the Trash
     int i = 1;
     while (QFile::exists(newFilePath)) {
         QString newFileName = fileInfo.baseName() + QString("_%1").arg(i++) + "." + fileInfo.suffix();
         newFilePath = m_trashPath + QDir::separator() + newFileName;
+    }
+
+    int result = QMessageBox::warning(m_parent, tr("Confirm"),
+                                      tr("Do you want to move the selected files to trash can?"),
+                                      QMessageBox::Yes|QMessageBox::No,
+                                      QMessageBox::No);
+    if(result != QMessageBox::Yes) {
+        return false;
     }
 
     // Move the file/directory to the Trash directory
