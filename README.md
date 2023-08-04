@@ -30,6 +30,7 @@ A clean rewrite of the Filer for [helloSystem](https://hellosystem.github.io/) (
 |Do not allow drag-and-drop of files onto applications|Allows drag-and-drop of files onto applications|TODO|
 |No animation when applications, documents, or folders are opened|Animation when applications, documents, or folders are opened|Implemented (using QTimeLine Property Animation)|
 |Opened applications, documents, and folders are not shown as such|Opened applications, documents, and folders are shown as such|Implemented for folders, TODO for the other types|
+|Uses technical jargon like "executables", "files", "directories", "properties", "wallpaper"|Uses familiar desktop terminology like "applications", "documents", "folders", "info", "desktop picture"|DONE|
 
 My conclusion is that most "desktop environments" are made by people who don't actually love the desktop. Or else, those basic things would work.
 
