@@ -35,7 +35,7 @@
 #include <QStandardPaths>
 #include <QDebug>
 
-#include "ElfBinary.h"
+#include "ElfSizeCalculator.h"
 #include "SqshArchiveReader.h"
 
 #include <DesktopFile.h>
@@ -136,12 +136,12 @@ QIcon ApplicationBundle::icon() const
         return icon;
     } else if (m_type == Type::AppImage) {
         // Determine the ELF offset
-        ElfBinary* elfBinary = new ElfBinary();
-        qint64 offset = elfBinary->getElfSize(m_path);
+        ElfSizeCalculator* elfSizeCalculator = new ElfSizeCalculator();
+        qint64 offset = elfSizeCalculator->CalculateElfSize(m_path);
+        delete elfSizeCalculator;
         qDebug() << "offset:" << offset << "for file" << m_path;
         // Get the data of the .DirIcon file from the squashfs
         SqshArchiveReader *reader = new SqshArchiveReader(offset);
-        delete elfBinary;
         qDebug() << "Extracting AppImage icon for file" << m_path;
         QByteArray fileData = reader->readFileFromArchive(m_path, ".DirIcon");
         qDebug() << "Finished extracting AppImage icon data for file" << m_path;

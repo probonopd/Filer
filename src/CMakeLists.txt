@@ -45,7 +45,7 @@ set(PROJECT_SOURCES
         CustomFileSystemModel.cpp CustomFileSystemModel.h
         CustomListView.cpp CustomListView.h
         TrashHandler.cpp TrashHandler.h
-        ElfBinary.cpp ElfBinary.h
+        ElfSizeCalculator.cpp ElfSizeCalculator.h
         SqshArchiveReader.cpp SqshArchiveReader.h)
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
@@ -79,7 +79,6 @@ target_link_libraries(Filer PRIVATE
         PkgConfig::ZLIB    # Link dynamically to zlib
         pthread  # Link dynamically to pthread
         )
-
 
 set_target_properties(Filer PROPERTIES
     MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com
