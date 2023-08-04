@@ -56,20 +56,26 @@ int main(int argc, char *argv[])
     // Check whether another instance of this application is already running
     const QString sharedMemoryKey = qApp->applicationName();
     QSharedMemory sharedMemory(sharedMemoryKey);
+    qDebug() << "Attempting to attach to shared memory...";
     if (sharedMemory.attach()) {
+        qDebug() << "Existing instance found in shared memory.";
         // Show a message box and exit
-        // TODO: Instead of doing this, we should check whether the can invoke the running instance with D-Bus
-        // and have it open the requested file or director
         QString text = QObject::tr("Another instance of %1 is already running.").arg(qApp->applicationName());
         QMessageBox::critical(0, qApp->applicationName(), text);
         return 0; // Exit the second instance of the application
     }
+    qDebug() << "Trying to create shared memory...";
     if (!sharedMemory.create(1)) {
-        // Show a message box and exit
+        qDebug() << "Failed to create shared memory segment.";
         QString text = QObject::tr("Failed to create shared memory segment. Please close any other instances of %1.").arg(qApp->applicationName());
         QMessageBox::critical(0, qApp->applicationName(), text);
         return 1;
     }
+    qDebug() << "Shared memory segment created successfully.";
+    // Properly detach the shared memory when the application exits
+    QObject::connect(&app, &QCoreApplication::aboutToQuit, [&sharedMemory]() {
+        sharedMemory.detach();
+    });
 
     // On the $PATH check for the existence of the following commands:
     // - open
