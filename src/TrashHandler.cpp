@@ -217,7 +217,7 @@ bool TrashHandler::emptyTrash() {
         return false;
     }
 
-    SoundPlayer::playSound("EmptyTrash.wav");
+    SoundPlayer::playSound("rustle.wav");
 
     QMessageBox::information(nullptr, tr("Empty Trash"),
                              tr("Trash has been emptied successfully."));
