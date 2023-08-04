@@ -1,4 +1,4 @@
 <map id="CustomItemDelegate" name="CustomItemDelegate">
-<area shape="rect" id="node1" title=" " alt="" coords="6,80,167,107"/>
+<area shape="rect" id="node1" title="A custom delegate for rendering items in views." alt="" coords="6,80,167,107"/>
 <area shape="rect" id="node2" title=" " alt="" coords="5,5,168,32"/>
 </map>

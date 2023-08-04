@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['trashhandler_61',['TrashHandler',['../classTrashHandler.html',1,'']]]
+  ['trashhandler_84',['TrashHandler',['../classTrashHandler.html',1,'']]]
 ];

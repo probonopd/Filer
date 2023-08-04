@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['_7einfodialog_90',['~InfoDialog',['../classInfoDialog.html#a691489763ca5ecf37b51bed3c9786d06',1,'InfoDialog']]]
+  ['trashhandler_132',['TrashHandler',['../classTrashHandler.html#a893bc441acaf7d135e4d6aac07fcae07',1,'TrashHandler']]],
+  ['type_133',['type',['../classApplicationBundle.html#a3fc6017dc262a90075dc0f63863957f4',1,'ApplicationBundle']]]
 ];
