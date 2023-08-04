@@ -102,20 +102,24 @@ $(function() {
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="preprocessor">#include &lt;QFile&gt;</span></div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="preprocessor">#include &lt;QByteArray&gt;</span></div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160; </div>
-<div class="line"><a name="l00038"></a><span class="lineno"><a class="line" href="classExtendedAttributes.html">   38</a></span>&#160;<span class="keyword">class </span><a class="code" href="classExtendedAttributes.html">ExtendedAttributes</a></div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;{</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    <a class="code" href="classExtendedAttributes.html">ExtendedAttributes</a>(<span class="keyword">const</span> QString &amp;filePath);</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160; </div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    <span class="keywordtype">bool</span> write(<span class="keyword">const</span> QString &amp;attributeName, <span class="keyword">const</span> QByteArray &amp;attributeValue);</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    QByteArray read(<span class="keyword">const</span> QString &amp;attributeName);</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160; </div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    QFile m_file;</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;};</div>
+<div class="line"><a name="l00041"></a><span class="lineno"><a class="line" href="classExtendedAttributes.html">   41</a></span>&#160;<span class="keyword">class </span><a class="code" href="classExtendedAttributes.html">ExtendedAttributes</a></div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;{</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    <a class="code" href="classExtendedAttributes.html#aca053eab68ec97e55b9cd530459361d7">ExtendedAttributes</a>(<span class="keyword">const</span> QString &amp;filePath);</div>
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160; </div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;<span class="preprocessor">#endif </span><span class="comment">// EXTENDEDATTRIBUTES_H</span></div>
-<div class="ttc" id="aclassExtendedAttributes_html"><div class="ttname"><a href="classExtendedAttributes.html">ExtendedAttributes</a></div><div class="ttdef"><b>Definition:</b> ExtendedAttributes.h:39</div></div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    <span class="keywordtype">bool</span> <a class="code" href="classExtendedAttributes.html#af7f743a666dfa142688acdd70d12adce">write</a>(<span class="keyword">const</span> QString &amp;attributeName, <span class="keyword">const</span> QByteArray &amp;attributeValue);</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160; </div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    QByteArray <a class="code" href="classExtendedAttributes.html#a8184cd0d00d9745d641f880b13a688d3">read</a>(<span class="keyword">const</span> QString &amp;attributeName);</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160; </div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    QFile m_file; </div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;};</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160; </div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;<span class="preprocessor">#endif </span><span class="comment">// EXTENDEDATTRIBUTES_H</span></div>
+<div class="ttc" id="aclassExtendedAttributes_html"><div class="ttname"><a href="classExtendedAttributes.html">ExtendedAttributes</a></div><div class="ttdoc">The ExtendedAttributes class provides functionality to read and write extended attributes of a file.</div><div class="ttdef"><b>Definition:</b> ExtendedAttributes.h:42</div></div>
+<div class="ttc" id="aclassExtendedAttributes_html_a8184cd0d00d9745d641f880b13a688d3"><div class="ttname"><a href="classExtendedAttributes.html#a8184cd0d00d9745d641f880b13a688d3">ExtendedAttributes::read</a></div><div class="ttdeci">QByteArray read(const QString &amp;attributeName)</div><div class="ttdoc">Reads the value of an extended attribute from the file.</div><div class="ttdef"><b>Definition:</b> ExtendedAttributes.cpp:87</div></div>
+<div class="ttc" id="aclassExtendedAttributes_html_aca053eab68ec97e55b9cd530459361d7"><div class="ttname"><a href="classExtendedAttributes.html#aca053eab68ec97e55b9cd530459361d7">ExtendedAttributes::ExtendedAttributes</a></div><div class="ttdeci">ExtendedAttributes(const QString &amp;filePath)</div><div class="ttdoc">Constructs an ExtendedAttributes object for the specified file.</div><div class="ttdef"><b>Definition:</b> ExtendedAttributes.cpp:34</div></div>
+<div class="ttc" id="aclassExtendedAttributes_html_af7f743a666dfa142688acdd70d12adce"><div class="ttname"><a href="classExtendedAttributes.html#af7f743a666dfa142688acdd70d12adce">ExtendedAttributes::write</a></div><div class="ttdeci">bool write(const QString &amp;attributeName, const QByteArray &amp;attributeValue)</div><div class="ttdoc">Writes an extended attribute for the file.</div><div class="ttdef"><b>Definition:</b> ExtendedAttributes.cpp:36</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

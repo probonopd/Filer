@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['_7einfodialog_32',['~InfoDialog',['../classInfoDialog.html#a691489763ca5ecf37b51bed3c9786d06',1,'InfoDialog']]]
+  ['ui_5finfodialog_39',['Ui_InfoDialog',['../classUi__InfoDialog.html',1,'']]]
 ];

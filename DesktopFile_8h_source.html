@@ -65,7 +65,7 @@ $(function() {
 <div class="title">DesktopFile.h</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="comment">/*-</span></div>
+<a href="DesktopFile_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="comment">/*-</span></div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="comment"> * Copyright (c) 2022-23 Simon Peter &lt;probono@puredarwin.org&gt;</span></div>
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment"> * All rights reserved.</span></div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment"> *</span></div>
@@ -91,32 +91,29 @@ $(function() {
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="comment"> * SUCH DAMAGE.</span></div>
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="comment"> */</span></div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160; </div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="comment">/* The DesktopFile class is a simple utility class for reading desktop files.</span></div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="comment"> * It provides a single method, getIcon, that reads the Icon= key</span></div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="comment"> * from the specified desktop file and searches for a matching icon file in directories</span></div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="comment"> * that may contain icons. If a matching file is found, the path to that file is returned.</span></div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="comment"> * If no matching file is found, an empty string is returned.</span></div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="comment"> * This class can be useful for reading the icon associated with</span></div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="comment"> * a desktop file and using it in a graphical user interface.</span></div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="comment"> */</span></div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160; </div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="comment">//ifndef DESKTOPFILE_H</span></div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="comment">//define DESKTOPFILE_H</span></div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="preprocessor">#ifndef DESKTOPFILE_H</span></div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="preprocessor">#define DESKTOPFILE_H</span></div>
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160; </div>
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="preprocessor">#include &lt;QString&gt;</span></div>
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160; </div>
-<div class="line"><a name="l00041"></a><span class="lineno"><a class="line" href="classDesktopFile.html">   41</a></span>&#160;<span class="keyword">class </span><a class="code" href="classDesktopFile.html">DesktopFile</a></div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;{</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    <a class="code" href="classDesktopFile.html">DesktopFile</a>(<span class="keyword">const</span> QString &amp;filename);</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    QString getIcon() <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160; </div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    QString m_filename;</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;};</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160; </div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;<span class="comment">//endif // DESKTOPFILE_H</span></div>
-<div class="ttc" id="aclassDesktopFile_html"><div class="ttname"><a href="classDesktopFile.html">DesktopFile</a></div><div class="ttdef"><b>Definition:</b> DesktopFile.h:42</div></div>
+<div class="line"><a name="l00049"></a><span class="lineno"><a class="line" href="classDesktopFile.html">   49</a></span>&#160;<span class="keyword">class </span><a class="code" href="classDesktopFile.html">DesktopFile</a></div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;{</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    <span class="keyword">static</span> QString <a class="code" href="classDesktopFile.html#a84dfa88bb3ff24916269c79b6e2d8519">getIcon</a>(<span class="keyword">const</span> QString &amp;filename);</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160; </div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    <span class="keyword">static</span> QString <a class="code" href="classDesktopFile.html#a35b351b3070f645de35a6cb35a647679">getName</a>(<span class="keyword">const</span> QString &amp;filename);</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160; </div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    <span class="keyword">static</span> QString <a class="code" href="classDesktopFile.html#aa2ba7c7df857e221116e94bd4aebe191">getValue</a>(<span class="keyword">const</span> QString &amp;filename, <span class="keyword">const</span> QString &amp;key);</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160; </div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;    <a class="code" href="classDesktopFile.html">DesktopFile</a>(); </div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;};</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160; </div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;<span class="preprocessor">#endif </span><span class="comment">// DESKTOPFILE_H</span></div>
+<div class="ttc" id="aclassDesktopFile_html"><div class="ttname"><a href="classDesktopFile.html">DesktopFile</a></div><div class="ttdef"><b>Definition:</b> DesktopFile.h:50</div></div>
+<div class="ttc" id="aclassDesktopFile_html_a35b351b3070f645de35a6cb35a647679"><div class="ttname"><a href="classDesktopFile.html#a35b351b3070f645de35a6cb35a647679">DesktopFile::getName</a></div><div class="ttdeci">static QString getName(const QString &amp;filename)</div><div class="ttdoc">Retrieves the value for Name= from a desktop file.</div><div class="ttdef"><b>Definition:</b> DesktopFile.cpp:70</div></div>
+<div class="ttc" id="aclassDesktopFile_html_a84dfa88bb3ff24916269c79b6e2d8519"><div class="ttname"><a href="classDesktopFile.html#a84dfa88bb3ff24916269c79b6e2d8519">DesktopFile::getIcon</a></div><div class="ttdeci">static QString getIcon(const QString &amp;filename)</div><div class="ttdoc">Retrieves the value for Icon= from a desktop file.</div><div class="ttdef"><b>Definition:</b> DesktopFile.cpp:65</div></div>
+<div class="ttc" id="aclassDesktopFile_html_aa2ba7c7df857e221116e94bd4aebe191"><div class="ttname"><a href="classDesktopFile.html#aa2ba7c7df857e221116e94bd4aebe191">DesktopFile::getValue</a></div><div class="ttdeci">static QString getValue(const QString &amp;filename, const QString &amp;key)</div><div class="ttdoc">Retrieves the value of a key from a desktop file.</div><div class="ttdef"><b>Definition:</b> DesktopFile.cpp:38</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

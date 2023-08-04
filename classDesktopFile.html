@@ -62,22 +62,142 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="classDesktopFile-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">DesktopFile Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
-Public Member Functions</h2></td></tr>
-<tr class="memitem:ac1e9134153b15c23268796af8a0eb566"><td class="memItemLeft" align="right" valign="top"><a id="ac1e9134153b15c23268796af8a0eb566"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>DesktopFile</b> (const QString &amp;filename)</td></tr>
-<tr class="separator:ac1e9134153b15c23268796af8a0eb566"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a837004ad9cbb98c8692aa357b4ad1927"><td class="memItemLeft" align="right" valign="top"><a id="a837004ad9cbb98c8692aa357b4ad1927"></a>
-QString&#160;</td><td class="memItemRight" valign="bottom"><b>getIcon</b> () const</td></tr>
-<tr class="separator:a837004ad9cbb98c8692aa357b4ad1927"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:a84dfa88bb3ff24916269c79b6e2d8519"><td class="memItemLeft" align="right" valign="top">static QString&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDesktopFile.html#a84dfa88bb3ff24916269c79b6e2d8519">getIcon</a> (const QString &amp;filename)</td></tr>
+<tr class="memdesc:a84dfa88bb3ff24916269c79b6e2d8519"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves the value for Icon= from a desktop file.  <a href="classDesktopFile.html#a84dfa88bb3ff24916269c79b6e2d8519">More...</a><br /></td></tr>
+<tr class="separator:a84dfa88bb3ff24916269c79b6e2d8519"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a35b351b3070f645de35a6cb35a647679"><td class="memItemLeft" align="right" valign="top">static QString&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDesktopFile.html#a35b351b3070f645de35a6cb35a647679">getName</a> (const QString &amp;filename)</td></tr>
+<tr class="memdesc:a35b351b3070f645de35a6cb35a647679"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves the value for Name= from a desktop file.  <a href="classDesktopFile.html#a35b351b3070f645de35a6cb35a647679">More...</a><br /></td></tr>
+<tr class="separator:a35b351b3070f645de35a6cb35a647679"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa2ba7c7df857e221116e94bd4aebe191"><td class="memItemLeft" align="right" valign="top">static QString&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDesktopFile.html#aa2ba7c7df857e221116e94bd4aebe191">getValue</a> (const QString &amp;filename, const QString &amp;key)</td></tr>
+<tr class="memdesc:aa2ba7c7df857e221116e94bd4aebe191"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves the value of a key from a desktop file.  <a href="classDesktopFile.html#aa2ba7c7df857e221116e94bd4aebe191">More...</a><br /></td></tr>
+<tr class="separator:aa2ba7c7df857e221116e94bd4aebe191"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a84dfa88bb3ff24916269c79b6e2d8519"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a84dfa88bb3ff24916269c79b6e2d8519">&#9670;&nbsp;</a></span>getIcon()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">QString DesktopFile::getIcon </td>
+          <td>(</td>
+          <td class="paramtype">const QString &amp;&#160;</td>
+          <td class="paramname"><em>filename</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Retrieves the value for Icon= from a desktop file. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">filename</td><td>The path of the desktop entry file to work with. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The name of the icon, or an empty string if not found. </dd></dl>
+
+</div>
+</div>
+<a id="a35b351b3070f645de35a6cb35a647679"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a35b351b3070f645de35a6cb35a647679">&#9670;&nbsp;</a></span>getName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">QString DesktopFile::getName </td>
+          <td>(</td>
+          <td class="paramtype">const QString &amp;&#160;</td>
+          <td class="paramname"><em>filename</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Retrieves the value for Name= from a desktop file. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">filename</td><td>The path of the desktop entry file to work with. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The name of the desktop entry, or an empty string if not found. </dd></dl>
+
+</div>
+</div>
+<a id="aa2ba7c7df857e221116e94bd4aebe191"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa2ba7c7df857e221116e94bd4aebe191">&#9670;&nbsp;</a></span>getValue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">QString DesktopFile::getValue </td>
+          <td>(</td>
+          <td class="paramtype">const QString &amp;&#160;</td>
+          <td class="paramname"><em>filename</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const QString &amp;&#160;</td>
+          <td class="paramname"><em>key</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Retrieves the value of a key from a desktop file. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">filename</td><td>The path of the desktop entry file to work with. </td></tr>
+    <tr><td class="paramname">key</td><td>The key to look for. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The value of the key, or an empty string if not found. </dd></dl>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li><a class="el" href="DesktopFile_8h_source.html">DesktopFile.h</a></li>
 <li>DesktopFile.cpp</li>

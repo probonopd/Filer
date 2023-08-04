@@ -68,19 +68,119 @@ $(function() {
 <div class="title">ExtendedAttributes Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p>The <a class="el" href="classExtendedAttributes.html" title="The ExtendedAttributes class provides functionality to read and write extended attributes of a file.">ExtendedAttributes</a> class provides functionality to read and write extended attributes of a file.  
+ <a href="classExtendedAttributes.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="ExtendedAttributes_8h_source.html">ExtendedAttributes.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:aca053eab68ec97e55b9cd530459361d7"><td class="memItemLeft" align="right" valign="top"><a id="aca053eab68ec97e55b9cd530459361d7"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>ExtendedAttributes</b> (const QString &amp;filePath)</td></tr>
+<tr class="memitem:aca053eab68ec97e55b9cd530459361d7"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classExtendedAttributes.html#aca053eab68ec97e55b9cd530459361d7">ExtendedAttributes</a> (const QString &amp;filePath)</td></tr>
+<tr class="memdesc:aca053eab68ec97e55b9cd530459361d7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs an <a class="el" href="classExtendedAttributes.html" title="The ExtendedAttributes class provides functionality to read and write extended attributes of a file.">ExtendedAttributes</a> object for the specified file.  <a href="classExtendedAttributes.html#aca053eab68ec97e55b9cd530459361d7">More...</a><br /></td></tr>
 <tr class="separator:aca053eab68ec97e55b9cd530459361d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af7f743a666dfa142688acdd70d12adce"><td class="memItemLeft" align="right" valign="top"><a id="af7f743a666dfa142688acdd70d12adce"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>write</b> (const QString &amp;attributeName, const QByteArray &amp;attributeValue)</td></tr>
+<tr class="memitem:af7f743a666dfa142688acdd70d12adce"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classExtendedAttributes.html#af7f743a666dfa142688acdd70d12adce">write</a> (const QString &amp;attributeName, const QByteArray &amp;attributeValue)</td></tr>
+<tr class="memdesc:af7f743a666dfa142688acdd70d12adce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Writes an extended attribute for the file.  <a href="classExtendedAttributes.html#af7f743a666dfa142688acdd70d12adce">More...</a><br /></td></tr>
 <tr class="separator:af7f743a666dfa142688acdd70d12adce"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8184cd0d00d9745d641f880b13a688d3"><td class="memItemLeft" align="right" valign="top"><a id="a8184cd0d00d9745d641f880b13a688d3"></a>
-QByteArray&#160;</td><td class="memItemRight" valign="bottom"><b>read</b> (const QString &amp;attributeName)</td></tr>
+<tr class="memitem:a8184cd0d00d9745d641f880b13a688d3"><td class="memItemLeft" align="right" valign="top">QByteArray&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classExtendedAttributes.html#a8184cd0d00d9745d641f880b13a688d3">read</a> (const QString &amp;attributeName)</td></tr>
+<tr class="memdesc:a8184cd0d00d9745d641f880b13a688d3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reads the value of an extended attribute from the file.  <a href="classExtendedAttributes.html#a8184cd0d00d9745d641f880b13a688d3">More...</a><br /></td></tr>
 <tr class="separator:a8184cd0d00d9745d641f880b13a688d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>The <a class="el" href="classExtendedAttributes.html" title="The ExtendedAttributes class provides functionality to read and write extended attributes of a file.">ExtendedAttributes</a> class provides functionality to read and write extended attributes of a file. </p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="aca053eab68ec97e55b9cd530459361d7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aca053eab68ec97e55b9cd530459361d7">&#9670;&nbsp;</a></span>ExtendedAttributes()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">ExtendedAttributes::ExtendedAttributes </td>
+          <td>(</td>
+          <td class="paramtype">const QString &amp;&#160;</td>
+          <td class="paramname"><em>filePath</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Constructs an <a class="el" href="classExtendedAttributes.html" title="The ExtendedAttributes class provides functionality to read and write extended attributes of a file.">ExtendedAttributes</a> object for the specified file. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">filePath</td><td>The path of the file to work with. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a8184cd0d00d9745d641f880b13a688d3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8184cd0d00d9745d641f880b13a688d3">&#9670;&nbsp;</a></span>read()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">QByteArray ExtendedAttributes::read </td>
+          <td>(</td>
+          <td class="paramtype">const QString &amp;&#160;</td>
+          <td class="paramname"><em>attributeName</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Reads the value of an extended attribute from the file. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">attributeName</td><td>The name of the attribute to read. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The value of the attribute, or an empty QByteArray if not found. </dd></dl>
+
+</div>
+</div>
+<a id="af7f743a666dfa142688acdd70d12adce"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af7f743a666dfa142688acdd70d12adce">&#9670;&nbsp;</a></span>write()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool ExtendedAttributes::write </td>
+          <td>(</td>
+          <td class="paramtype">const QString &amp;&#160;</td>
+          <td class="paramname"><em>attributeName</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const QByteArray &amp;&#160;</td>
+          <td class="paramname"><em>attributeValue</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Writes an extended attribute for the file. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">attributeName</td><td>The name of the attribute. </td></tr>
+    <tr><td class="paramname">attributeValue</td><td>The value of the attribute to be written. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>True if the attribute was written successfully, false otherwise. </dd></dl>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li><a class="el" href="ExtendedAttributes_8h_source.html">ExtendedAttributes.h</a></li>
 <li>ExtendedAttributes.cpp</li>

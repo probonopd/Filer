@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['readfilefromarchive_62',['readFileFromArchive',['../classSqshArchiveReader.html#a3e80c89957e5f18a3c1adc67e480e347',1,'SqshArchiveReader']]],
-  ['readsqsharchive_63',['readSqshArchive',['../classSqshArchiveReader.html#a8e94ea1f5fe9dabc211910752847c4c7',1,'SqshArchiveReader']]]
+  ['playsound_78',['playSound',['../classSoundPlayer.html#a4993ff7a7b3c26f65edc117e5f306f32',1,'SoundPlayer']]]
 ];
