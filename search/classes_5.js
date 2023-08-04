@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['launchdb_36',['LaunchDB',['../classLaunchDB.html',1,'']]]
+  ['informationdialog_42',['InformationDialog',['../classInformationDialog.html',1,'InformationDialog'],['../classUi_1_1InformationDialog.html',1,'Ui::InformationDialog']]]
 ];

@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['trashhandler_39',['TrashHandler',['../classTrashHandler.html',1,'']]]
+  ['soundplayer_44',['SoundPlayer',['../classSoundPlayer.html',1,'']]],
+  ['sqsharchivereader_45',['SqshArchiveReader',['../classSqshArchiveReader.html',1,'']]]
 ];

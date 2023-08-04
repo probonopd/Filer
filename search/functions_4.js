@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['icon_44',['icon',['../classCustomFileIconProvider.html#a2e44d2e48b65690d1d3ae2d0b8d8b6fc',1,'CustomFileIconProvider']]]
+  ['icon_52',['icon',['../classCustomFileIconProvider.html#a2e44d2e48b65690d1d3ae2d0b8d8b6fc',1,'CustomFileIconProvider']]]
 ];
