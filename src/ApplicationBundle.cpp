@@ -135,9 +135,7 @@ QIcon ApplicationBundle::icon() const
         return icon;
     } else if (m_type == Type::AppImage) {
         // Determine the ELF offset
-        ElfSizeCalculator* elfSizeCalculator = new ElfSizeCalculator();
-        qint64 offset = elfSizeCalculator->CalculateElfSize(m_path);
-        delete elfSizeCalculator;
+        qint64 offset = ElfSizeCalculator::CalculateElfSize(m_path);
         qDebug() << "offset:" << offset << "for file" << m_path;
         // Get the data of the .DirIcon file from the squashfs
         SqshArchiveReader *reader = new SqshArchiveReader(offset);
