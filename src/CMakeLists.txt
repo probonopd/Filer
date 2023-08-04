@@ -1,5 +1,8 @@
 cmake_minimum_required(VERSION 3.5)
 
+# Build fileoperation/
+add_subdirectory(fileoperation)
+
 # Do not show deprecated warnings
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
 
@@ -37,7 +40,6 @@ set(PROJECT_SOURCES
         DesktopFile.h DesktopFile.cpp
         CustomItemDelegate.h CustomItemDelegate.cpp
         ExtendedAttributes.cpp ExtendedAttributes.h
-        MoverCopier.cpp MoverCopier.h
         CustomFileIconProvider.cpp CustomFileIconProvider.h
         DBusInterface.cpp DBusInterface.h
         LaunchDB.cpp LaunchDB.h
@@ -107,12 +109,12 @@ add_custom_command(TARGET Filer POST_BUILD
         ${APPLICATION_BUNDLE_PATH}/Filer
 )
 
-# Copy resources into the bundle
 # Remove previous Resources directory if it exists
 add_custom_command(TARGET Filer POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E remove_directory
         ${APPLICATION_BUNDLE_PATH}/Resources
 )
+
 # Copy the Resources directory into the bundle
 add_custom_command(TARGET Filer POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
@@ -126,3 +128,21 @@ add_custom_command(TARGET Filer POST_BUILD
         ${APPLICATION_BUNDLE_PATH}/Resources/Filer.svg
 )
 
+# Remove previous bin/ directory if it exists
+add_custom_command(TARGET Filer POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E remove_directory
+        ${APPLICATION_BUNDLE_PATH}/bin
+)
+
+# Create bin/ directory in the bundle
+add_custom_command(TARGET Filer POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E make_directory
+        ${APPLICATION_BUNDLE_PATH}/bin
+)
+
+# Copy fileoperation binary into the bundle under bin/
+add_custom_command(TARGET Filer POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy
+        $<TARGET_FILE:fileoperation>
+        ${APPLICATION_BUNDLE_PATH}/bin/fileoperation
+)
