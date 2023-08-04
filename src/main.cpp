@@ -35,6 +35,7 @@
 #include <QProcess>
 #include <QDBusMessage>
 #include <QDBusConnection>
+#include <QThread>
 
 #include "FileManagerMainWindow.h"
 #include "DBusInterface.h"
@@ -91,11 +92,10 @@ int main(int argc, char *argv[])
     QSharedMemory sharedMemory(sharedMemoryKey);
     qDebug() << "Attempting to attach to shared memory...";
     if (sharedMemory.attach()) {
-        qDebug() << "Existing instance found in shared memory.";
-        // Show a message box and exit
+        qDebug() << "Shared memory segment already exists.";
         QString text = QObject::tr("Another instance of %1 is already running.").arg(qApp->applicationName());
         QMessageBox::critical(0, qApp->applicationName(), text);
-        return 0; // Exit the second instance of the application
+        return 1;
     }
     qDebug() << "Trying to create shared memory...";
     if (!sharedMemory.create(1)) {

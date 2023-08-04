@@ -42,6 +42,7 @@
 #include <QSize>
 #include "ApplicationBundle.h"
 #include "TrashHandler.h"
+#include "InformationDialog.h"
 
 // Constructor that takes a QObject pointer and a QFileSystemModel pointer as arguments
 CustomItemDelegate::CustomItemDelegate(QObject* parent, CustomFileSystemModel* fileSystemModel)
@@ -321,8 +322,19 @@ bool CustomItemDelegate::editorEvent(QEvent *event, QAbstractItemModel *model,
 
         QAction *getInfoAction = new QAction(tr("Get Info"), this);
         getInfoAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_I));
-        getInfoAction->setEnabled(false);
         menu.addAction(getInfoAction);
+        connect(getInfoAction, &QAction::triggered, [=]() {
+            // Get all selected items
+            QModelIndexList selectedIndexes = mainWindow->getCurrentView()->selectionModel()->selectedIndexes();
+            for (QModelIndex index : selectedIndexes) {
+                // Get the absolute path of the item represented by the index, using the model
+                QString filePath = model->data(index, QFileSystemModel::FilePathRole).toString();
+                // Destroy the dialog when it is closed
+                InformationDialog *infoDialog = new InformationDialog(filePath);
+                infoDialog->setAttribute(Qt::WA_DeleteOnClose);
+                infoDialog->show();
+            }
+        });
 
         menu.addSeparator();
 

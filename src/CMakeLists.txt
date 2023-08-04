@@ -34,22 +34,23 @@ include_directories(/usr/local/include/sqsh)
 
 set(PROJECT_SOURCES
         main.cpp
-        FileManagerMainWindow.cpp
-        FileManagerMainWindow.h
-        ApplicationBundle.h ApplicationBundle.cpp
-        DesktopFile.h DesktopFile.cpp
-        CustomItemDelegate.h CustomItemDelegate.cpp
-        ExtendedAttributes.cpp ExtendedAttributes.h
-        CustomFileIconProvider.cpp CustomFileIconProvider.h
-        DBusInterface.cpp DBusInterface.h
-        LaunchDB.cpp LaunchDB.h
+        AppGlobals.cpp AppGlobals.h
+        ApplicationBundle.cpp ApplicationBundle.h
         CombinedIconCreator.cpp CombinedIconCreator.h
+        CustomFileIconProvider.cpp CustomFileIconProvider.h
         CustomFileSystemModel.cpp CustomFileSystemModel.h
+        CustomItemDelegate.cpp CustomItemDelegate.h
         CustomListView.cpp CustomListView.h
-        TrashHandler.cpp TrashHandler.h
+        DBusInterface.cpp DBusInterface.h
+        DesktopFile.cpp DesktopFile.h
         ElfSizeCalculator.cpp ElfSizeCalculator.h
+        ExtendedAttributes.cpp ExtendedAttributes.h
+        FileManagerMainWindow.cpp FileManagerMainWindow.h
+        InformationDialog.cpp InformationDialog.h
+        LaunchDB.cpp LaunchDB.h
+        SoundPlayer.cpp SoundPlayer.h
         SqshArchiveReader.cpp SqshArchiveReader.h
-        SoundPlayer.h SoundPlayer.cpp
+        TrashHandler.cpp TrashHandler.h
         )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
@@ -57,22 +58,10 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         MANUAL_FINALIZATION
         ${PROJECT_SOURCES}
     )
-# Define target properties for Android with Qt 6 as:
-#    set_property(TARGET Filer APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
-#                 ${CMAKE_CURRENT_SOURCE_DIR}/android)
-# For more information, see https://doc.qt.io/qt-6/qt-add-executable.html#target-creation
 else()
-    if(ANDROID)
-        add_library(Filer SHARED
-            ${PROJECT_SOURCES}
-        )
-# Define properties for Android with Qt 5 after find_package() calls as:
-#    set(ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android")
-    else()
-        add_executable(Filer
-            ${PROJECT_SOURCES}
-        )
-    endif()
+    add_executable(Filer
+        ${PROJECT_SOURCES}
+    )
 endif()
 
 target_link_libraries(Filer PRIVATE

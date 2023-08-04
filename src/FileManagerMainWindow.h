@@ -76,6 +76,8 @@ public:
     void selectItems(const QStringList &paths);
     void bringToFront();
 
+    void getInfo();
+
 public slots:
     void open(const QString &filePath);
     void openWith(const QString &filePath);
@@ -105,6 +107,7 @@ private:
 
     QAction *m_openAction;
     QAction *m_openWithAction;
+    QAction *m_getInfoAction;
     QAction *m_renameAction;
 
     QAction *m_moveToTrashAction;

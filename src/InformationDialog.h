@@ -24,26 +24,33 @@
  * SUCH DAMAGE.
  */
 
-#ifndef DBUSINTERFACE_H
-#define DBUSINTERFACE_H
+#ifndef INFORMATIONDIALOG_H
+#define INFORMATIONDIALOG_H
 
-#include <QObject>
+#include <QDialog>
+#include <QFileInfo>
 
-class DBusInterface : QObject
+namespace Ui {
+    class InformationDialog;
+}
+
+class InformationDialog : public QDialog
 {
-    Q_OBJECT
-    Q_CLASSINFO("D-Bus Interface", "org.freedesktop.FileManager1")
+Q_OBJECT
 
 public:
-    DBusInterface();
-    Q_SCRIPTABLE void ShowFolders(const QStringList &uriList, const QString &startUpId);
-    Q_SCRIPTABLE void ShowItems(const QStringList &uriList, const QString &startUpId);
-    Q_SCRIPTABLE void ShowItemProperties(const QStringList &uriList, const QString &startUpId);
-
-    Q_SCRIPTABLE void SortOrderForUrl(const QString &url, QString &role, QString &order);
+    explicit InformationDialog(const QString &filePath, QWidget *parent = nullptr);
+    ~InformationDialog();
 
 private:
-    bool m_isDaemon = false;
+    Ui::InformationDialog *ui;
+    QString filePath;
+    QFileInfo fileInfo;
+    QString getPermissionsString(QFile::Permissions permissions);
+    void setupInformation();
+
+private slots:
+    void openFile();
 };
 
-#endif // DBUSINTERFACE_H
+#endif // INFORMATIONDIALOG_H

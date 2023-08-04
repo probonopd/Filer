@@ -67,6 +67,7 @@
 #include <QUrl>
 #include "ApplicationBundle.h"
 #include "TrashHandler.h"
+#include "InformationDialog.h"
 
 /*
  * This creates a FileManagerMainWindow object with a QTreeView and QListView widget.
@@ -564,6 +565,12 @@ void FileManagerMainWindow::createMenus()
     }
 
     fileMenu->addSeparator();
+
+    QAction *infoAction = new QAction(tr("Get Info"), this);
+    infoAction->setShortcut(QKeySequence("Ctrl+I"));
+    fileMenu->addAction(infoAction);
+    m_getInfoAction = infoAction;
+    connect(infoAction, &QAction::triggered, this, &FileManagerMainWindow::getInfo);
 
     // Add the File menu to the menu bar
     m_menuBar->addMenu(fileMenu);
@@ -1345,10 +1352,12 @@ void FileManagerMainWindow::updateMenus()
         m_openAction->setEnabled(false);
         m_openWithAction->setEnabled(false);
         m_moveToTrashAction->setEnabled(false);
+        m_getInfoAction->setEnabled(false);
     } else {
         m_openAction->setEnabled(true);
         m_openWithAction->setEnabled(true);
         m_moveToTrashAction->setEnabled(true);
+        m_getInfoAction->setEnabled(true);
     }
 }
 
@@ -1459,3 +1468,16 @@ void FileManagerMainWindow::bringToFront()
             showNormal(); // Show the window normally (unminimize)
         }
 };
+
+void FileManagerMainWindow::getInfo() {
+    // Get all selected items
+    QModelIndexList selectedIndexes = getCurrentView()->selectionModel()->selectedIndexes();
+    for (QModelIndex index : selectedIndexes) {
+        // Get the absolute path of the item represented by the index, using the model
+        QString filePath = m_fileSystemModel->data(index, QFileSystemModel::FilePathRole).toString();
+        // Destroy the dialog when it is closed
+        InformationDialog *infoDialog = new InformationDialog(filePath);
+        infoDialog->setAttribute(Qt::WA_DeleteOnClose);
+        infoDialog->show();
+    }
+}
