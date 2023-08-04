@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['elfbinary_40',['ElfBinary',['../classElfBinary.html#a113092796e43d3f8d23a68d7a7b6de52',1,'ElfBinary']]]
+  ['calculateelfsize_43',['CalculateElfSize',['../classElfSizeCalculator.html#af2c901aa12ddb1e654a5d94cc96c63d6',1,'ElfSizeCalculator']]]
 ];

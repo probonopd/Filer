@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['elfbinary_30',['ElfBinary',['../classElfBinary.html',1,'']]],
-  ['extendedattributes_31',['ExtendedAttributes',['../classExtendedAttributes.html',1,'']]]
+  ['elfbinary_32',['ElfBinary',['../classElfBinary.html',1,'']]],
+  ['elfsizecalculator_33',['ElfSizeCalculator',['../classElfSizeCalculator.html',1,'']]],
+  ['extendedattributes_34',['ExtendedAttributes',['../classExtendedAttributes.html',1,'']]]
 ];
