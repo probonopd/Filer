@@ -1,0 +1,59 @@
+#!/usr/bin/env python3
+
+# calldbus de-complicates calling functions over D-Bus
+# It is useful for testing Filer's D-Bus interface, e.g., from the command line
+# like this:
+#   calldbus org.freedesktop.FileManager1 ShowFolders /home/user /home/user/Documents
+#   calldbus org.freedesktop.FileManager1 ShowItems /home/user /home/user/Documents/file.txt
+#   calldbus org.freedesktop.FileManager1 ShowItemProperties /home/user/file.txt
+#   calldbus org.freedesktop.FileManager1 SortOrderForUrl /home/user
+
+import argparse
+import dbus
+import os
+from urllib.parse import quote, unquote
+
+
+def get_file_uris(file_paths):
+    """Convert local file paths to file URIs."""
+    uris = []
+    for path in file_paths:
+        # Ensure that the path is properly encoded for URLs
+        encoded_path = quote(os.path.abspath(path))
+        uris.append('file://' + encoded_path)
+    return uris
+
+
+def main():
+    # Set up argument parsing
+    parser = argparse.ArgumentParser(description='Call D-Bus method on a service')
+    parser.add_argument('service', help='D-Bus service name (e.g., org.freedesktop.FileManager1)')
+    parser.add_argument('method', choices=['ShowFolders', 'ShowItems', 'ShowItemProperties', 'SortOrderForUrl'],
+                        help='D-Bus method name')
+    parser.add_argument('file_paths', nargs='+', help='Local file paths to open as URIs')
+    parser.add_argument('--startup-id', default='your_startup_id', help='Startup ID')
+
+    args = parser.parse_args()
+
+    # Establish a connection to the D-Bus session bus
+    bus = dbus.SessionBus()
+
+    # Derive the object path from the service name
+    object_path = '/' + args.service.replace('.', '/')
+
+    # Get the D-Bus object associated with the specified service and object path
+    service_object = bus.get_object(args.service, object_path)
+
+    # Convert local file paths to file URIs
+    uris = get_file_uris(args.file_paths)
+    startup_id = args.startup_id
+
+    # Get the specified D-Bus method from the service object
+    method = getattr(service_object, args.method)
+
+    # Call the D-Bus method with converted URIs and startup ID
+    method(dbus.Array(uris, signature='s'), startup_id, dbus_interface=args.service)
+
+
+if __name__ == '__main__':
+    main()

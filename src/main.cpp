@@ -33,6 +33,8 @@
 #include <QDebug>
 #include <QTranslator>
 #include <QProcess>
+#include <QDBusMessage>
+#include <QDBusConnection>
 
 #include "FileManagerMainWindow.h"
 #include "DBusInterface.h"
@@ -52,6 +54,37 @@ int main(int argc, char *argv[])
     parser.addHelpOption();
     parser.addVersionOption();
     parser.process(app);
+
+
+    // Allow for arguments to be passed to the application
+    // In this case, we don't create a main window, but instead we send messages via D-Bus
+    // that cause the already running file manager to open the paths
+    QStringList pathsToBeOpened = parser.positionalArguments();
+    if (! pathsToBeOpened.isEmpty()) {
+
+        // Create a D-Bus message to call the ShowFolders method
+        QDBusMessage message = QDBusMessage::createMethodCall(
+                "org.freedesktop.FileManager1",    // Service name
+                "/org/freedesktop/FileManager1",  // Object path
+                "org.freedesktop.FileManager1",    // Interface name
+                "ShowFolders"                        // Method name
+        );
+
+        // Set the arguments for the method call
+        message << pathsToBeOpened;
+
+        // Send the D-Bus message and get the reply
+        QDBusMessage reply = QDBusConnection::sessionBus().call(message);
+
+        if (reply.type() == QDBusMessage::ReplyMessage) {
+            qDebug() << "ShowFolders method called successfully";
+        } else if (reply.type() == QDBusMessage::ErrorMessage) {
+            qDebug() << "Failed to call ShowFolders method: " << reply.errorMessage();
+        } else {
+            qDebug() << "Failed to call ShowFolders method";
+        }
+        app.quit();
+    }
 
     // Check whether another instance of this application is already running
     const QString sharedMemoryKey = qApp->applicationName();

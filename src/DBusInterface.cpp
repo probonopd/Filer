@@ -29,9 +29,39 @@ DBusInterface::DBusInterface()
 
 void DBusInterface::ShowFolders(const QStringList &uriList, const QString &startUpId)
 {
-    QMessageBox::warning(0, 0, "ShowFolders is not yet implemented");
     qDebug() << "ShowFolders" << uriList << startUpId;
+
+    for (const QString &fileUrlString : uriList) {
+        QUrl fileUrl(fileUrlString);
+        QString filePath;
+
+        if (fileUrl.isValid()) {
+            filePath = fileUrl.toLocalFile();
+        } else {
+            if (QFileInfo::exists(fileUrlString)) {
+                filePath = fileUrlString;
+            } else {
+                qDebug() << "Not a URL or a local file path:" << fileUrlString;
+                QMessageBox::warning(0, QString(), tr("Not a URL or a local file path: %1").arg(fileUrlString));
+                continue;
+            }
+        }
+
+        FileManagerMainWindow *mainWindow = qobject_cast<FileManagerMainWindow *>(qApp->activeWindow());
+
+        if (!mainWindow->instanceExists(filePath)) {
+            mainWindow->openFolderInNewWindow(filePath);
+        }
+
+        while (!mainWindow->instanceExists(filePath)) {
+            qDebug() << "Waiting for instance of FileManagerMainWindow for" << filePath;
+            QApplication::processEvents();
+        }
+
+        mainWindow = mainWindow->getInstanceForDirectory(filePath);
+    }
 }
+
 
 void DBusInterface::ShowItems(const QStringList &uriList, const QString &startUpId)
 {
@@ -45,6 +75,10 @@ void DBusInterface::ShowItems(const QStringList &uriList, const QString &startUp
         // Get the parent directory
         QFileInfo fileInfo(filePath);
         QString parentDir = fileInfo.absoluteDir().path();
+        if (!fileInfo.exists()) {
+            QMessageBox::warning(0, 0, tr("File does not exist: %1").arg(filePath));
+            continue;
+        }
 
         FileManagerMainWindow* mainWindow = qobject_cast<FileManagerMainWindow*>(qApp->activeWindow());
 
@@ -68,12 +102,12 @@ void DBusInterface::ShowItems(const QStringList &uriList, const QString &startUp
 
 void DBusInterface::ShowItemProperties(const QStringList &uriList, const QString &startUpId)
 {
-    QMessageBox::warning(0, 0, "ShowItemProperties is not yet implemented");
+    QMessageBox::warning(0, 0, "ShowItemProperties is not implemented yet");
     qDebug() << "ShowItemProperties" << uriList << startUpId;
 }
 
 void DBusInterface::SortOrderForUrl(const QString &url, QString &role, QString &order)
 {
-    QMessageBox::warning(0, 0, "SortOrderForUrl is not yet implemented");
+    QMessageBox::warning(0, 0, "SortOrderForUrl is not implemented yet");
     qDebug() << "SortOrderForUrl" << url << role << order;
 }
