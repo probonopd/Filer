@@ -31,6 +31,11 @@
 #include <QMessageBox>
 #include <QDesktopServices>
 #include <QUrl>
+#include <QAction>
+#include "CustomFileIconProvider.h"
+#include <QGraphicsScene>
+#include <QGraphicsPixmapItem>
+#include <QDebug>
 
 InfoDialog::InfoDialog(const QString &filePath, QWidget *parent) :
         QDialog(parent),
@@ -47,8 +52,6 @@ InfoDialog::InfoDialog(const QString &filePath, QWidget *parent) :
     // Destroy the dialog when it is closed
     setAttribute(Qt::WA_DeleteOnClose);
 
-    connect(ui->openButton, &QPushButton::clicked, this, &InfoDialog::openFile);
-
     QAction *closeAction = new QAction(this);
     closeAction->setShortcut(Qt::CTRL + Qt::Key_W);
     connect(closeAction, &QAction::triggered, this, &InfoDialog::close);
@@ -64,29 +67,54 @@ InfoDialog::~InfoDialog()
 
 void InfoDialog::setupInformation()
 {
-    ui->pathLabel->setText(filePath);
-    ui->sizeLabel->setText(QString::number(fileInfo.size()) + " bytes");
-    ui->createdLabel->setText(fileInfo.created().toString(Qt::DefaultLocaleLongDate));
-    ui->modifiedLabel->setText(fileInfo.lastModified().toString(Qt::DefaultLocaleLongDate));
+    qDebug() << fileInfo.absoluteFilePath();
+    QIcon icon = QIcon::fromTheme("unknown");
+
+    // Make the window unresizable horizontally
+    setMinimumWidth(400);
+    setMaximumWidth(400);
+
+    ui->iconInfo->setPixmap(icon.pixmap(128, 128));
+    ui->iconInfo->setStyleSheet("border: 1px solid grey;");
+    ui->iconInfo->setFixedSize(128, 128);
+    ui->iconInfo->setAlignment(Qt::AlignCenter);
+    // Make the icon selectable
+    ui->iconInfo->setFocusPolicy(Qt::ClickFocus);
+
+    // Make it so that one can copy and paste the icon
+    ui->iconInfo->setContextMenuPolicy(Qt::ActionsContextMenu);
+    QAction *copyAction = new QAction(tr("Copy"), this);
+    copyAction->setShortcut(Qt::CTRL + Qt::Key_C);
+    // connect(copyAction, &QAction::triggered, this, &InfoDialog::copyIcon);
+    ui->iconInfo->addAction(copyAction);
+    QAction *pasteAction = new QAction(tr("Paste"), this);
+    pasteAction->setShortcut(Qt::CTRL + Qt::Key_V);
+    // connect(pasteAction, &QAction::triggered, this, &InfoDialog::pasteIcon);
+    ui->iconInfo->addAction(pasteAction);
+
+    ui->pathInfo->setText(filePath);
+    ui->pathInfo->setTextInteractionFlags(Qt::TextSelectableByMouse | Qt::TextSelectableByKeyboard);
+
+    ui->sizeInfo->setText(QString::number(fileInfo.size()) + " bytes");
+
+    ui->createdInfo->setText(fileInfo.created().toString(Qt::DefaultLocaleLongDate));
+
+    ui->modifiedInfo->setText(fileInfo.lastModified().toString(Qt::DefaultLocaleLongDate));
+
     QFile::Permissions permissions = fileInfo.permissions();
+
     QString permissionsString = getPermissionsString(permissions);
-    ui->permissionsLabel->setText(permissionsString);
+
+    ui->permissionsInfo->setText(permissionsString);
 
     if (fileInfo.isDir()) {
         // In the GUI, we always use the word "Folder" instead of "Directory"
-        ui->typeLabel->setText(tr("Folder"));
+        ui->typeInfo->setText(tr("Folder"));
     } else if (fileInfo.isFile()) {
         // In the GUI, we always use the word "Document" instead of "File"
-        ui->typeLabel->setText(tr("Document"));
+        ui->typeInfo->setText(tr("Document"));
     } else {
-        ui->typeLabel->setText(tr("Unknown"));
-    }
-
-    if (fileInfo.isFile()) {
-        ui->openButton->setEnabled(true);
-        connect(ui->openButton, &QPushButton::clicked, this, &InfoDialog::openFile);
-    } else {
-        ui->openButton->setEnabled(false);
+        ui->typeInfo->setText(tr("Unknown"));
     }
 }
 
@@ -104,7 +132,18 @@ QString InfoDialog::getPermissionsString(QFile::Permissions permissions)
     else result += "-";
     if (permissions & QFile::ExeOwner) result += "x";
     else result += "-";
-    // Repeat the above for group and others permissions
+    if (permissions & QFile::ReadGroup) result += "r";
+    else result += "-";
+    if (permissions & QFile::WriteGroup) result += "w";
+    else result += "-";
+    if (permissions & QFile::ExeGroup) result += "x";
+    else result += "-";
+    if (permissions & QFile::ReadOther) result += "r";
+    else result += "-";
+    if (permissions & QFile::WriteOther) result += "w";
+    else result += "-";
+    if (permissions & QFile::ExeOther) result += "x";
+    else result += "-";
 
     return result;
 }
