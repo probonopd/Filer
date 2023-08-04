@@ -46,7 +46,7 @@ set(PROJECT_SOURCES
         ElfSizeCalculator.cpp ElfSizeCalculator.h
         ExtendedAttributes.cpp ExtendedAttributes.h
         FileManagerMainWindow.cpp FileManagerMainWindow.h
-        InformationDialog.cpp InformationDialog.h
+        InfoDialog.cpp InfoDialog.h
         LaunchDB.cpp LaunchDB.h
         SoundPlayer.cpp SoundPlayer.h
         SqshArchiveReader.cpp SqshArchiveReader.h

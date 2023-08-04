@@ -42,7 +42,7 @@
 #include <QSize>
 #include "ApplicationBundle.h"
 #include "TrashHandler.h"
-#include "InformationDialog.h"
+#include "InfoDialog.h"
 
 // Constructor that takes a QObject pointer and a QFileSystemModel pointer as arguments
 CustomItemDelegate::CustomItemDelegate(QObject* parent, CustomFileSystemModel* fileSystemModel)
@@ -330,7 +330,7 @@ bool CustomItemDelegate::editorEvent(QEvent *event, QAbstractItemModel *model,
                 // Get the absolute path of the item represented by the index, using the model
                 QString filePath = model->data(index, QFileSystemModel::FilePathRole).toString();
                 // Destroy the dialog when it is closed
-                InformationDialog *infoDialog = new InformationDialog(filePath);
+                InfoDialog *infoDialog = new InfoDialog(filePath);
                 infoDialog->setAttribute(Qt::WA_DeleteOnClose);
                 infoDialog->show();
             }

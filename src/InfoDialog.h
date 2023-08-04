@@ -24,33 +24,58 @@
  * SUCH DAMAGE.
  */
 
-#ifndef INFORMATIONDIALOG_H
-#define INFORMATIONDIALOG_H
+#ifndef INFODIALOG_H
+#define INFODIALOG_H
 
 #include <QDialog>
 #include <QFileInfo>
 
 namespace Ui {
-    class InformationDialog;
+    class InfoDialog;
 }
 
-class InformationDialog : public QDialog
+/**
+ * @brief The InfoDialog class represents a dialog to display information about a file or directory.
+ */
+class InfoDialog : public QDialog
 {
 Q_OBJECT
 
 public:
-    explicit InformationDialog(const QString &filePath, QWidget *parent = nullptr);
-    ~InformationDialog();
+    /**
+     * @brief Constructs an InfoDialog with the given file path.
+     * @param filePath The path of the file or directory to display information for.
+     * @param parent The parent widget (optional).
+     */
+    explicit InfoDialog(const QString &filePath, QWidget *parent = nullptr);
+
+    /**
+     * @brief Destructor.
+     */
+    ~InfoDialog();
 
 private:
-    Ui::InformationDialog *ui;
-    QString filePath;
-    QFileInfo fileInfo;
+    Ui::InfoDialog *ui; /**< The user interface components. */
+    QString filePath; /**< The path of the file or directory. */
+    QFileInfo fileInfo; /**< File information. */
+
+    /**
+     * @brief Converts file permissions to a human-readable string.
+     * @param permissions The file permissions to convert.
+     * @return A string representation of the file permissions.
+     */
     QString getPermissionsString(QFile::Permissions permissions);
+
+    /**
+     * @brief Sets up the information to be displayed in the dialog.
+     */
     void setupInformation();
 
 private slots:
+    /**
+     * @brief Slot to open the file using the default associated application.
+     */
     void openFile();
 };
 
-#endif // INFORMATIONDIALOG_H
+#endif // INFODIALOG_H

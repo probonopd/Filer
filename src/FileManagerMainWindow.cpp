@@ -67,7 +67,7 @@
 #include <QUrl>
 #include "ApplicationBundle.h"
 #include "TrashHandler.h"
-#include "InformationDialog.h"
+#include "InfoDialog.h"
 
 /*
  * This creates a FileManagerMainWindow object with a QTreeView and QListView widget.
@@ -1476,7 +1476,7 @@ void FileManagerMainWindow::getInfo() {
         // Get the absolute path of the item represented by the index, using the model
         QString filePath = m_fileSystemModel->data(index, QFileSystemModel::FilePathRole).toString();
         // Destroy the dialog when it is closed
-        InformationDialog *infoDialog = new InformationDialog(filePath);
+        InfoDialog *infoDialog = new InfoDialog(filePath);
         infoDialog->setAttribute(Qt::WA_DeleteOnClose);
         infoDialog->show();
     }

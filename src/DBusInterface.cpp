@@ -35,7 +35,7 @@
 #include <QFileInfo>
 
 #include "FileManagerMainWindow.h"
-#include "InformationDialog.h"
+#include "InfoDialog.h"
 
 DBusInterface::DBusInterface()
     : QObject()
@@ -136,7 +136,7 @@ void DBusInterface::ShowItemProperties(const QStringList &uriList, const QString
         QUrl fileUrl(fileUrlString);
         QString filePath = fileUrl.toLocalFile();
         // Destroy the dialog when it is closed
-        InformationDialog *infoDialog = new InformationDialog(filePath);
+        InfoDialog *infoDialog = new InfoDialog(filePath);
         infoDialog->setAttribute(Qt::WA_DeleteOnClose);
         infoDialog->show();
     }

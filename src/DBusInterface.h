@@ -29,21 +29,51 @@
 
 #include <QObject>
 
-class DBusInterface : QObject
+/**
+ * @brief The DBusInterface class represents the D-Bus interface for file management operations.
+ */
+class DBusInterface : public QObject
 {
-    Q_OBJECT
+Q_OBJECT
     Q_CLASSINFO("D-Bus Interface", "org.freedesktop.FileManager1")
 
 public:
+    /**
+     * @brief Constructs a DBusInterface object.
+     */
     DBusInterface();
+
+    /**
+     * @brief Shows folders corresponding to the provided URIs.
+     * @param uriList List of URIs representing folders to be shown.
+     * @param startUpId Identifier for startup.
+     */
     Q_SCRIPTABLE void ShowFolders(const QStringList &uriList, const QString &startUpId);
+
+    /**
+     * @brief Shows items corresponding to the provided URIs.
+     * @param uriList List of URIs representing items to be shown.
+     * @param startUpId Identifier for startup.
+     */
     Q_SCRIPTABLE void ShowItems(const QStringList &uriList, const QString &startUpId);
+
+    /**
+     * @brief Shows properties of items corresponding to the provided URIs.
+     * @param uriList List of URIs representing items for which properties are to be shown.
+     * @param startUpId Identifier for startup.
+     */
     Q_SCRIPTABLE void ShowItemProperties(const QStringList &uriList, const QString &startUpId);
 
+    /**
+     * @brief Retrieves the sort order for a given URL.
+     * @param url The URL for which the sort order is to be retrieved.
+     * @param role The role for sorting.
+     * @param order The sorting order.
+     */
     Q_SCRIPTABLE void SortOrderForUrl(const QString &url, QString &role, QString &order);
 
 private:
-    bool m_isDaemon = false;
+    bool m_isDaemon = false; /**< Indicates if the interface is used as a daemon. */
 };
 
 #endif // DBUSINTERFACE_H

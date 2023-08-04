@@ -24,44 +24,45 @@
  * SUCH DAMAGE.
  */
 
-#include "InformationDialog.h"
-#include "ui_InformationDialog.h"
+#include "InfoDialog.h"
+#include "ui_InfoDialog.h"
 
 #include <QDateTime>
 #include <QMessageBox>
 #include <QDesktopServices>
 #include <QUrl>
 
-InformationDialog::InformationDialog(const QString &filePath, QWidget *parent) :
+InfoDialog::InfoDialog(const QString &filePath, QWidget *parent) :
         QDialog(parent),
-        ui(new Ui::InformationDialog),
+        ui(new Ui::InfoDialog),
         filePath(filePath),
         fileInfo(filePath)
 {
     ui->setupUi(this);
-    setWindowTitle(tr("Information"));
+
+    setWindowTitle(filePath.mid(filePath.lastIndexOf("/") + 1) + " Info");
 
     setupInformation();
 
     // Destroy the dialog when it is closed
     setAttribute(Qt::WA_DeleteOnClose);
 
-    connect(ui->openButton, &QPushButton::clicked, this, &InformationDialog::openFile);
+    connect(ui->openButton, &QPushButton::clicked, this, &InfoDialog::openFile);
 
     QAction *closeAction = new QAction(this);
     closeAction->setShortcut(Qt::CTRL + Qt::Key_W);
-    connect(closeAction, &QAction::triggered, this, &InformationDialog::close);
+    connect(closeAction, &QAction::triggered, this, &InfoDialog::close);
     addAction(closeAction);
 
 
 }
 
-InformationDialog::~InformationDialog()
+InfoDialog::~InfoDialog()
 {
     delete ui;
 }
 
-void InformationDialog::setupInformation()
+void InfoDialog::setupInformation()
 {
     ui->pathLabel->setText(filePath);
     ui->sizeLabel->setText(QString::number(fileInfo.size()) + " bytes");
@@ -83,18 +84,18 @@ void InformationDialog::setupInformation()
 
     if (fileInfo.isFile()) {
         ui->openButton->setEnabled(true);
-        connect(ui->openButton, &QPushButton::clicked, this, &InformationDialog::openFile);
+        connect(ui->openButton, &QPushButton::clicked, this, &InfoDialog::openFile);
     } else {
         ui->openButton->setEnabled(false);
     }
 }
 
-void InformationDialog::openFile()
+void InfoDialog::openFile()
 {
     QMessageBox::warning(this, tr("Error"), tr("Not implemented yet!"));
 }
 
-QString InformationDialog::getPermissionsString(QFile::Permissions permissions)
+QString InfoDialog::getPermissionsString(QFile::Permissions permissions)
 {
     QString result;
     if (permissions & QFile::ReadOwner) result += "r";
