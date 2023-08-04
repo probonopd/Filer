@@ -24,6 +24,11 @@
  * SUCH DAMAGE.
  */
 
+/**
+ * @file CustomItemDelegate.h
+ * @brief The CustomItemDelegate class.
+ */
+
 #ifndef CUSTOMITEMDELEGATE_H
 #define CUSTOMITEMDELEGATE_H
 

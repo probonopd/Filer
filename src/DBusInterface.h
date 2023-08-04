@@ -30,6 +30,7 @@
 #include <QObject>
 
 /**
+ * @file DBusInterface.h
  * @brief The DBusInterface class represents the D-Bus interface for file management operations.
  */
 class DBusInterface : public QObject

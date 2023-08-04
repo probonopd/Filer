@@ -16,6 +16,7 @@
 #include <QString>
 
 /**
+ * @file ElfSizeCalculator.h
  * @class ElfSizeCalculator
  * @brief Calculate the size of an ELF file based on the information in the ELF header.
  *

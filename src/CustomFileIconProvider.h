@@ -34,20 +34,40 @@
 #include "CustomFileSystemModel.h"
 #include "CombinedIconCreator.h"
 
+/**
+ * @file CustomFileIconProvider.h
+ * @brief The CustomFileIconProvider class provides custom icons for files and directories.
+ *
+ * This class extends QFileIconProvider to provide custom icons based on the file type and context.
+ */
 class CustomFileIconProvider : public QFileIconProvider
 {
 public:
+    /**
+     * @brief Constructs a CustomFileIconProvider object.
+     */
     CustomFileIconProvider();
 
+    ~CustomFileIconProvider();
+
+    /**
+     * @brief Retrieves the custom icon for the specified file info.
+     * @param info The QFileInfo object representing the file or directory.
+     * @return The QIcon representing the custom icon for the file or directory.
+     */
     QIcon icon(const QFileInfo &info) const override;
 
-    QString currentThemeName;
+    QString currentThemeName; /**< The name of the current theme. */
 
+    /**
+     * @brief Sets the CustomFileSystemModel associated with the icon provider.
+     * @param model The CustomFileSystemModel to set.
+     */
     void setModel(CustomFileSystemModel* model);
 
 private:
-    const CustomFileSystemModel* m_model;
-    CombinedIconCreator iconCreator;
+    const CustomFileSystemModel* m_model; /**< Pointer to the CustomFileSystemModel associated with the icon provider. */
+    CombinedIconCreator* iconCreator;; /**< Pointer to the CombinedIconCreator associated with the icon provider. */
 };
 
 #endif // Filer_CUSTOMFILEICONPROVIDER_H

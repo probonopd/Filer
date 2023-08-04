@@ -38,12 +38,18 @@
 #include <QApplication>
 
 CustomFileIconProvider::CustomFileIconProvider()
+        : iconCreator(new CombinedIconCreator) // "Initialize the pointer in the constructor"
 {
 
     currentThemeName = QIcon::themeName();
     // qDebug() << "currentThemeName: " << currentThemeName;
 
     CombinedIconCreator iconCreator;
+}
+
+CustomFileIconProvider::~CustomFileIconProvider()
+{
+    delete iconCreator; // Release the memory in the destructor
 }
 
 /**
@@ -127,7 +133,7 @@ QIcon CustomFileIconProvider::icon(const QFileInfo &info) const
                 applicationIcon = QIcon::fromTheme("unknown");
             }
             // return(applicationIcon);
-            QIcon combinedIcon = iconCreator.createCombinedIcon(applicationIcon);
+            QIcon combinedIcon = iconCreator->createCombinedIcon(applicationIcon);
             return (combinedIcon);
         } else {
             qDebug("Info: %s is not a valid application bundle", qPrintable(openWith));
