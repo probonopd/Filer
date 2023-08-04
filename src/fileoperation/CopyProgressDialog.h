@@ -18,7 +18,7 @@ public:
 
 
 public slots:
-            void onCopyProgress(int progress);
+    void onCopyProgress(int progress);
     void onCopyFinished();
     void onCancelCopy();
     void onErrorOccurred(const QString& errorMessage);

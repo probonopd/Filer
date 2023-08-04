@@ -92,7 +92,10 @@ void CopyProgressDialog::closeEvent(QCloseEvent* event) {
     event->accept();
 }
 
+// FIXME: This never gets called, why?
+// Instead, we get CopyManager: Copy operation cancelled.
 void CopyProgressDialog::onErrorOccurred(const QString& errorMessage) {
+    qDebug() << "CopyProgressDialog::onErrorOccurred";
     hide();
     QMessageBox::warning(this, tr("Error"), errorMessage);
     close();

@@ -34,6 +34,7 @@ void CopyManager::copyWithProgress(const QStringList& fromPaths, const QString& 
     connect(copyThread, &CopyThread::progress, this, &CopyManager::onCopyProgress);
     connect(copyThread, &CopyThread::copyFinished, this, &CopyManager::onCopyFinished);
     connect(copyThread, &CopyThread::cancelCopyRequested, this, &CopyManager::onCancelCopy);
+    connect(copyThread, &CopyThread::error, this, &CopyManager::onErrorOccurred);
 
     copyThread->start();
 
@@ -46,7 +47,7 @@ void CopyManager::onCopyProgress(int progress) {
 }
 
 void CopyManager::onCopyFinished() {
-    qDebug() << "Copy operation completed.";
+    qDebug() << "CopyManager: Copy operation completed.";
     emit copyFinished();
     if (progressDialog) {
         progressDialog->hide();
@@ -59,7 +60,23 @@ void CopyManager::onCopyFinished() {
 }
 
 void CopyManager::onCancelCopy() {
-    qDebug() << "Copy operation canceled.";
+    qDebug() << "CopyManager: Copy operation canceled.";
+    emit copyCanceled();
+    if (copyThread && copyThread->isRunning()) {
+        copyThread->quit();
+        copyThread->wait();
+        copyThread = nullptr;
+    }
+    if (progressDialog) {
+        progressDialog->hide();
+        delete progressDialog;
+        progressDialog = nullptr;
+    }
+}
+
+void CopyManager::onErrorOccurred(const QString& errorMessage) {
+    qDebug() << "CopyManager:" << errorMessage;
+    emit errorOccured(errorMessage);
     if (copyThread && copyThread->isRunning()) {
         copyThread->quit();
         copyThread->wait();

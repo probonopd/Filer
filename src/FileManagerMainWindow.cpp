@@ -63,6 +63,8 @@
 #include <QFileSystemModel>
 #include <QCompleter>
 #include <QRegExpValidator>
+#include <QClipboard>
+#include <QUrl>
 #include "ApplicationBundle.h"
 #include "TrashHandler.h"
 
@@ -579,8 +581,96 @@ void FileManagerMainWindow::createMenus()
     editMenu->actions().last()->setShortcut(QKeySequence("Ctrl+X"));
     editMenu->addAction(tr("Copy"));
     editMenu->actions().last()->setShortcut(QKeySequence("Ctrl+C"));
+    // Put the paths of the selected files on the clipboard so that we can use them when pasting
+    connect(editMenu->actions().last(), &QAction::triggered, this, [this]() {
+        // Get all selected indexes
+        QModelIndexList selectedIndexes = m_treeView->selectionModel()->selectedIndexes();
+        // Get the file paths of the selected indexes
+        QStringList filePaths;
+        for (const QModelIndex &index : selectedIndexes) {
+            filePaths.append(m_fileSystemModel->filePath(index));
+        }
+        qDebug() << "Copying the following files to the clipboard:";
+        for (const QString &filePath : filePaths) {
+            qDebug() << filePath;
+        }
+        // Put the file paths on the clipboard using mimeData->setData("text/uri-list", ...)
+        QMimeData *mimeData = new QMimeData;
+        QList<QUrl> urls;
+        for (const QString &filePath : filePaths) {
+            urls.append(QUrl::fromLocalFile(filePath));
+        }
+        mimeData->setUrls(urls);
+        QApplication::clipboard()->setMimeData(mimeData);
+        // Set the "cut" property of the clipboard to false
+        // so that we know that we are copying and not cutting
+        QApplication::clipboard()->setProperty("cut", false);
+    });
     editMenu->addAction(tr("Paste"));
     editMenu->actions().last()->setShortcut(QKeySequence("Ctrl+V"));
+    // Lambda that prints the paths of the files that are on the clipboard
+    connect(editMenu->actions().last(), &QAction::triggered, this, [this]() {
+        qDebug() << "Pasting the following files from the clipboard:";
+        QClipboard *clipboard = QApplication::clipboard();
+
+        // Check if we have URLs on the clipboard using mimeData
+        if (clipboard->mimeData()->hasUrls()) {
+            // Check if they are all file://
+            bool allFileUrls = true;
+            for (const QUrl &url : clipboard->mimeData()->urls()) {
+                if (!url.isLocalFile()) {
+                    allFileUrls = false;
+                    break;
+                }
+            }
+
+            // Find out whether they were cut or copied
+            bool filesWereCut = clipboard->property("cut").toBool();
+
+            // If they were cut, move them
+            if (filesWereCut) {
+                // Dialog saying not yet implemented
+                QMessageBox::information(this, tr("Not yet implemented"), tr("Moving files is not yet implemented."));
+            }
+
+            if (!filesWereCut) {
+
+                // Call the "fileoperation" command line tool like this:
+                // fileoperation --copy "/home/username" "/home/username/file1" "/home/username/file2" "/tmp/destination"
+                // The first argument is the operation to perform, the last argument is the destination directory,
+                // and the arguments in between are the files to be copied
+                // The fileoperation tool will then copy the files to the destination directory
+
+                QStringList args;
+                args << "--copy";
+
+                // Construct the command line arguments from the URLs on the clipboard
+                QClipboard *clipboard = QApplication::clipboard();
+                QList<QUrl> urls = clipboard->mimeData()->urls();
+                for (const QUrl &url : urls) {
+                    args << url.toLocalFile();
+                }
+                // Get the destination directory based on the root index of the current view
+                QModelIndex rootIndex = m_treeView->rootIndex();
+                QString destinationDirectory = m_fileSystemModel->filePath(rootIndex);
+                args << destinationDirectory;
+
+                // Show a dialog with the command and the arguments
+                QMessageBox::information(this, tr("Paste"), tr("The following command will be executed:\n\n%1 %2").arg("fileoperation").arg(args.join(" ")));
+
+                // Execute the command
+                QProcess process;
+                process.start("fileoperation", args);
+                process.waitForFinished();
+                qDebug() << "Exit code:" << process.exitCode();
+
+                // Show a dialog with the exit code
+                QMessageBox::information(this, tr("Paste"), tr("The exit code of the command was %1.").arg(process.exitCode()));
+            }
+        }
+    });
+
+
     editMenu->addAction(tr("Move to Trash"));
     editMenu->actions().last()->setShortcut(QKeySequence("Ctrl-Backspace"));
     connect(editMenu->actions().last(), &QAction::triggered, this, [this]() {

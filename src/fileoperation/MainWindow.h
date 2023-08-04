@@ -14,7 +14,8 @@ public:
 private:
     CopyManager copyManager;
     void onCopyFinished();
-    void onCopyCancelled();
+    void onCopyCanceled();
+    void onErrorOccurred(const QString& errorMessage);
 
 };
 #endif // MAINWINDOW_H

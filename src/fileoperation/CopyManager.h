@@ -18,11 +18,14 @@ public:
 
     signals:
         void copyFinished();
+        void copyCanceled();
+        void errorOccured(const QString& errorMessage);
 
 private slots:
     void onCopyProgress(int progress);
     void onCopyFinished();
     void onCancelCopy();
+    void onErrorOccurred(const QString& errorMessage);
 
 private:
     CopyProgressDialog* progressDialog;

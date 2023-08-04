@@ -16,14 +16,25 @@ void MainWindow::startCopyWithProgress(const QStringList& fromPaths, const QStri
 
     // Register a callback to know when the copy is finished
     connect(&copyManager, &CopyManager::copyFinished, this, &MainWindow::onCopyFinished);
+    // Register a callback to know when the copy was cancelled or an error occurred
+    connect(&copyManager, &CopyManager::copyCanceled, this, &MainWindow::onCopyCanceled);
+    // Register a callback to know when an error occurred
+    connect(&copyManager, &CopyManager::errorOccured, this, &MainWindow::onErrorOccurred);
 }
 
 void MainWindow::onCopyFinished() {
-    qDebug() << "Copy finished!";
-    // QCoreApplication::quit();
+    qDebug() << "MainWindow: Copy finished!";
+    QCoreApplication::quit();
 }
 
-void MainWindow::onCopyCancelled() {
-    qDebug() << "Copy cancelled!";
-    // QCoreApplication::quit();
+void MainWindow::onCopyCanceled() {
+    qDebug() << "MainWindow: Copy canceled!";
+    // Exit with an error code
+    QCoreApplication::exit(1);
+}
+
+void MainWindow::onErrorOccurred(const QString& errorMessage) {
+    qDebug() << "MainWindow: Error occurred: " << errorMessage;
+    // Exit with an error code
+    QCoreApplication::exit(1);
 }
