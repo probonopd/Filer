@@ -2,3 +2,6 @@
 	path = src/sounds
 	url = https://github.com/helloSystem/Sounds.git
 	branch = main
+[submodule "Resources/Sounds"]
+	path = Resources/Sounds
+	url = https://github.com/helloSystem/Sounds
