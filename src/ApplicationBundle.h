@@ -24,6 +24,11 @@
  * SUCH DAMAGE.
  */
 
+/**
+ * @file ApplicationBundle.h
+ * @brief Definition of the ApplicationBundle class.
+ */
+
 #ifndef APPLICATIONBUNDLE_H
 #define APPLICATIONBUNDLE_H
 
@@ -32,35 +37,97 @@
 #include <QIcon>
 #include <QObject>
 
+/**
+ * @class ApplicationBundle
+ * @brief Represents an application bundle or executable in various formats.
+ *
+ * The ApplicationBundle class provides methods to work with different types of application
+ * bundles, including AppImages, AppDirs, desktop files, and regular executables.
+ * It can be used to retrieve information about the application, such as its type, icon,
+ * name, executable path, and arguments.
+ *
+ * The class supports multiple types of application bundles, each identified by its Type.
+ * Application types include AppBundle (application bundle directory), AppDir (AppImage-like),
+ * AppImage (AppImage executable), and DesktopFile (desktop entry).
+ */
 class ApplicationBundle : public QObject {
-    Q_OBJECT
+Q_OBJECT
+
 public:
+    /**
+     * @brief Enumerates the different types of application bundles.
+     */
     enum class Type {
-        Unknown,
-        AppBundle,
-        AppDir,
-        AppImage,
-        DesktopFile
+        Unknown,       /**< Unknown application bundle type. */
+        AppBundle,     /**< Simplified .app bundle. */
+        AppDir,        /**< ROX-style AppDir. */
+        AppImage,      /**< AppImage executable. */
+        DesktopFile    /**< Desktop entry file. */
     };
 
+    /**
+     * @brief Constructs an ApplicationBundle object for the specified path.
+     * @param path The path to the application bundle.
+     */
     ApplicationBundle(const QString& path);
+
+    /**
+     * @brief Returns the path of the application bundle.
+     * @return The path.
+     */
     QString path() const;
+
+    /**
+     * @brief Checks if the application bundle is valid and exists.
+     * @return True if the bundle is valid, false otherwise.
+     */
     bool isValid() const;
+
+    /**
+     * @brief Returns the type of the application bundle.
+     * @return The type.
+     */
     Type type() const;
+
+    /**
+     * @brief Retrieves the icon of the application bundle.
+     * @return The icon.
+     */
     QIcon icon() const;
+
+    /**
+     * @brief Retrieves the name of the icon file.
+     * @return The icon name.
+     */
     QString iconName() const;
+
+    /**
+     * @brief Retrieves the name of the application.
+     * @return The name.
+     */
     QString name() const;
+
+    /**
+     * @brief Retrieves the path to the executable of the application.
+     * @return The executable path.
+     */
     QString executable() const;
+
+    /**
+     * @brief Retrieves the list of arguments passed to the executable.
+     * @return The list of arguments.
+     */
     QStringList arguments() const;
 
 private:
-    QString m_path;
-    bool m_isValid;
-    Type m_type;
-    QString m_name;
-    QString m_icon;
-    QString m_executable;
-    QStringList m_arguments;
+    QString m_path;         /**< The path of the application bundle. */
+    bool m_isValid;         /**< Indicates if the bundle is valid. */
+    Type m_type;            /**< The type of the application bundle. */
+    QString m_name;         /**< The name of the application. */
+    QString m_icon;         /**< The path of the application's icon. */
+    QString m_executable;   /**< The path to the executable. */
+    QStringList m_arguments;/**< The list of arguments. */
 };
 
 #endif // APPLICATIONBUNDLE_H
+
