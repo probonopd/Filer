@@ -22,7 +22,7 @@ task:
   stateful: false
   setup_script:
     - sed -i '' -e 's|quarterly|release_3|g' "/etc/pkg/FreeBSD.conf" # https://bugs.freebsd.org/bugzilla/show_bug.cgi?id=270940
-    - pkg install -y git-lite curl wget zip cmake pkgconf qt5-core qt5-widgets qt5-qmake qt5-buildtools meson zstd 
+    - pkg install -y git-lite curl wget zip cmake pkgconf qt5-core qt5-widgets qt5-multimedia qt5-qmake qt5-buildtools meson zstd
   ccache_setup_script:
     - env IGNORE_OSVERSION=yes pkg install -y ccache-static
     - ccache --max-size=${CCACHE_SIZE}
