@@ -62,33 +62,28 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="classElfSizeCalculator-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">ElfSizeCalculator Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-
-<p>Calculate the size of an ELF file based on the information in the ELF header.  
- <a href="classElfSizeCalculator.html#details">More...</a></p>
-
-<p><code>#include &lt;<a class="el" href="ElfSizeCalculator_8h_source.html">ElfSizeCalculator.h</a>&gt;</code></p>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
-Public Member Functions</h2></td></tr>
-<tr class="memitem:af2c901aa12ddb1e654a5d94cc96c63d6"><td class="memItemLeft" align="right" valign="top">qint64&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classElfSizeCalculator.html#af2c901aa12ddb1e654a5d94cc96c63d6">CalculateElfSize</a> (const QString &amp;filePath)</td></tr>
-<tr class="memdesc:af2c901aa12ddb1e654a5d94cc96c63d6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculate the size of the ELF file.  <a href="classElfSizeCalculator.html#af2c901aa12ddb1e654a5d94cc96c63d6">More...</a><br /></td></tr>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:af2c901aa12ddb1e654a5d94cc96c63d6"><td class="memItemLeft" align="right" valign="top">static qint64&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classElfSizeCalculator.html#af2c901aa12ddb1e654a5d94cc96c63d6">CalculateElfSize</a> (const QString &amp;filePath)</td></tr>
+<tr class="memdesc:af2c901aa12ddb1e654a5d94cc96c63d6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculate the ELF size for the given file path.  <a href="classElfSizeCalculator.html#af2c901aa12ddb1e654a5d94cc96c63d6">More...</a><br /></td></tr>
 <tr class="separator:af2c901aa12ddb1e654a5d94cc96c63d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Calculate the size of an ELF file based on the information in the ELF header. </p>
-<p>The <a class="el" href="classElfSizeCalculator.html" title="Calculate the size of an ELF file based on the information in the ELF header.">ElfSizeCalculator</a> class provides methods to calculate the size of an ELF file in bytes based on the information available in the ELF header. </p>
-</div><h2 class="groupheader">Member Function Documentation</h2>
+<h2 class="groupheader">Member Function Documentation</h2>
 <a id="af2c901aa12ddb1e654a5d94cc96c63d6"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#af2c901aa12ddb1e654a5d94cc96c63d6">&#9670;&nbsp;</a></span>CalculateElfSize()</h2>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">qint64 ElfSizeCalculator::CalculateElfSize </td>
@@ -98,17 +93,21 @@ Public Member Functions</h2></td></tr>
           <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
-<p>Calculate the size of the ELF file. </p>
-<p>This function takes the path of an ELF file as input and returns the size of the ELF file in bytes. It reads the ELF header to determine the size.</p>
+<p>Calculate the ELF size for the given file path. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">filePath</td><td>The path of the ELF file. </td></tr>
+    <tr><td class="paramname">filePath</td><td>The path to the ELF file. </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>The size of the ELF file in bytes, or 0 if an error occurs. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>The calculated ELF size in bytes. </dd></dl>
 
 </div>
 </div>

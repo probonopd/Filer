@@ -65,31 +65,32 @@ $(function() {
 <div class="title">ElfSizeCalculator.h</div>  </div>
 </div><!--header-->
 <div class="contents">
-<a href="ElfSizeCalculator_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160; </div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#ifndef ELF_SIZE_CALCULATOR_H</span></div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#define ELF_SIZE_CALCULATOR_H</span></div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160; </div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &lt;elf.h&gt;</span></div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &lt;QString&gt;</span></div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160; </div>
-<div class="line"><a name="l00026"></a><span class="lineno"><a class="line" href="classElfSizeCalculator.html">   26</a></span>&#160;<span class="keyword">class </span><a class="code" href="classElfSizeCalculator.html">ElfSizeCalculator</a></div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;{</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    qint64 <a class="code" href="classElfSizeCalculator.html#af2c901aa12ddb1e654a5d94cc96c63d6">CalculateElfSize</a>(<span class="keyword">const</span> QString&amp; filePath);</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160; </div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    <span class="keywordtype">bool</span> IsElfHeaderMagicValid(<span class="keyword">const</span> Elf64_Ehdr&amp; header);</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160; </div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    qint64 CalculateElfSize64(<span class="keyword">const</span> Elf64_Ehdr&amp; header, qint64 fileSize);</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160; </div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    qint64 CalculateElfSize32(<span class="keyword">const</span> Elf64_Ehdr&amp; header, qint64 fileSize);</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160; </div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;    <span class="keywordtype">void</span> PrintError(<span class="keyword">const</span> QString&amp; context, <span class="keyword">const</span> QString&amp; error);</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;};</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160; </div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;<span class="preprocessor">#endif </span><span class="comment">// ELF_SIZE_CALCULATOR_H</span></div>
-<div class="ttc" id="aclassElfSizeCalculator_html"><div class="ttname"><a href="classElfSizeCalculator.html">ElfSizeCalculator</a></div><div class="ttdoc">Calculate the size of an ELF file based on the information in the ELF header.</div><div class="ttdef"><b>Definition:</b> ElfSizeCalculator.h:27</div></div>
-<div class="ttc" id="aclassElfSizeCalculator_html_af2c901aa12ddb1e654a5d94cc96c63d6"><div class="ttname"><a href="classElfSizeCalculator.html#af2c901aa12ddb1e654a5d94cc96c63d6">ElfSizeCalculator::CalculateElfSize</a></div><div class="ttdeci">qint64 CalculateElfSize(const QString &amp;filePath)</div><div class="ttdoc">Calculate the size of the ELF file.</div><div class="ttdef"><b>Definition:</b> ElfSizeCalculator.cpp:6</div></div>
+<a href="ElfSizeCalculator_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#ifndef ELFSIZECALCULATOR_H</span></div>
+<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="preprocessor">#define ELFSIZECALCULATOR_H</span></div>
+<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160; </div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="preprocessor">#include &lt;QString&gt;</span></div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor">#include &lt;elf.h&gt;</span></div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160; </div>
+<div class="line"><a name="l00015"></a><span class="lineno"><a class="line" href="classElfSizeCalculator.html">   15</a></span>&#160;<span class="keyword">class </span><a class="code" href="classElfSizeCalculator.html">ElfSizeCalculator</a></div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;{</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    <span class="keyword">static</span> qint64 <a class="code" href="classElfSizeCalculator.html#af2c901aa12ddb1e654a5d94cc96c63d6">CalculateElfSize</a>(<span class="keyword">const</span> QString&amp; filePath);</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160; </div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    <span class="keyword">static</span> qint64 CalculateElfSizeInternal(<span class="keyword">const</span> QString&amp; filePath);</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160; </div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    <span class="keyword">static</span> <span class="keywordtype">bool</span> IsElfHeaderMagicValid(<span class="keyword">const</span> Elf64_Ehdr&amp; header);</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160; </div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    <span class="keyword">static</span> qint64 CalculateElfSize64(<span class="keyword">const</span> Elf64_Ehdr&amp; header, qint64 fileSize);</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160; </div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    <span class="keyword">static</span> qint64 CalculateElfSize32(<span class="keyword">const</span> Elf64_Ehdr&amp; header, qint64 fileSize);</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160; </div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    <span class="keyword">static</span> <span class="keywordtype">void</span> PrintError(<span class="keyword">const</span> QString&amp; context, <span class="keyword">const</span> QString&amp; error);</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;};</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160; </div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;<span class="preprocessor">#endif </span><span class="comment">// ELFSIZECALCULATOR_H</span></div>
+<div class="ttc" id="aclassElfSizeCalculator_html"><div class="ttname"><a href="classElfSizeCalculator.html">ElfSizeCalculator</a></div><div class="ttdef"><b>Definition:</b> ElfSizeCalculator.h:16</div></div>
+<div class="ttc" id="aclassElfSizeCalculator_html_af2c901aa12ddb1e654a5d94cc96c63d6"><div class="ttname"><a href="classElfSizeCalculator.html#af2c901aa12ddb1e654a5d94cc96c63d6">ElfSizeCalculator::CalculateElfSize</a></div><div class="ttdeci">static qint64 CalculateElfSize(const QString &amp;filePath)</div><div class="ttdoc">Calculate the ELF size for the given file path.</div><div class="ttdef"><b>Definition:</b> ElfSizeCalculator.cpp:6</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

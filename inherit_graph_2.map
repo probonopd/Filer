@@ -1,9 +1,8 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" title=" " alt="" coords="5,132,80,159"/>
+<area shape="rect" id="node1" title=" " alt="" coords="5,107,80,133"/>
 <area shape="rect" id="node2" href="$classApplicationBundle.html" title="Represents an application bundle or executable in various formats." alt="" coords="132,5,272,32"/>
 <area shape="rect" id="node3" href="$classDBusInterface.html" title=" " alt="" coords="145,56,259,83"/>
-<area shape="rect" id="node4" href="$classElfBinary.html" title="The ElfBinary class provides functionality to read information from ELF binary files." alt="" coords="161,107,243,133"/>
-<area shape="rect" id="node5" href="$classSoundPlayer.html" title="The SoundPlayer class provides functionality to play sound effects." alt="" coords="151,157,253,184"/>
-<area shape="rect" id="node6" href="$classSqshArchiveReader.html" title="The SqshArchiveReader class provides functionality to read files from a SquashFS archive." alt="" coords="128,208,276,235"/>
-<area shape="rect" id="node7" href="$classTrashHandler.html" title="The TrashHandler class provides functionality to manage a &quot;Trash&quot; (virtual trash) for files and direc..." alt="" coords="149,259,255,285"/>
+<area shape="rect" id="node4" href="$classSoundPlayer.html" title="The SoundPlayer class provides functionality to play sound effects." alt="" coords="151,107,253,133"/>
+<area shape="rect" id="node5" href="$classSqshArchiveReader.html" title="The SqshArchiveReader class provides functionality to read files from a SquashFS archive." alt="" coords="128,157,276,184"/>
+<area shape="rect" id="node6" href="$classTrashHandler.html" title="The TrashHandler class provides functionality to manage a &quot;Trash&quot; (virtual trash) for files and direc..." alt="" coords="149,208,255,235"/>
 </map>
