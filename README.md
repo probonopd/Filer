@@ -13,24 +13,27 @@ A clean rewrite of the Filer for [helloSystem](https://hellosystem.github.io/) (
 
 ## Features
 
-|Other file managers|Filer|Implemented|
+|Other file managers|Filer|DONE|
 |---|---|---|
-|Do not natively support `.app` bundles, `.AppDir` and `.AppImage` formats | Natively supports `.app` bundles, `.AppDir` and `.AppImage` formats|WIP|
+|Do not natively support `.app` bundles, `.AppDir` and `.AppImage` formats | Natively supports `.app` bundles, `.AppDir` and `.AppImage` formats|DONE|
 |Use XDG standards that have prevented *nix desktops from working well for all too long|Engineered from first principles to be a great desktop file manager|WIP|
 |Assume applications are at fixed locations, e.g., in `/usr/bin`|Assumes applications can be anywhere including external disks and file shares, and can be freely moved around|WIP based on `launch` "database"|
-|Show icons for files based on their MIME type|Show icons for files based on the application that opens them|Implemented based on `launch` "database"|
-|Do not allow individual files of the same MIME type to be opened with different applications|Allows individual files of the same MIME type to be opened with different applications (using the `can-open` extended attribute)|Handled by `launch`|
-|Do not persist window location and size for each window|Persists window location and size for each window|Implemented|
-|Do not persist the view type for each window|Persists the view type for each window|Implemented|
+|Show icons for files based on their MIME type|Show icons for files based on the application that opens them|DONE based on `launch` "database"|
+|Do not allow individual files of the same MIME type to be opened with different applications|Allows individual files of the same MIME type to be opened with different applications (using the `can-open` extended attribute)|DONE by `launch`|
+|Do not persist window location and size for each window|Persists window location and size for each window|DONE|
+|Do not persist the view type for each window|Persists the view type for each window|DONE|
 |Do not persist icon locations|Persists icon locations|TODO|
 |Do not persist the size of each icon|Persists the size of each icon|For consideration|
 |Cannot use copy and pasted icons for documents and folders|Can use copy and pasted icons for documents and folders|TODO|
-|Open files with whatever application if there is more than one that can handle a file|Asks the user which application to use if there is more than one that can handle a file|Handled by `launch`|
+|Open files with whatever application if there is more than one that can handle a file|Asks the user which application to use if there is more than one that can handle a file|DONE by `launch`|
 |Do not know which application created a file|Knows which application created a file and by default opens it with that application|TODO; how? Using DTrace or similar?|
 |Do not allow drag-and-drop of files onto applications|Allows drag-and-drop of files onto applications|TODO|
-|No animation when applications, documents, or folders are opened|Animation when applications, documents, or folders are opened|Implemented (using QTimeLine Property Animation)|
-|Opened applications, documents, and folders are not shown as such|Opened applications, documents, and folders are shown as such|Implemented for folders, TODO for the other types|
-|Uses technical jargon like "executables", "files", "directories", "properties", "wallpaper"|Uses familiar desktop terminology like "applications", "documents", "folders", "info", "desktop picture"|DONE|
+|No animation when applications, documents, or folders are opened|Animation when applications, documents, or folders are opened|DONE (using QTimeLine Property Animation)|
+|Opened applications, documents, and folders are not shown as open|Opened applications, documents, and folders are shown as open|DONE for folders, TODO for the other types|
+|Use technical jargon like "executables", "files", "directories", "properties", "wallpaper"|Uses familiar desktop terminology like "applications", "documents", "folders", "info", "desktop picture"|DONE|
+|Do not show volumes (disks) on the desktop|Shows volumes (disks) on the desktop|TODO|
+|Cannot eject disks by dragging them to the Trash|Ejects disks by dragging them to the Trash|TODO|
+|Use controls designed for mobile devices|Only uses controls designed for the desktop (e.g., real checkboxes)|DONE|
 
 My conclusion is that most "desktop environments" are made by people who don't actually love the desktop. Or else, those basic things would work.
 
