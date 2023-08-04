@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['icon_52',['icon',['../classCustomFileIconProvider.html#a2e44d2e48b65690d1d3ae2d0b8d8b6fc',1,'CustomFileIconProvider']]]
+  ['getelfsize_58',['getElfSize',['../classElfBinary.html#a34813c12aeebbaacadb38e98a49738d9',1,'ElfBinary']]]
 ];

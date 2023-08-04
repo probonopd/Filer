@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.9.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Filer: ui_InformationDialog.h Source File</title>
+<title>Filer: ui_InfoDialog.h Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -62,7 +62,7 @@ $(function() {
 
 <div class="header">
   <div class="headertitle">
-<div class="title">ui_InformationDialog.h</div>  </div>
+<div class="title">ui_InfoDialog.h</div>  </div>
 </div><!--header-->
 <div class="contents">
 <div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#ifndef UI_INFORMATIONDIALOG_H</span></div>
@@ -82,7 +82,7 @@ $(function() {
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160; </div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;QT_BEGIN_NAMESPACE</div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160; </div>
-<div class="line"><a name="l00018"></a><span class="lineno"><a class="line" href="classUi__InformationDialog.html">   18</a></span>&#160;<span class="keyword">class </span><a class="code" href="classUi__InformationDialog.html">Ui_InformationDialog</a></div>
+<div class="line"><a name="l00018"></a><span class="lineno"><a class="line" href="classUi__InfoDialog.html">   18</a></span>&#160;<span class="keyword">class </span><a class="code" href="classUi__InfoDialog.html">Ui_InfoDialog</a></div>
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;{</div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="keyword">public</span>:</div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;    QVBoxLayout *verticalLayout;</div>
@@ -95,44 +95,44 @@ $(function() {
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    QPushButton *openButton;</div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    QSpacerItem *verticalSpacer;</div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160; </div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    <span class="keywordtype">void</span> setupUi(QDialog *<a class="code" href="classInformationDialog.html">InformationDialog</a>)</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    <span class="keywordtype">void</span> setupUi(QDialog *<a class="code" href="classInfoDialog.html">InfoDialog</a>)</div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    {</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;        <span class="keywordflow">if</span> (<a class="code" href="classInformationDialog.html">InformationDialog</a>-&gt;objectName().isEmpty())</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;            <a class="code" href="classInformationDialog.html">InformationDialog</a>-&gt;setObjectName(QStringLiteral(<span class="stringliteral">&quot;InformationDialog&quot;</span>));</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;        <a class="code" href="classInformationDialog.html">InformationDialog</a>-&gt;resize(400, 300);</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;        verticalLayout = <span class="keyword">new</span> QVBoxLayout(<a class="code" href="classInformationDialog.html">InformationDialog</a>);</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;        <span class="keywordflow">if</span> (<a class="code" href="classInfoDialog.html">InfoDialog</a>-&gt;objectName().isEmpty())</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;            <a class="code" href="classInfoDialog.html">InfoDialog</a>-&gt;setObjectName(QStringLiteral(<span class="stringliteral">&quot;InformationDialog&quot;</span>));</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;        <a class="code" href="classInfoDialog.html">InfoDialog</a>-&gt;resize(400, 300);</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;        verticalLayout = <span class="keyword">new</span> QVBoxLayout(<a class="code" href="classInfoDialog.html">InfoDialog</a>);</div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;        verticalLayout-&gt;setObjectName(QStringLiteral(<span class="stringliteral">&quot;verticalLayout&quot;</span>));</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;        pathLabel = <span class="keyword">new</span> QLabel(<a class="code" href="classInformationDialog.html">InformationDialog</a>);</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;        pathLabel = <span class="keyword">new</span> QLabel(<a class="code" href="classInfoDialog.html">InfoDialog</a>);</div>
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;        pathLabel-&gt;setObjectName(QStringLiteral(<span class="stringliteral">&quot;pathLabel&quot;</span>));</div>
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160; </div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;        verticalLayout-&gt;addWidget(pathLabel);</div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160; </div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;        sizeLabel = <span class="keyword">new</span> QLabel(<a class="code" href="classInformationDialog.html">InformationDialog</a>);</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;        sizeLabel = <span class="keyword">new</span> QLabel(<a class="code" href="classInfoDialog.html">InfoDialog</a>);</div>
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;        sizeLabel-&gt;setObjectName(QStringLiteral(<span class="stringliteral">&quot;sizeLabel&quot;</span>));</div>
 <div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160; </div>
 <div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;        verticalLayout-&gt;addWidget(sizeLabel);</div>
 <div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160; </div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;        createdLabel = <span class="keyword">new</span> QLabel(<a class="code" href="classInformationDialog.html">InformationDialog</a>);</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;        createdLabel = <span class="keyword">new</span> QLabel(<a class="code" href="classInfoDialog.html">InfoDialog</a>);</div>
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;        createdLabel-&gt;setObjectName(QStringLiteral(<span class="stringliteral">&quot;createdLabel&quot;</span>));</div>
 <div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160; </div>
 <div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;        verticalLayout-&gt;addWidget(createdLabel);</div>
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160; </div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;        modifiedLabel = <span class="keyword">new</span> QLabel(<a class="code" href="classInformationDialog.html">InformationDialog</a>);</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;        modifiedLabel = <span class="keyword">new</span> QLabel(<a class="code" href="classInfoDialog.html">InfoDialog</a>);</div>
 <div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;        modifiedLabel-&gt;setObjectName(QStringLiteral(<span class="stringliteral">&quot;modifiedLabel&quot;</span>));</div>
 <div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160; </div>
 <div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;        verticalLayout-&gt;addWidget(modifiedLabel);</div>
 <div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160; </div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;        permissionsLabel = <span class="keyword">new</span> QLabel(<a class="code" href="classInformationDialog.html">InformationDialog</a>);</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;        permissionsLabel = <span class="keyword">new</span> QLabel(<a class="code" href="classInfoDialog.html">InfoDialog</a>);</div>
 <div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;        permissionsLabel-&gt;setObjectName(QStringLiteral(<span class="stringliteral">&quot;permissionsLabel&quot;</span>));</div>
 <div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160; </div>
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;        verticalLayout-&gt;addWidget(permissionsLabel);</div>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160; </div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;        typeLabel = <span class="keyword">new</span> QLabel(<a class="code" href="classInformationDialog.html">InformationDialog</a>);</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;        typeLabel = <span class="keyword">new</span> QLabel(<a class="code" href="classInfoDialog.html">InfoDialog</a>);</div>
 <div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;        typeLabel-&gt;setObjectName(QStringLiteral(<span class="stringliteral">&quot;typeLabel&quot;</span>));</div>
 <div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160; </div>
 <div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;        verticalLayout-&gt;addWidget(typeLabel);</div>
 <div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160; </div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;        openButton = <span class="keyword">new</span> QPushButton(<a class="code" href="classInformationDialog.html">InformationDialog</a>);</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;        openButton = <span class="keyword">new</span> QPushButton(<a class="code" href="classInfoDialog.html">InfoDialog</a>);</div>
 <div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;        openButton-&gt;setObjectName(QStringLiteral(<span class="stringliteral">&quot;openButton&quot;</span>));</div>
 <div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160; </div>
 <div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;        verticalLayout-&gt;addWidget(openButton);</div>
@@ -141,29 +141,29 @@ $(function() {
 <div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160; </div>
 <div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;        verticalLayout-&gt;addItem(verticalSpacer);</div>
 <div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160; </div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;        retranslateUi(<a class="code" href="classInformationDialog.html">InformationDialog</a>);</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;        retranslateUi(<a class="code" href="classInfoDialog.html">InfoDialog</a>);</div>
 <div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160; </div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;        QMetaObject::connectSlotsByName(<a class="code" href="classInformationDialog.html">InformationDialog</a>);</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;        QMetaObject::connectSlotsByName(<a class="code" href="classInfoDialog.html">InfoDialog</a>);</div>
 <div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    } <span class="comment">// setupUi</span></div>
 <div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160; </div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    <span class="keywordtype">void</span> retranslateUi(QDialog *<a class="code" href="classInformationDialog.html">InformationDialog</a>)</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    <span class="keywordtype">void</span> retranslateUi(QDialog *<a class="code" href="classInfoDialog.html">InfoDialog</a>)</div>
 <div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;    {</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;        <a class="code" href="classInformationDialog.html">InformationDialog</a>-&gt;setWindowTitle(QCoreApplication::translate(<span class="stringliteral">&quot;InformationDialog&quot;</span>, <span class="stringliteral">&quot;Dialog&quot;</span>, <span class="keyword">nullptr</span>));</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;        <a class="code" href="classInfoDialog.html">InfoDialog</a>-&gt;setWindowTitle(QCoreApplication::translate(<span class="stringliteral">&quot;InformationDialog&quot;</span>, <span class="stringliteral">&quot;Dialog&quot;</span>, <span class="keyword">nullptr</span>));</div>
 <div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;        openButton-&gt;setText(QCoreApplication::translate(<span class="stringliteral">&quot;InformationDialog&quot;</span>, <span class="stringliteral">&quot;Open File&quot;</span>, <span class="keyword">nullptr</span>));</div>
 <div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;    } <span class="comment">// retranslateUi</span></div>
 <div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160; </div>
 <div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;};</div>
 <div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160; </div>
 <div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;<span class="keyword">namespace </span>Ui {</div>
-<div class="line"><a name="l00091"></a><span class="lineno"><a class="line" href="classUi_1_1InformationDialog.html">   91</a></span>&#160;    <span class="keyword">class </span><a class="code" href="classUi_1_1InformationDialog.html">InformationDialog</a>: <span class="keyword">public</span> <a class="code" href="classUi__InformationDialog.html">Ui_InformationDialog</a> {};</div>
+<div class="line"><a name="l00091"></a><span class="lineno"><a class="line" href="classUi_1_1InfoDialog.html">   91</a></span>&#160;    <span class="keyword">class </span><a class="code" href="classUi_1_1InfoDialog.html">InfoDialog</a>: <span class="keyword">public</span> <a class="code" href="classUi__InfoDialog.html">Ui_InfoDialog</a> {};</div>
 <div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;} <span class="comment">// namespace Ui</span></div>
 <div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160; </div>
 <div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;QT_END_NAMESPACE</div>
 <div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160; </div>
 <div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;<span class="preprocessor">#endif </span><span class="comment">// UI_INFORMATIONDIALOG_H</span></div>
-<div class="ttc" id="aclassInformationDialog_html"><div class="ttname"><a href="classInformationDialog.html">InformationDialog</a></div><div class="ttdef"><b>Definition:</b> InformationDialog.h:38</div></div>
-<div class="ttc" id="aclassUi_1_1InformationDialog_html"><div class="ttname"><a href="classUi_1_1InformationDialog.html">Ui::InformationDialog</a></div><div class="ttdef"><b>Definition:</b> ui_InformationDialog.h:91</div></div>
-<div class="ttc" id="aclassUi__InformationDialog_html"><div class="ttname"><a href="classUi__InformationDialog.html">Ui_InformationDialog</a></div><div class="ttdef"><b>Definition:</b> ui_InformationDialog.h:19</div></div>
+<div class="ttc" id="aclassInfoDialog_html"><div class="ttname"><a href="classInfoDialog.html">InfoDialog</a></div><div class="ttdoc">The InfoDialog class represents a dialog to display information about a file or directory.</div><div class="ttdef"><b>Definition:</b> InfoDialog.h:41</div></div>
+<div class="ttc" id="aclassUi_1_1InfoDialog_html"><div class="ttname"><a href="classUi_1_1InfoDialog.html">Ui::InfoDialog</a></div><div class="ttdef"><b>Definition:</b> ui_InfoDialog.h:91</div></div>
+<div class="ttc" id="aclassUi__InfoDialog_html"><div class="ttname"><a href="classUi__InfoDialog.html">Ui_InfoDialog</a></div><div class="ttdef"><b>Definition:</b> ui_InfoDialog.h:19</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

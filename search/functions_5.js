@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['readfilefromarchive_53',['readFileFromArchive',['../classSqshArchiveReader.html#a3e80c89957e5f18a3c1adc67e480e347',1,'SqshArchiveReader']]],
-  ['readsqsharchive_54',['readSqshArchive',['../classSqshArchiveReader.html#a8e94ea1f5fe9dabc211910752847c4c7',1,'SqshArchiveReader']]]
+  ['icon_59',['icon',['../classCustomFileIconProvider.html#a2e44d2e48b65690d1d3ae2d0b8d8b6fc',1,'CustomFileIconProvider']]],
+  ['infodialog_60',['InfoDialog',['../classInfoDialog.html#ae103d6834fb2808adeaa6a046676e1b4',1,'InfoDialog']]]
 ];

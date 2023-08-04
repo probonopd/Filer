@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['informationdialog_42',['InformationDialog',['../classInformationDialog.html',1,'InformationDialog'],['../classUi_1_1InformationDialog.html',1,'Ui::InformationDialog']]]
+  ['infodialog_48',['InfoDialog',['../classInfoDialog.html',1,'InfoDialog'],['../classUi_1_1InfoDialog.html',1,'Ui::InfoDialog']]]
 ];
