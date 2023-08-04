@@ -24,28 +24,55 @@
  * SUCH DAMAGE.
  */
 
-/* The DesktopFile class is a simple utility class for reading desktop files.
- * It provides a single method, getIcon, that reads the Icon= key
- * from the specified desktop file and searches for a matching icon file in directories
- * that may contain icons. If a matching file is found, the path to that file is returned.
- * If no matching file is found, an empty string is returned.
- * This class can be useful for reading the icon associated with
- * a desktop file and using it in a graphical user interface.
+/**
+ * @file DesktopFile.h
+ * @brief The DesktopFile class provides functionality to work with desktop entry files.
+ *
+ * Note: This class provides minimal support for XDG desktop files for backward compatibility
+ * with legacy applications. Consider bundle formats like .app, .AppDir, or .AppImage instead,
+ * as Filer is optimized for these.
  */
 
-//ifndef DESKTOPFILE_H
-//define DESKTOPFILE_H
+#ifndef DESKTOPFILE_H
+#define DESKTOPFILE_H
 
 #include <QString>
 
+/**
+ * @file DesktopFile.h
+ * @brief The DesktopFile class provides functionality to work with desktop entry files.
+ *
+ * Note: This class provides minimal support for XDG desktop files for backward compatibility
+ * with legacy applications. Consider bundle formats like .app, .AppDir, or .AppImage instead,
+ * as Filer is optimized for these.
+ */
 class DesktopFile
 {
 public:
-    DesktopFile(const QString &filename);
-    QString getIcon() const;
+    /**
+     * @brief Retrieves the value for Icon= from a desktop file.
+     * @param filename The path of the desktop entry file to work with.
+     * @return The name of the icon, or an empty string if not found.
+     */
+    static QString getIcon(const QString &filename);
+
+    /**
+     * @brief Retrieves the value for Name= from a desktop file.
+     * @param filename The path of the desktop entry file to work with.
+     * @return The name of the desktop entry, or an empty string if not found.
+     */
+    static QString getName(const QString &filename);
+
+    /**
+     * @brief Retrieves the value of a key from a desktop file.
+     * @param filename The path of the desktop entry file to work with.
+     * @param key The key to look for.
+     * @return The value of the key, or an empty string if not found.
+     */
+    static QString getValue(const QString &filename, const QString &key);
 
 private:
-    QString m_filename;
+    DesktopFile(); /**< Private constructor to prevent instantiation. */
 };
 
-//endif // DESKTOPFILE_H
+#endif // DESKTOPFILE_H

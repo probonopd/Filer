@@ -35,16 +35,35 @@
 #include <QFile>
 #include <QByteArray>
 
+/**
+ * @brief The ExtendedAttributes class provides functionality to read and write extended attributes of a file.
+ */
 class ExtendedAttributes
 {
 public:
+    /**
+     * @brief Constructs an ExtendedAttributes object for the specified file.
+     * @param filePath The path of the file to work with.
+     */
     ExtendedAttributes(const QString &filePath);
 
+    /**
+     * @brief Writes an extended attribute for the file.
+     * @param attributeName The name of the attribute.
+     * @param attributeValue The value of the attribute to be written.
+     * @return True if the attribute was written successfully, false otherwise.
+     */
     bool write(const QString &attributeName, const QByteArray &attributeValue);
+
+    /**
+     * @brief Reads the value of an extended attribute from the file.
+     * @param attributeName The name of the attribute to read.
+     * @return The value of the attribute, or an empty QByteArray if not found.
+     */
     QByteArray read(const QString &attributeName);
 
 private:
-    QFile m_file;
+    QFile m_file; /**< The file associated with extended attributes. */
 };
 
 #endif // EXTENDEDATTRIBUTES_H

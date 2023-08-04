@@ -33,21 +33,21 @@
 #include <QDebug>
 #include <QIcon>
 
-DesktopFile::DesktopFile(const QString &filename) : m_filename(filename) { }
+DesktopFile::DesktopFile() { }
 
-QString DesktopFile::getIcon() const
+QString DesktopFile::getValue(const QString &filename, const QString &key)
 {
-    QString icon;
-    QFile file(m_filename);
-    // qDebug() << "Searching for icon for" << m_filename;
+    QString value;
+    QFile file(filename);
+    // qDebug() << "Searching for" << key << "in" << filename;
     // Search for a line starting with "Icon=" in the file
     if (file.open(QIODevice::ReadOnly)) {
         QTextStream in(&file);
         while (!in.atEnd()) {
             QString line = in.readLine();
-            if (line.startsWith("Icon")) {
+            if (line.startsWith(key)) {
                 // Split the line at "=" and take the second part, trim it
-                icon = line.split("=").at(1).trimmed();
+                value = line.split("=").at(1).trimmed();
                 break;
             }
         }
@@ -55,9 +55,19 @@ QString DesktopFile::getIcon() const
     }
 
     // Print error message if icon is not found
-    if (icon.isEmpty()) {
-        qDebug() << "Icon= not found in" << m_filename;
+    if (value.isEmpty()) {
+        qDebug() << key << "not found in" << filename;
     }
-    
-    return icon;
+
+    return value;
+}
+
+QString DesktopFile::getIcon(const QString &filename)
+{
+    return getValue(filename, "Icon");
+}
+
+QString DesktopFile::getName(const QString &filename)
+{
+    return getValue(filename, "Name");
 }
