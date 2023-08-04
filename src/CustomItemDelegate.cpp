@@ -341,7 +341,7 @@ bool CustomItemDelegate::editorEvent(QEvent *event, QAbstractItemModel *model,
         moveToTrashAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Backspace));
         connect(moveToTrashAction, &QAction::triggered, [=]() {
             TrashHandler trashHandler;
-            trashHandler.moveToTrash(filePath);
+            trashHandler.moveToTrash({filePath});
         });
         TrashHandler trashHandler;
         if (filePath.startsWith(trashHandler.getTrashPath())) {

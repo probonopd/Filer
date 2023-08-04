@@ -687,9 +687,8 @@ void FileManagerMainWindow::createMenus()
         }
         // Move the files to the trash
         TrashHandler trashHandler(this);
-        for (const QString &filePath : filePaths) {
-            trashHandler.moveToTrash(filePath);
-        }
+        trashHandler.moveToTrash(filePaths);
+
     });
     m_moveToTrashAction = editMenu->actions().last();
     m_moveToTrashAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Backspace));

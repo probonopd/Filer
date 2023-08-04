@@ -15,8 +15,8 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets DBus)
-find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets DBus)
+find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets DBus Multimedia)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets DBus Multimedia)
 
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(ZSTD REQUIRED IMPORTED_TARGET libzstd)
@@ -48,7 +48,9 @@ set(PROJECT_SOURCES
         CustomListView.cpp CustomListView.h
         TrashHandler.cpp TrashHandler.h
         ElfSizeCalculator.cpp ElfSizeCalculator.h
-        SqshArchiveReader.cpp SqshArchiveReader.h)
+        SqshArchiveReader.cpp SqshArchiveReader.h
+        SoundPlayer.h SoundPlayer.cpp
+        )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(Filer
@@ -76,6 +78,7 @@ endif()
 target_link_libraries(Filer PRIVATE
         Qt${QT_VERSION_MAJOR}::Widgets
         Qt${QT_VERSION_MAJOR}::DBus
+        Qt${QT_VERSION_MAJOR}::Multimedia
         ${LIBSQSH_STATIC_PATH}
         PkgConfig::ZSTD    # Link dynamically to libzstd
         PkgConfig::ZLIB    # Link dynamically to zlib
