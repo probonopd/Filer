@@ -27,6 +27,7 @@
 #include "FileManagerMainWindow.h"
 #include "CustomItemDelegate.h"
 #include "CustomFileIconProvider.h"
+#include "FileOperationManager.h"
 
 #include <QMenuBar>
 #include <QMenu>
@@ -642,38 +643,19 @@ void FileManagerMainWindow::createMenus()
 
             if (!filesWereCut) {
 
-                // Call the "fileoperation" command line tool like this:
-                // fileoperation --copy "/home/username" "/home/username/file1" "/home/username/file2" "/tmp/destination"
-                // The first argument is the operation to perform, the last argument is the destination directory,
-                // and the arguments in between are the files to be copied
-                // The fileoperation tool will then copy the files to the destination directory
-
-                QStringList args;
-                args << "--copy";
-
                 // Construct the command line arguments from the URLs on the clipboard
                 QClipboard *clipboard = QApplication::clipboard();
                 QList<QUrl> urls = clipboard->mimeData()->urls();
-                for (const QUrl &url : urls) {
-                    args << url.toLocalFile();
-                }
+
                 // Get the destination directory based on the root index of the current view
                 QModelIndex rootIndex = m_treeView->rootIndex();
                 QString destinationDirectory = m_fileSystemModel->filePath(rootIndex);
-                args << destinationDirectory;
-
-                // Show a dialog with the command and the arguments
-                QMessageBox::information(this, tr("Paste"), tr("The following command will be executed:\n\n%1 %2").arg("fileoperation").arg(args.join(" ")));
-
-                // Execute the command
-                QProcess process;
-                process.start("fileoperation", args);
-                process.waitForFinished();
-                qDebug() << "Exit code:" << process.exitCode();
-
-                // Show a dialog with the exit code
-                QMessageBox::information(this, tr("Paste"), tr("The exit code of the command was %1.").arg(process.exitCode()));
-            }
+                QStringList sourceFilePaths;
+                for (const QUrl &url : urls) {
+                    sourceFilePaths.append(url.toLocalFile());
+                }
+                FileOperationManager::copyWithProgress(sourceFilePaths, destinationDirectory);
+           }
         }
     });
 

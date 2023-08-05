@@ -4,7 +4,7 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QDebug>
-#include <QMessageBox>
+
 
 CopyProgressDialog::CopyProgressDialog(QWidget* parent) : QDialog(parent), fromLabel(nullptr), toLabel(nullptr),
                                                           progressBar(nullptr), cancelButton(nullptr) {
@@ -97,6 +97,5 @@ void CopyProgressDialog::closeEvent(QCloseEvent* event) {
 void CopyProgressDialog::onErrorOccurred(const QString& errorMessage) {
     qDebug() << "CopyProgressDialog::onErrorOccurred";
     hide();
-    QMessageBox::warning(this, tr("Error"), errorMessage);
-    close();
+    // close(); // FIXME: This would lead to a crash, why?
 }

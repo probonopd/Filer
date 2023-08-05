@@ -36,11 +36,14 @@
 #include <QDBusMessage>
 #include <QDBusConnection>
 #include <QThread>
+#include <QString>
 
 #include "FileManagerMainWindow.h"
 #include "DBusInterface.h"
 #include "ElfSizeCalculator.h"
 #include "SqshArchiveReader.h"
+#include "AppGlobals.h"
+#include "FileOperationManager.h"
 
 int main(int argc, char *argv[])
 {
@@ -123,6 +126,10 @@ int main(int argc, char *argv[])
             QMessageBox::critical(0, "Filer", QString("The '%1' command is missing. Please install it.").arg(neededCommand));
             return 1;
         }
+    }
+
+    if (FileOperationManager::findFileOperationBinary().isEmpty()) {
+        return 1;
     }
 
     // Run "open" without arguments and get its output; check

@@ -1,6 +1,7 @@
 #include "MainWindow.h"
 #include <QDebug>
 #include <QApplication>
+#include <QMessageBox>
 
 MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
 
@@ -35,6 +36,7 @@ void MainWindow::onCopyCanceled() {
 
 void MainWindow::onErrorOccurred(const QString& errorMessage) {
     qDebug() << "MainWindow: Error occurred: " << errorMessage;
+    QMessageBox::critical(this, tr("Error"), errorMessage);
     // Exit with an error code
     QCoreApplication::exit(1);
 }

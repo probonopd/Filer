@@ -70,7 +70,6 @@ void CopyManager::onCancelCopy() {
     if (progressDialog) {
         progressDialog->hide();
         delete progressDialog;
-        progressDialog = nullptr;
     }
 }
 
@@ -85,6 +84,5 @@ void CopyManager::onErrorOccurred(const QString& errorMessage) {
     if (progressDialog) {
         progressDialog->hide();
         delete progressDialog;
-        progressDialog = nullptr;
     }
 }

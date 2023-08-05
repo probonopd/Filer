@@ -51,7 +51,7 @@ set(PROJECT_SOURCES
         SoundPlayer.cpp SoundPlayer.h
         SqshArchiveReader.cpp SqshArchiveReader.h
         TrashHandler.cpp TrashHandler.h
-        )
+        FileOperationManager.cpp FileOperationManager.h)
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(Filer
