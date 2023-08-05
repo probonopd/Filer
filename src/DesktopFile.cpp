@@ -71,3 +71,13 @@ QString DesktopFile::getName(const QString &filename)
 {
     return getValue(filename, "Name");
 }
+
+bool DesktopFile::isCommandLineTool(const QString &filename)
+{
+    qDebug() << "Checking if" << filename << "is a command line tool";
+    if (getValue(filename, "Terminal") == "true") {
+        qDebug() << filename << "is a command line tool";
+        return true;
+    }
+    return false;
+}

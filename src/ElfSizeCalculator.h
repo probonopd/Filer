@@ -20,7 +20,7 @@ public:
      * @param filePath The path to the ELF file.
      * @return The calculated ELF size in bytes.
      */
-    static qint64 CalculateElfSize(const QString& filePath);
+    static qint64 calculateElfSize(const QString& filePath);
 
 private:
     /**

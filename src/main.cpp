@@ -39,6 +39,8 @@
 
 #include "FileManagerMainWindow.h"
 #include "DBusInterface.h"
+#include "ElfSizeCalculator.h"
+#include "SqshArchiveReader.h"
 
 int main(int argc, char *argv[])
 {
@@ -55,7 +57,6 @@ int main(int argc, char *argv[])
     parser.addHelpOption();
     parser.addVersionOption();
     parser.process(app);
-
 
     // Allow for arguments to be passed to the application
     // In this case, we don't create a main window, but instead we send messages via D-Bus

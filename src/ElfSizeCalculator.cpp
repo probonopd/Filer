@@ -3,7 +3,7 @@
 #include <QDataStream>
 #include <QDebug>
 
-qint64 ElfSizeCalculator::CalculateElfSize(const QString& filePath)
+qint64 ElfSizeCalculator::calculateElfSize(const QString& filePath)
 {
     QFile file(filePath);
     if (!file.open(QIODevice::ReadOnly))

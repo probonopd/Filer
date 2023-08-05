@@ -135,7 +135,7 @@ QIcon ApplicationBundle::icon() const
         return icon;
     } else if (m_type == Type::AppImage) {
         // Determine the ELF offset
-        qint64 offset = ElfSizeCalculator::CalculateElfSize(m_path);
+        qint64 offset = ElfSizeCalculator::calculateElfSize(m_path);
         qDebug() << "offset:" << offset << "for file" << m_path;
         // Get the data of the .DirIcon file from the squashfs
         SqshArchiveReader *reader = new SqshArchiveReader(offset);
@@ -188,4 +188,45 @@ QString ApplicationBundle::executable() const
 QStringList ApplicationBundle::arguments() const
 {
     return m_arguments;
+}
+
+bool ApplicationBundle::isCommandLineTool() const
+{
+    if (m_type == Type::DesktopFile) {
+        return DesktopFile::isCommandLineTool(m_path);
+    } else if (m_type == Type::AppImage) {
+        qint64 offset = ElfSizeCalculator::calculateElfSize(m_path);
+        qDebug() << "Offset:" << offset << "for file" << m_path;
+
+        SqshArchiveReader *reader = new SqshArchiveReader(offset);
+        qDebug() << "Extracting desktop files from" << m_path;
+
+        QStringList desktopFileCandidates = reader->readSqshArchive(m_path);
+        qDebug("desktopFileCandidates: %s", qUtf8Printable(desktopFileCandidates.join(", ")));
+
+        for (const QString desktopFileCandidate : desktopFileCandidates) {
+            // If ends with .desktop, check if it is a command line tool
+            if (desktopFileCandidate.endsWith(".desktop")) {
+                QString desktopFileContents = reader->readFileFromArchive(m_path, desktopFileCandidate);
+                qDebug() << "desktopFileContents:" << desktopFileContents;
+                QStringList lines = desktopFileContents.split("\n");
+                for (QString line : lines) {
+                    if (line.startsWith("Terminal=")) {
+                        // Split the line at "=" and take the second part, trim it
+                        QString value = line.split("=").at(1).trimmed();
+                        if (value == "true") {
+                            delete reader;
+                            return true;
+                        } else {
+                            delete reader;
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+        delete reader;
+        return false;
+    }
+    return false;
 }

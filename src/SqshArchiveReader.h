@@ -26,14 +26,13 @@
 
 /*
  * Example usage (in the real world, should use "this" instead of deleting the reader and elfBinary objects):
-   const char* sqsh_file = "/tmp/appimagetool-x86_64.AppImage";
 
-    ElfBinary* elfBinary = new ElfBinary();
-    qint64 offset = elfBinary->getElfSize(sqsh_file);
+    const char* sqsh_file = "/home/user/Desktop/appimagetool-730-x86_64.AppImage";
+    qDebug() << "sqsh_file" << sqsh_file;
+
+    qint64 offset = ElfSizeCalculator::calculateElfSize(sqsh_file);
+    qDebug() << "offset" << offset;
     SqshArchiveReader *reader = new SqshArchiveReader(offset);
-
-    QStringList results = reader->readSqshArchive(sqsh_file);
-    qDebug() << results;
 
     QByteArray fileData = reader->readFileFromArchive(sqsh_file, ".DirIcon");
     QIcon icon;
@@ -46,12 +45,15 @@
     desktopEntries.removeAll("");
     qDebug() << desktopEntries;
 
-    delete reader;
-    delete elfBinary;
+    QStringList results = reader->readSqshArchive(sqsh_file);
+    qDebug() << results;
 
- (".DirIcon", "AppRun", "appimagetool.desktop", "appimagetool.png", "usr")
+    delete reader;
+    exit(0);
+
  (QSize(128, 128))
  ("[Desktop Entry]", "Type=Application", "Name=appimagetool", "Exec=appimagetool", "Comment=Tool to generate AppImages from AppDirs", "Icon=appimagetool", "Categories=Development;", "Terminal=true")
+ (".DirIcon", "AppRun", "appimagetool.desktop", "appimagetool.png", "usr")
 
  */
 

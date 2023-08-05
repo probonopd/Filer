@@ -119,6 +119,12 @@ public:
      */
     QStringList arguments() const;
 
+    /**
+     * @brief Checks if the application bundle is a command line tool.
+     * @return True if the application is a command-line tool, false otherwise.
+     */
+    bool isCommandLineTool() const;
+
 private:
     QString m_path;         /**< The path of the application bundle. */
     bool m_isValid;         /**< Indicates if the bundle is valid. */

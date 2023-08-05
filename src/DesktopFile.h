@@ -71,6 +71,13 @@ public:
      */
     static QString getValue(const QString &filename, const QString &key);
 
+    /**
+     * @brief Checks if the application bundle is a command line tool.
+     * @param filename The path of the desktop entry file to work with.
+     * @return True if the application is a command-line tool, false otherwise.
+     */
+    static bool isCommandLineTool(const QString &filename);
+
 private:
     DesktopFile(); /**< Private constructor to prevent instantiation. */
 };
