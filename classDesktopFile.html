@@ -80,6 +80,9 @@ Static Public Member Functions</h2></td></tr>
 <tr class="memitem:aa2ba7c7df857e221116e94bd4aebe191"><td class="memItemLeft" align="right" valign="top">static QString&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDesktopFile.html#aa2ba7c7df857e221116e94bd4aebe191">getValue</a> (const QString &amp;filename, const QString &amp;key)</td></tr>
 <tr class="memdesc:aa2ba7c7df857e221116e94bd4aebe191"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves the value of a key from a desktop file.  <a href="classDesktopFile.html#aa2ba7c7df857e221116e94bd4aebe191">More...</a><br /></td></tr>
 <tr class="separator:aa2ba7c7df857e221116e94bd4aebe191"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a95063032ec1823e73cb0e49a6e00b911"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDesktopFile.html#a95063032ec1823e73cb0e49a6e00b911">isCommandLineTool</a> (const QString &amp;filename)</td></tr>
+<tr class="memdesc:a95063032ec1823e73cb0e49a6e00b911"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if the application bundle is a command line tool.  <a href="classDesktopFile.html#a95063032ec1823e73cb0e49a6e00b911">More...</a><br /></td></tr>
+<tr class="separator:a95063032ec1823e73cb0e49a6e00b911"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Member Function Documentation</h2>
 <a id="a84dfa88bb3ff24916269c79b6e2d8519"></a>
@@ -195,6 +198,41 @@ Static Public Member Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The value of the key, or an empty string if not found. </dd></dl>
+
+</div>
+</div>
+<a id="a95063032ec1823e73cb0e49a6e00b911"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a95063032ec1823e73cb0e49a6e00b911">&#9670;&nbsp;</a></span>isCommandLineTool()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool DesktopFile::isCommandLineTool </td>
+          <td>(</td>
+          <td class="paramtype">const QString &amp;&#160;</td>
+          <td class="paramname"><em>filename</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Checks if the application bundle is a command line tool. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">filename</td><td>The path of the desktop entry file to work with. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>True if the application is a command-line tool, false otherwise. </dd></dl>
 
 </div>
 </div>

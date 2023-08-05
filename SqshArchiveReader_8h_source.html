@@ -93,58 +93,60 @@ $(function() {
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160; </div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="comment">/*</span></div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="comment"> * Example usage (in the real world, should use &quot;this&quot; instead of deleting the reader and elfBinary objects):</span></div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="comment">   const char* sqsh_file = &quot;/tmp/appimagetool-x86_64.AppImage&quot;;</span></div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="comment"></span> </div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="comment">    ElfBinary* elfBinary = new ElfBinary();</span></div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="comment">    qint64 offset = elfBinary-&gt;getElfSize(sqsh_file);</span></div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="comment">    SqshArchiveReader *reader = new SqshArchiveReader(offset);</span></div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="comment"></span> </div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="comment">    QStringList results = reader-&gt;readSqshArchive(sqsh_file);</span></div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="comment">    qDebug() &lt;&lt; results;</span></div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="comment"></span> </div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="comment">    QByteArray fileData = reader-&gt;readFileFromArchive(sqsh_file, &quot;.DirIcon&quot;);</span></div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="comment">    QIcon icon;</span></div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;<span class="comment">    icon.addPixmap(QPixmap::fromImage(QImage::fromData(fileData)), QIcon::Normal, QIcon::Off);</span></div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;<span class="comment">    qDebug() &lt;&lt; icon.availableSizes();</span></div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;<span class="comment"></span> </div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;<span class="comment">    QByteArray desktopData = reader-&gt;readFileFromArchive(sqsh_file, &quot;appimagetool.desktop&quot;);</span></div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;<span class="comment">    QString desktopFile = QString::fromUtf8(desktopData);</span></div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;<span class="comment">    QStringList desktopEntries = desktopFile.split(&quot;\n&quot;);</span></div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;<span class="comment">    desktopEntries.removeAll(&quot;&quot;);</span></div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;<span class="comment">    qDebug() &lt;&lt; desktopEntries;</span></div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;<span class="comment"></span> </div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;<span class="comment">    delete reader;</span></div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;<span class="comment">    delete elfBinary;</span></div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;<span class="comment"></span> </div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;<span class="comment"> (&quot;.DirIcon&quot;, &quot;AppRun&quot;, &quot;appimagetool.desktop&quot;, &quot;appimagetool.png&quot;, &quot;usr&quot;)</span></div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;<span class="comment"> (QSize(128, 128))</span></div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;<span class="comment"> (&quot;[Desktop Entry]&quot;, &quot;Type=Application&quot;, &quot;Name=appimagetool&quot;, &quot;Exec=appimagetool&quot;, &quot;Comment=Tool to generate AppImages from AppDirs&quot;, &quot;Icon=appimagetool&quot;, &quot;Categories=Development;&quot;, &quot;Terminal=true&quot;)</span></div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;<span class="comment"></span> </div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;<span class="comment"> */</span></div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160; </div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;<span class="preprocessor">#ifndef SQSHARCHIVEREADER_H</span></div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;<span class="preprocessor">#define SQSHARCHIVEREADER_H</span></div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160; </div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;<span class="preprocessor">#include &lt;QObject&gt;</span></div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;<span class="preprocessor">#include &lt;QString&gt;</span></div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;<span class="preprocessor">#include &lt;QByteArray&gt;</span></div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160; </div>
-<div class="line"><a name="l00071"></a><span class="lineno"><a class="line" href="classSqshArchiveReader.html">   71</a></span>&#160;<span class="keyword">class </span><a class="code" href="classSqshArchiveReader.html">SqshArchiveReader</a> : <span class="keyword">public</span> QObject {</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;Q_OBJECT</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160; </div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    <span class="keyword">explicit</span> <a class="code" href="classSqshArchiveReader.html#a6140f2a86e0a9470bd74320ba4e23a2b">SqshArchiveReader</a>(uint64_t archive_offset = 0, QObject* parent = <span class="keyword">nullptr</span>);</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160; </div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;    QStringList <a class="code" href="classSqshArchiveReader.html#a8e94ea1f5fe9dabc211910752847c4c7">readSqshArchive</a>(<span class="keyword">const</span> QString&amp; sqsh_file);</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160; </div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;    QByteArray <a class="code" href="classSqshArchiveReader.html#a3e80c89957e5f18a3c1adc67e480e347">readFileFromArchive</a>(<span class="keyword">const</span> QString&amp; sqsh_file, <span class="keyword">const</span> QString&amp; file_path);</div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160; </div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;    uint64_t archive_offset_; </div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;};</div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160; </div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;<span class="preprocessor">#endif </span><span class="comment">// SQSHARCHIVEREADER_H</span></div>
-<div class="ttc" id="aclassSqshArchiveReader_html"><div class="ttname"><a href="classSqshArchiveReader.html">SqshArchiveReader</a></div><div class="ttdoc">The SqshArchiveReader class provides functionality to read files from a SquashFS archive.</div><div class="ttdef"><b>Definition:</b> SqshArchiveReader.h:71</div></div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="comment"></span> </div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="comment">    const char* sqsh_file = &quot;/home/user/Desktop/appimagetool-730-x86_64.AppImage&quot;;</span></div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="comment">    qDebug() &lt;&lt; &quot;sqsh_file&quot; &lt;&lt; sqsh_file;</span></div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="comment"></span> </div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="comment">    qint64 offset = ElfSizeCalculator::calculateElfSize(sqsh_file);</span></div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="comment">    qDebug() &lt;&lt; &quot;offset&quot; &lt;&lt; offset;</span></div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="comment">    SqshArchiveReader *reader = new SqshArchiveReader(offset);</span></div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="comment"></span> </div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="comment">    QByteArray fileData = reader-&gt;readFileFromArchive(sqsh_file, &quot;.DirIcon&quot;);</span></div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="comment">    QIcon icon;</span></div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="comment">    icon.addPixmap(QPixmap::fromImage(QImage::fromData(fileData)), QIcon::Normal, QIcon::Off);</span></div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;<span class="comment">    qDebug() &lt;&lt; icon.availableSizes();</span></div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;<span class="comment"></span> </div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;<span class="comment">    QByteArray desktopData = reader-&gt;readFileFromArchive(sqsh_file, &quot;appimagetool.desktop&quot;);</span></div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;<span class="comment">    QString desktopFile = QString::fromUtf8(desktopData);</span></div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;<span class="comment">    QStringList desktopEntries = desktopFile.split(&quot;\n&quot;);</span></div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;<span class="comment">    desktopEntries.removeAll(&quot;&quot;);</span></div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;<span class="comment">    qDebug() &lt;&lt; desktopEntries;</span></div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;<span class="comment"></span> </div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;<span class="comment">    QStringList results = reader-&gt;readSqshArchive(sqsh_file);</span></div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;<span class="comment">    qDebug() &lt;&lt; results;</span></div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;<span class="comment"></span> </div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;<span class="comment">    delete reader;</span></div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;<span class="comment">    exit(0);</span></div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;<span class="comment"></span> </div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;<span class="comment"> (QSize(128, 128))</span></div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;<span class="comment"> (&quot;[Desktop Entry]&quot;, &quot;Type=Application&quot;, &quot;Name=appimagetool&quot;, &quot;Exec=appimagetool&quot;, &quot;Comment=Tool to generate AppImages from AppDirs&quot;, &quot;Icon=appimagetool&quot;, &quot;Categories=Development;&quot;, &quot;Terminal=true&quot;)</span></div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;<span class="comment"> (&quot;.DirIcon&quot;, &quot;AppRun&quot;, &quot;appimagetool.desktop&quot;, &quot;appimagetool.png&quot;, &quot;usr&quot;)</span></div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;<span class="comment"></span> </div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;<span class="comment"> */</span></div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160; </div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;<span class="preprocessor">#ifndef SQSHARCHIVEREADER_H</span></div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;<span class="preprocessor">#define SQSHARCHIVEREADER_H</span></div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160; </div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;<span class="preprocessor">#include &lt;QObject&gt;</span></div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;<span class="preprocessor">#include &lt;QString&gt;</span></div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;<span class="preprocessor">#include &lt;QByteArray&gt;</span></div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160; </div>
+<div class="line"><a name="l00073"></a><span class="lineno"><a class="line" href="classSqshArchiveReader.html">   73</a></span>&#160;<span class="keyword">class </span><a class="code" href="classSqshArchiveReader.html">SqshArchiveReader</a> : <span class="keyword">public</span> QObject {</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;Q_OBJECT</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160; </div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    <span class="keyword">explicit</span> <a class="code" href="classSqshArchiveReader.html#a6140f2a86e0a9470bd74320ba4e23a2b">SqshArchiveReader</a>(uint64_t archive_offset = 0, QObject* parent = <span class="keyword">nullptr</span>);</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160; </div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    QStringList <a class="code" href="classSqshArchiveReader.html#a8e94ea1f5fe9dabc211910752847c4c7">readSqshArchive</a>(<span class="keyword">const</span> QString&amp; sqsh_file);</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160; </div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;    QByteArray <a class="code" href="classSqshArchiveReader.html#a3e80c89957e5f18a3c1adc67e480e347">readFileFromArchive</a>(<span class="keyword">const</span> QString&amp; sqsh_file, <span class="keyword">const</span> QString&amp; file_path);</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160; </div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;    uint64_t archive_offset_; </div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;};</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160; </div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;<span class="preprocessor">#endif </span><span class="comment">// SQSHARCHIVEREADER_H</span></div>
+<div class="ttc" id="aclassSqshArchiveReader_html"><div class="ttname"><a href="classSqshArchiveReader.html">SqshArchiveReader</a></div><div class="ttdoc">The SqshArchiveReader class provides functionality to read files from a SquashFS archive.</div><div class="ttdef"><b>Definition:</b> SqshArchiveReader.h:73</div></div>
 <div class="ttc" id="aclassSqshArchiveReader_html_a3e80c89957e5f18a3c1adc67e480e347"><div class="ttname"><a href="classSqshArchiveReader.html#a3e80c89957e5f18a3c1adc67e480e347">SqshArchiveReader::readFileFromArchive</a></div><div class="ttdeci">QByteArray readFileFromArchive(const QString &amp;sqsh_file, const QString &amp;file_path)</div><div class="ttdoc">Reads the contents of a specific file from the SquashFS archive.</div><div class="ttdef"><b>Definition:</b> SqshArchiveReader.cpp:82</div></div>
 <div class="ttc" id="aclassSqshArchiveReader_html_a6140f2a86e0a9470bd74320ba4e23a2b"><div class="ttname"><a href="classSqshArchiveReader.html#a6140f2a86e0a9470bd74320ba4e23a2b">SqshArchiveReader::SqshArchiveReader</a></div><div class="ttdeci">SqshArchiveReader(uint64_t archive_offset=0, QObject *parent=nullptr)</div><div class="ttdoc">Constructs a SqshArchiveReader object with the specified archive offset.</div><div class="ttdef"><b>Definition:</b> SqshArchiveReader.cpp:33</div></div>
 <div class="ttc" id="aclassSqshArchiveReader_html_a8e94ea1f5fe9dabc211910752847c4c7"><div class="ttname"><a href="classSqshArchiveReader.html#a8e94ea1f5fe9dabc211910752847c4c7">SqshArchiveReader::readSqshArchive</a></div><div class="ttdeci">QStringList readSqshArchive(const QString &amp;sqsh_file)</div><div class="ttdoc">Reads and returns the list of files present in the SquashFS archive.</div><div class="ttdef"><b>Definition:</b> SqshArchiveReader.cpp:36</div></div>

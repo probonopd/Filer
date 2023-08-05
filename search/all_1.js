@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['calculateelfsize_10',['CalculateElfSize',['../classElfSizeCalculator.html#af2c901aa12ddb1e654a5d94cc96c63d6',1,'ElfSizeCalculator']]],
+  ['calculateelfsize_10',['calculateElfSize',['../classElfSizeCalculator.html#ade907342c355256c796b5f3286e47ca4',1,'ElfSizeCalculator']]],
   ['colors_11',['Colors',['../classAppGlobals_1_1Colors.html',1,'AppGlobals']]],
   ['combinediconcreator_12',['CombinedIconCreator',['../classCombinedIconCreator.html',1,'']]],
   ['currentthemename_13',['currentThemeName',['../classCustomFileIconProvider.html#ae4a1e7f693687f0be2b62c94d921cea6',1,'CustomFileIconProvider']]],

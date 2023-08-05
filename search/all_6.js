@@ -5,5 +5,6 @@ var searchData=
   ['infodialog_40',['InfoDialog',['../classInfoDialog.html',1,'InfoDialog'],['../classInfoDialog.html#ae103d6834fb2808adeaa6a046676e1b4',1,'InfoDialog::InfoDialog()'],['../classUi_1_1InfoDialog.html',1,'Ui::InfoDialog']]],
   ['installeventfilteronview_41',['installEventFilterOnView',['../classCustomItemDelegate.html#ac56331b63d239a4f27b27507d695cef5',1,'CustomItemDelegate']]],
   ['isanimationrunning_42',['isAnimationRunning',['../classCustomItemDelegate.html#a0c1764db0b5af7e379146cef59c76a9b',1,'CustomItemDelegate']]],
-  ['isvalid_43',['isValid',['../classApplicationBundle.html#a377dc1f5576f2d7746f265d91e2466cd',1,'ApplicationBundle']]]
+  ['iscommandlinetool_43',['isCommandLineTool',['../classApplicationBundle.html#a87933516c1bddbe580ff66a069540cf8',1,'ApplicationBundle::isCommandLineTool()'],['../classDesktopFile.html#a95063032ec1823e73cb0e49a6e00b911',1,'DesktopFile::isCommandLineTool()']]],
+  ['isvalid_44',['isValid',['../classApplicationBundle.html#a377dc1f5576f2d7746f265d91e2466cd',1,'ApplicationBundle']]]
 ];
