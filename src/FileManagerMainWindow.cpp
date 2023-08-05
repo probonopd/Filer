@@ -1195,7 +1195,7 @@ void FileManagerMainWindow::open(const QString &filePath)
     if (bundle.isValid()) {
         // Check if it is a command line tool and show an error dialog if it is
         if (bundle.isCommandLineTool()) {
-            QMessageBox::critical(nullptr, 0, "This is a command line tool. You can run it "
+            QMessageBox::information(nullptr, 0, "This is a command line tool. You can run it "
                                                     "from the terminal.");
             // TODO: Run the command line tool in a terminal
             // For this, we need to get the terminal application to be used
