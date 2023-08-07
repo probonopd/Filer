@@ -161,7 +161,11 @@ FileManagerMainWindow::FileManagerMainWindow(QWidget *parent, const QString &ini
     setProperty("type", "filemanager");
 
     // Set the icon for the window
-    setWindowIcon(QIcon::fromTheme("folder"));
+    if (m_isFirstInstance) {
+        setWindowIcon(QIcon::fromTheme("user-desktop"));
+    } else {
+        setWindowIcon(QIcon::fromTheme("folder"));
+    }
 
     // Initialize m_stackedWidget
     m_stackedWidget = new QStackedWidget(this);
