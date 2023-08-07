@@ -76,7 +76,7 @@ void CustomListView::paintEvent(QPaintEvent* event)
     QPen pen(Qt::NoPen);
     painter.setPen(pen);
     QRect rect(0, 0, this->width(), 44);
-    QLinearGradient gradient(0, 22, 0, 44);
+    QLinearGradient gradient(0, 0, 0, 22);
     gradient.setColorAt(0, QColor(0, 0, 0, 50));
     gradient.setColorAt(1, QColor(0, 0, 0, 0));
     painter.fillRect(rect, gradient);

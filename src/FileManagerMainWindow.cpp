@@ -167,6 +167,12 @@ FileManagerMainWindow::FileManagerMainWindow(QWidget *parent, const QString &ini
         setWindowIcon(QIcon::fromTheme("folder"));
     }
 
+    // Set padding for the desktop to leave room for the global menu bar
+    if (! qgetenv("UBUNTU_MENUPROXY").isEmpty() && m_isFirstInstance) {
+        // Padding for the desktop
+        setContentsMargins(0, 22, 0, 0);
+    }
+
     // Initialize m_stackedWidget
     m_stackedWidget = new QStackedWidget(this);
 
