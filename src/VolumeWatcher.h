@@ -35,9 +35,12 @@
  * @class VolumeWatcher
  * @brief The VolumeWatcher class monitors changes in a directory and manages symlinks to new directories.
  *
- * This class uses QFileSystemWatcher to keep track of changes in the specified directory.
+ * This class uses QFileSystemWatcher to keep track of changes in the /media directory.
  * When a new subdirectory appears, it creates a symlink to that subdirectory on the user's desktop.
  * If a subdirectory disappears, the corresponding symlink is removed.
+ * @Note This class should be replaced by a more appropriate solution, e.g., using a QProxyModel
+ * to display the contents of the /media directory alongside the contents of the user's home directory
+ * without the need to create symlinks.
  */
 class VolumeWatcher : public QObject
 {
