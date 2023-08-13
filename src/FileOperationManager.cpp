@@ -13,9 +13,11 @@ void FileOperationManager::executeFileOperation(const QStringList& fromPaths, co
     QStringList arguments;
     arguments << operation;
     for (const QString& fromPath : fromPaths) {
-        arguments << "'" + fromPath + "'";
+        arguments << fromPath;
     }
-    arguments << "'" + toPath + "'";
+    arguments << toPath;
+
+    qDebug() << "Executing file operation:" << fileOperationBinary << arguments;
 
     process->start(fileOperationBinary, arguments);
 

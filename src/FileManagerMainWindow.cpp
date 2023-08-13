@@ -606,7 +606,9 @@ void FileManagerMainWindow::createMenus()
         // Get the file paths of the selected indexes
         QStringList filePaths;
         for (const QModelIndex &index : selectedIndexes) {
-            filePaths.append(m_fileSystemModel->filePath(index));
+            if (! filePaths.contains(m_fileSystemModel->filePath(index))) {
+                filePaths.append(m_fileSystemModel->filePath(index));
+            }
         }
         qDebug() << "Copying the following files to the clipboard:";
         for (const QString &filePath : filePaths) {
@@ -633,6 +635,7 @@ void FileManagerMainWindow::createMenus()
 
         // Check if we have URLs on the clipboard using mimeData
         if (clipboard->mimeData()->hasUrls()) {
+            qDebug() << "The clipboard has URLs: " << clipboard->mimeData()->urls();
             // Check if they are all file://
             bool allFileUrls = true;
             for (const QUrl &url : clipboard->mimeData()->urls()) {
@@ -641,6 +644,7 @@ void FileManagerMainWindow::createMenus()
                     break;
                 }
             }
+            qDebug() << "All URLs are file://: " << allFileUrls;
 
             // Find out whether they were cut or copied
             bool filesWereCut = clipboard->property("cut").toBool();
@@ -663,6 +667,7 @@ void FileManagerMainWindow::createMenus()
                 QStringList sourceFilePaths;
                 for (const QUrl &url : urls) {
                     sourceFilePaths.append(url.toLocalFile());
+                    qDebug() << "Shall copy " << url.toLocalFile() << " to " << destinationDirectory;
                 }
                 FileOperationManager::copyWithProgress(sourceFilePaths, destinationDirectory);
            }

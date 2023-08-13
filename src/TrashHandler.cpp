@@ -176,18 +176,58 @@ void TrashHandler::moveToTrash(const QStringList& paths) {
             }
         }
 
-        // Move the file/directory to the Trash directory
-        if (!QFile::rename(path, newFilePath)) {
-            // Failed to move the file/directory to Trash
-            // Restore the original file back to its original location
-            QFile::rename(newFilePath, path);
+        // Check if the file/directory is on the same mount point as the Trash directory
+        QFileInfo trashDirInfo(m_trashPath);
+        if (trashDirInfo.isDir()) {
+            QStorageInfo trashDirStorageInfo(m_trashPath);
+            QStorageInfo fileStorageInfo(path);
+            qDebug() << "Trash dir mount point: " << trashDirStorageInfo.rootPath();
+            qDebug() << "File root mount point: " << fileStorageInfo.rootPath();
+            if (trashDirStorageInfo.rootPath() == fileStorageInfo.rootPath()) {
+                // The file/directory is on the same mount point as the Trash directory
+                // Move the file/directory to the Trash directory
+                qDebug() << "The file/directory is on the same mount point as the Trash directory";
+                if (!QFile::rename(path, newFilePath)) {
+                    // Failed to move the file/directory to Trash
+                    // Restore the original file back to its original location
+                    QFile::rename(newFilePath, path);
 
-            QMessageBox::critical(nullptr, tr("Error"),
-                                  tr("Failed to move to Trash. Please check file permissions."));
-            continue;
-        } else {
-            filesMoved = true;
-            continue;
+                    QMessageBox::critical(nullptr, tr("Error"),
+                                          tr("Failed to move to Trash. Please check file permissions."));
+                    continue;
+                } else {
+                    filesMoved = true;
+                    continue;
+                }
+            } else {
+                // The file/directory is on a different mount point than the Trash directory, hence
+                // inform the user and as whether to delete the file/directory permanently right away
+                qDebug() << "The file/directory is on a different mount point than the Trash directory";
+                int result = QMessageBox::warning(m_parent, tr("Confirm"),
+                                                  tr("The selected items are on a different mount point than the Trash directory. "
+                                                     "Do you want to delete the selected items permanently right away?"),
+                                                  QMessageBox::Yes | QMessageBox::No,
+                                                  QMessageBox::No);
+                if (result == QMessageBox::Yes) {
+                    // Delete the file/directory permanently
+                    if (fileInfo.isDir()) {
+                        if (!QDir(path).removeRecursively()) {
+                            QMessageBox::critical(nullptr, tr("Error"),
+                                                  tr("Failed to delete the directory permanently. Please check file permissions."));
+                            continue;
+                        }
+                    } else {
+                        if (!QFile::remove(path)) {
+                            QMessageBox::critical(nullptr, tr("Error"),
+                                                  tr("Failed to delete the file permanently. Please check file permissions."));
+                            continue;
+                        }
+                    }
+                } else {
+                    // Do not delete the file/directory permanently
+                    continue;
+                }
+            }
         }
     }
     SoundPlayer::playSound("ffft.wav");
