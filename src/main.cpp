@@ -44,6 +44,7 @@
 #include "SqshArchiveReader.h"
 #include "AppGlobals.h"
 #include "FileOperationManager.h"
+#include "VolumeWatcher.h"
 
 int main(int argc, char *argv[])
 {
@@ -164,6 +165,7 @@ int main(int argc, char *argv[])
 
     // Install a QFileSystemWatcher on /media, and whenever a new directory appears, symlink it to ~/Desktop
     // when a directory disappears, remove the symlink
+    VolumeWatcher watcher;
 
     return app.exec();
 }

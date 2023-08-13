@@ -33,6 +33,7 @@
 #include <QProcess>
 #include <QMessageBox>
 #include "SoundPlayer.h"
+#include <QTimer>
 
 TrashHandler::TrashHandler(QWidget *parent) : QObject(parent) {
     m_trashPath = QDir::homePath() + "/.local/share/Trash/files";
@@ -65,23 +66,33 @@ void TrashHandler::moveToTrash(const QStringList& paths) {
             // Unmount the mount point
             // TODO: Might be necessary to call with sudo -A -E
             QProcess umount;
-            umount.start("umount", QStringList() << absoluteFilePathWithSymlinksResolved);
+            // If eject-and-clean exists, use it; otherwise use umount
+            // eject-and-clean is a wrapper around umount that also cleans up the mount point
+            if (QFile::exists("eject-and-clean")) {
+                umount.start("eject-and-clean", QStringList() << absoluteFilePathWithSymlinksResolved);
+            } else {
+                umount.start("umount", QStringList() << absoluteFilePathWithSymlinksResolved);
+            }
             umount.waitForFinished(10000);
             if (umount.exitCode() == 0) {
+                unmounted = true;
                 // Successfully unmounted the mount point, now remove the mount point
                 QDir mountPointDir(absoluteFilePathWithSymlinksResolved);
-                // Remove the mount point directory but not recursively
-                if (!mountPointDir.rmdir(".")) {
-                    QMessageBox::critical(nullptr, tr("Error"),
-                                          tr("Failed to remove the mount point directory: ") + absoluteFilePathWithSymlinksResolved);
+                // Using sudo, remove the mount point directory if it is still there
+                if (!mountPointDir.exists()) {
+                    QProcess removeMountPoint;
+                    removeMountPoint.start("sudo", QStringList() << "-A" << "-E" << "rm" << "-r" << mountPointDir.absolutePath());
+                    removeMountPoint.waitForFinished(2000);
+                    if (removeMountPoint.exitCode() != 0) {
+                        QMessageBox::critical(nullptr, tr("Error"),
+                                              tr("Failed to remove the mount point directory: ") + mountPointDir.absolutePath());
+                    }
                 }
-                unmounted = true;
-                continue;
             } else {
                 QMessageBox::critical(nullptr, tr("Error"),
-                                      tr("Failed to unmount") + absoluteFilePathWithSymlinksResolved);
-                continue;
+                                      tr("Failed to unmount the mount point: ") + absoluteFilePathWithSymlinksResolved);
             }
+            continue;
         }
 
         if (!fileInfo.exists()) {
@@ -230,14 +241,13 @@ void TrashHandler::moveToTrash(const QStringList& paths) {
             }
         }
     }
-    SoundPlayer::playSound("ffft.wav");
 
     if (unmounted && filesMoved) {
         // Both mount points were unmounted and files were moved to trash
         SoundPlayer::playSound("ffft.wav");
     } else if (unmounted) {
         // Only mount points were unmounted
-        SoundPlayer::playSound("trashmount.wav");
+        SoundPlayer::playSound("pschiuu.wav");
     } else if (filesMoved) {
         // Only files were moved to trash
         SoundPlayer::playSound("ffft.wav");
