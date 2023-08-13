@@ -55,9 +55,9 @@ jobs:
       - name: Create Debian package
         run: |     
              # Create the 'DEBIAN' directory for package control scripts and metadata
-             mkdir -p DEBIAN
-             # Move the control file to the DEBIAN directory
-             mv packaging/debian/control DEBIAN/control
+             mkdir -p package/DEBIAN
+             # Move the control file to the package/DEBIAN directory
+             cp packaging/debian/control package/DEBIAN/control
              # Create the package directory structure
              mkdir -p package/System
              cp -R build/Filer.app package/System/  # Copy Filer.app and its contents to package directory
