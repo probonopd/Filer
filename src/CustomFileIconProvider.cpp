@@ -80,8 +80,7 @@ QIcon CustomFileIconProvider::icon(const QFileInfo &info) const
     }
 
     // If it is a directory and the symlink target is a mount point, then we want to show the drive icon
-    if (info.isDir() && absoluteFilePathWithSymLinksResolved.startsWith("/media")) {
-
+    if (info.isDir() && absoluteFilePathWithSymLinksResolved.startsWith("/media/") && !absoluteFilePathWithSymLinksResolved.endsWith("/media")) {
         // Using Qt, get the device node of the mount point
         // and then use the device node to get the icon
         // qDebug() << "Mount point: " << info.absoluteFilePath();

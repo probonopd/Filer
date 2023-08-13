@@ -63,7 +63,7 @@ void VolumeWatcher::handleDirectoryChange(const QString &path)
             foreach (const QFileInfo &entryInfo, entries) {
             if (entryInfo.isSymLink()) {
                 // If links to /media
-                if (entryInfo.symLinkTarget().startsWith("/media")) {
+                if (entryInfo.symLinkTarget().startsWith("/media/")) {
                     symlinkPaths.append(entryInfo.fileName());
                 }
             }
@@ -98,7 +98,7 @@ void VolumeWatcher::handleDirectoryChange(const QString &path)
         }
     }
 
-    // Clean up symlinks for targets that no longer exist in /media
+    // Clean up symlinks for targets that no longer exist in /media/
     for (const QString &symlinkPath : symlinkPaths) {
         QString fullPath = "/media/" + symlinkPath;
         if (!QFile::exists(fullPath)) {

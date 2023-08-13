@@ -421,17 +421,19 @@ void CustomItemDelegate::animationValueChanged(double value)
     currentAnimationValue = value;
     qDebug() << "Animation value changed:" << value;
 
+/*
     // Trigger a redraw of the view
     if (QAbstractItemView* view = qobject_cast<QAbstractItemView*>(parent()))
     {
         // Print the class name of the stacked widget that the view is in
-        qDebug() << "Parent widget class name:" << view->parentWidget()->metaObject()->className();
+        // qDebug() << "Parent widget class name:" << view->parentWidget()->metaObject()->className();
         QWidget* stackedWidget = view->parentWidget();
         // Update the widget in the stacked widget
-        stackedWidget->update();
+        // stackedWidget->update(); // FIXME: This destroys the animation, so we should only be doing this when the animation is finished
     } else {
         qDebug() << "Parent widget is not a view";
     }
+*/
 
 }
 
