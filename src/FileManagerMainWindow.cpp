@@ -595,8 +595,37 @@ void FileManagerMainWindow::createMenus()
     // Set disabled because we don't have an undo stack
     editMenu->actions().last()->setEnabled(false);
     editMenu->addSeparator();
+
     editMenu->addAction(tr("Cut"));
     editMenu->actions().last()->setShortcut(QKeySequence("Ctrl+X"));
+    // Put the paths of the selected files on the clipboard so that we can use them when pasting
+    connect(editMenu->actions().last(), &QAction::triggered, this, [this]() {
+        // Get all selected indexes
+        QModelIndexList selectedIndexes = m_treeView->selectionModel()->selectedIndexes();
+        // Get the file paths of the selected indexes
+        QStringList filePaths;
+        for (const QModelIndex &index : selectedIndexes) {
+            if (! filePaths.contains(m_fileSystemModel->filePath(index))) {
+                filePaths.append(m_fileSystemModel->filePath(index));
+            }
+        }
+        qDebug() << "Copying the following files to the clipboard:";
+        for (const QString &filePath : filePaths) {
+            qDebug() << filePath;
+        }
+        // Put the file paths on the clipboard using mimeData->setData("text/uri-list", ...)
+        QMimeData *mimeData = new QMimeData;
+        QList<QUrl> urls;
+        for (const QString &filePath : filePaths) {
+            urls.append(QUrl::fromLocalFile(filePath));
+        }
+        mimeData->setUrls(urls);
+        QApplication::clipboard()->setMimeData(mimeData);
+        // Set the "cut" property of the clipboard to true
+        // so that we know that we are cutting and not copying
+        QApplication::clipboard()->setProperty("cut", true);
+    });
+
     editMenu->addAction(tr("Copy"));
     editMenu->actions().last()->setShortcut(QKeySequence("Ctrl+C"));
     // Put the paths of the selected files on the clipboard so that we can use them when pasting
@@ -626,6 +655,7 @@ void FileManagerMainWindow::createMenus()
         // so that we know that we are copying and not cutting
         QApplication::clipboard()->setProperty("cut", false);
     });
+
     editMenu->addAction(tr("Paste"));
     editMenu->actions().last()->setShortcut(QKeySequence("Ctrl+V"));
     // Lambda that prints the paths of the files that are on the clipboard
@@ -651,12 +681,22 @@ void FileManagerMainWindow::createMenus()
 
             // If they were cut, move them
             if (filesWereCut) {
-                // Dialog saying not yet implemented
-                QMessageBox::information(this, tr("Not yet implemented"), tr("Moving files is not yet implemented."));
+                // Construct the command line arguments from the URLs on the clipboard
+                QClipboard *clipboard = QApplication::clipboard();
+                QList<QUrl> urls = clipboard->mimeData()->urls();
+
+                // Get the destination directory based on the root index of the current view
+                QModelIndex rootIndex = m_treeView->rootIndex();
+                QString destinationDirectory = m_fileSystemModel->filePath(rootIndex);
+                QStringList sourceFilePaths;
+                for (const QUrl &url : urls) {
+                    sourceFilePaths.append(url.toLocalFile());
+                    qDebug() << "Shall move " << url.toLocalFile() << " to " << destinationDirectory;
+                }
+                FileOperationManager::moveWithProgress(sourceFilePaths, destinationDirectory);
             }
 
             if (!filesWereCut) {
-
                 // Construct the command line arguments from the URLs on the clipboard
                 QClipboard *clipboard = QApplication::clipboard();
                 QList<QUrl> urls = clipboard->mimeData()->urls();

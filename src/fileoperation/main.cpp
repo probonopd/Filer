@@ -5,6 +5,9 @@
 #include <QDesktopWidget>
 #include <QTranslator>
 #include "MainWindow.h"
+#include <QMessageBox>
+#include <QFile>
+#include <QDir>
 
 int main(int argc, char *argv[])
 {
@@ -68,7 +71,39 @@ int main(int argc, char *argv[])
         qDebug() << "Target path:" << targetPath;
 
         // Perform the move operation
-        // Your code here
+        MainWindow w;
+        w.startCopyWithProgress(args, targetPath);
+        // Get the result of the operation
+        int result = a.exec();
+        qDebug() << "Result:" << result;
+        // If the result is 0, then the operation was successful
+        if (result == 0) {
+            QMessageBox::StandardButton reply = QMessageBox::question(
+                    nullptr,
+                    "Delete source files?",
+                    "Do you want to delete the following?\n\n" + args.join("\n"),
+                    QMessageBox::Yes | QMessageBox::No
+            );
+            if (reply == QMessageBox::Yes) {
+                qDebug() << "Deleting source files...";
+                // Recursively delete the source files
+                for (const QString &path : args) {
+                    QDir dir(path);
+                    if (dir.exists()) {
+                        dir.removeRecursively();
+                    }
+                    else {
+                        QFile file(path);
+                        if (file.exists()) {
+                            file.remove();
+                        }
+                    }
+                    if (QFile::exists(path)) {
+                        qWarning() << "Failed to delete" << path;
+                    }
+                }
+            }
+        }
     }
     else {
         qWarning() << "Please specify either --copy or --move.";
