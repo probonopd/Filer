@@ -51,6 +51,18 @@ jobs:
           find Filer.app/
           zip --symlinks -r ./Filer_Ubuntu.zip Filer.app/
 
+      - name: Create Debian package
+        run: |     
+             # Create the 'DEBIAN' directory for package control scripts and metadata
+             mkdir -p DEBIAN
+             # Move the control file to the DEBIAN directory
+             mv packaging/debian/control DEBIAN/control
+             # Create the package directory structure
+             mkdir -p package/System
+             cp -R build/src/Filer.app package/System/  # Copy Filer.app and its contents to package directory
+             # Build the package
+             dpkg-deb --build package
+    
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
