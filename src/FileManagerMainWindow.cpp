@@ -823,13 +823,18 @@ void FileManagerMainWindow::createMenus()
     goMenu->addAction(tr("Network"));
     goMenu->actions().last()->setShortcut(QKeySequence("Ctrl+Shift+N"));
     connect(goMenu->actions().last(), &QAction::triggered, this, [this]() {
-        QMessageBox::information(nullptr, (" "), tr("This feature is still in development."));
+        // Run the command "launch Zeroconf" and check its exit code
+        if (QProcess::execute("launch Zeroconf") != 0) {
+            QMessageBox::critical(this, tr("Error"), tr("Could not launch Zeroconf"));
+            // NOTE: Implement the command "launch Zeroconf" like in helloSystem if you want to use this;
+            // in the future we might think about implementing Zeroconf browsing here using
+            // https://github.com/nitroshare/qmdnsengine
+        }
     });
 
     QMenu *devicesMenu = new QMenu(tr("Devices"), this);
-    goMenu->actions().last()->setShortcut(QKeySequence("Ctrl+Shift+U")); // FIXME: This does not work because we have a submenu
-    connect(goMenu->actions().last(), &QAction::triggered, this,
-            [this]() { openFolderInNewWindow("/media"); }); // FIXME: As above
+    // devicesMenu->setShortcut(QKeySequence("Ctrl+Shift+U")); // FIXME: This does not work because we have a submenu
+    // connect(devicesMenu, &QAction::triggered, this, [this]() { openFolderInNewWindow("/media"); }); // FIXME: As above
     goMenu->addMenu(devicesMenu);
     // Add a submenu to the Devices menu with one entry for each of the directories in /media;
     // this needs to be done dynamically because the contents of /media can change

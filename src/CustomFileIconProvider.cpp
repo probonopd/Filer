@@ -37,6 +37,7 @@
 #include <QPainter>
 #include <QApplication>
 #include <QStorageInfo>
+#include <QThread>
 
 CustomFileIconProvider::CustomFileIconProvider()
         : iconCreator(new CombinedIconCreator) // "Initialize the pointer in the constructor"
@@ -78,13 +79,15 @@ QIcon CustomFileIconProvider::icon(const QFileInfo &info) const
         absoluteFilePathWithSymLinksResolved = info.symLinkTarget();
     }
 
-    if (mountPoints.contains(absoluteFilePathWithSymLinksResolved)) {
+    // If it is a directory and the symlink target is a mount point, then we want to show the drive icon
+    if (info.isDir() && absoluteFilePathWithSymLinksResolved.startsWith("/media")) {
+
         // Using Qt, get the device node of the mount point
         // and then use the device node to get the icon
         // qDebug() << "Mount point: " << info.absoluteFilePath();
         QStorageInfo storageInfo(info.absoluteFilePath());
         QString deviceNode = storageInfo.device();
-        qDebug() << "xxxxxxxxxxxxx Device node: " << deviceNode;
+        qDebug() << "Device node: " << deviceNode;
         if (deviceNode.startsWith("/dev/da")){
             return (QIcon::fromTheme("drive-removable-media"));
         } else if (deviceNode.startsWith("/dev/sr") || deviceNode.startsWith("/dev/cd")) {
@@ -92,7 +95,22 @@ QIcon CustomFileIconProvider::icon(const QFileInfo &info) const
         } else {
             return (QIcon::fromTheme("drive-harddisk"));
         }
+    }
 
+    if (info.isDir() && mountPoints.contains(absoluteFilePathWithSymLinksResolved)) {
+        // Using Qt, get the device node of the mount point
+        // and then use the device node to get the icon
+        // qDebug() << "Mount point: " << info.absoluteFilePath();
+        QStorageInfo storageInfo(info.absoluteFilePath());
+        QString deviceNode = storageInfo.device();
+        qDebug() << "Device node: " << deviceNode;
+        if (deviceNode.startsWith("/dev/da")){
+            return (QIcon::fromTheme("drive-removable-media"));
+        } else if (deviceNode.startsWith("/dev/sr") || deviceNode.startsWith("/dev/cd")) {
+            return (QIcon::fromTheme("media-optical"));
+        } else {
+            return (QIcon::fromTheme("drive-harddisk"));
+        }
     }
 
     // If it is not a bundle but a directory, then we always want to show the folder icon

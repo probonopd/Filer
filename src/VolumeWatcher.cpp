@@ -29,6 +29,10 @@
 #include <QFile>
 #include <QDebug>
 #include <QFileInfo>
+#include <QStringList>
+#include <QStorageInfo>
+#include <QThread>
+#include <QApplication>
 
 VolumeWatcher::VolumeWatcher(QObject *parent) : QObject(parent)
 {
@@ -73,6 +77,19 @@ void VolumeWatcher::handleDirectoryChange(const QString &path)
 
         if (QFile::exists(fullPath)) {
             if (!QFile::exists(symlinkPath)) {
+                // Wait until a mount point appears at the target
+                while (true) {
+                    QStringList mountPoints;
+                    for (const QStorageInfo &storage : QStorageInfo::mountedVolumes()) {
+                        mountPoints << storage.rootPath();
+                    }
+                    if (mountPoints.contains(fullPath)) {
+                        break;
+                    }
+                    QThread::msleep(100);
+                    qApp->processEvents();
+                    qDebug() << "Waiting for mount point to appear at" << fullPath;
+                }
                 QFile::link(fullPath, symlinkPath);
                 qDebug() << "Symlink created for" << fullPath;
             } else {
