@@ -50,6 +50,7 @@ jobs:
           make DESTDIR=. install
           find Filer.app/
           zip --symlinks -r ./Filer_Ubuntu.zip Filer.app/
+          cd ..
 
       - name: Create Debian package
         run: |     
@@ -59,7 +60,7 @@ jobs:
              mv packaging/debian/control DEBIAN/control
              # Create the package directory structure
              mkdir -p package/System
-             cp -R build/src/Filer.app package/System/  # Copy Filer.app and its contents to package directory
+             cp -R build/Filer.app package/System/  # Copy Filer.app and its contents to package directory
              # Build the package
              dpkg-deb --build package
     
