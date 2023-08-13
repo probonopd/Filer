@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['filemanagermainwindow_89',['FileManagerMainWindow',['../classFileManagerMainWindow.html',1,'']]],
-  ['fileoperationmanager_90',['FileOperationManager',['../classFileOperationManager.html',1,'']]]
+  ['filemanagermainwindow_91',['FileManagerMainWindow',['../classFileManagerMainWindow.html',1,'']]],
+  ['fileoperationmanager_92',['FileOperationManager',['../classFileOperationManager.html',1,'']]]
 ];
