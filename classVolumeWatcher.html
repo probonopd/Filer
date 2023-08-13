@@ -100,7 +100,7 @@ Public Member Functions</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>The <a class="el" href="classVolumeWatcher.html" title="The VolumeWatcher class monitors changes in a directory and manages symlinks to new directories.">VolumeWatcher</a> class monitors changes in a directory and manages symlinks to new directories. </p>
-<p>This class uses QFileSystemWatcher to keep track of changes in the specified directory. When a new subdirectory appears, it creates a symlink to that subdirectory on the user's desktop. If a subdirectory disappears, the corresponding symlink is removed. </p>
+<p>This class uses QFileSystemWatcher to keep track of changes in the /media directory. When a new subdirectory appears, it creates a symlink to that subdirectory on the user's desktop. If a subdirectory disappears, the corresponding symlink is removed. @Note This class should be replaced by a more appropriate solution, e.g., using a QProxyModel to display the contents of the /media directory alongside the contents of the user's home directory without the need to create symlinks. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a51e89642e1ae7db94e02215751906ad1"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a51e89642e1ae7db94e02215751906ad1">&#9670;&nbsp;</a></span>VolumeWatcher()</h2>
