@@ -1,12 +1,17 @@
 #include <QApplication>
 #include <QCommandLineParser>
 #include <QDebug>
+#include <QStyle>
+#include <QDesktopWidget>
+#include <QTranslator>
 #include "MainWindow.h"
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     QApplication::setApplicationName("fileoperation");
+
+    QDesktopWidget desktop;
 
     QCommandLineParser parser;
     parser.setApplicationDescription("A command line tool for copying and moving files with a graphical progress dialog.");
@@ -37,6 +42,17 @@ int main(int argc, char *argv[])
         // Perform the copy operation
         MainWindow w;
         w.startCopyWithProgress(args, targetPath);
+
+        // Center the main window on the screen
+        w.setGeometry(
+                QStyle::alignedRect(
+                        Qt::LeftToRight,
+                        Qt::AlignCenter,
+                        w.size(),
+                        desktop.availableGeometry() // Get screen geometry
+                )
+        );
+
         return a.exec();
     }
     else if (parser.isSet("move")) {
