@@ -36,6 +36,7 @@
 #include <QIcon>
 #include <QPainter>
 #include <QApplication>
+#include <QStorageInfo>
 
 CustomFileIconProvider::CustomFileIconProvider()
         : iconCreator(new CombinedIconCreator) // "Initialize the pointer in the constructor"
@@ -65,6 +66,33 @@ QIcon CustomFileIconProvider::icon(const QFileInfo &info) const
     if (bundle.isValid()) {
         // qDebug() << "Bundle is valid: " << info.absoluteFilePath();
         return (bundle.icon());
+    }
+
+    // Check if the path is a mount point using QStorageInfo
+    QStringList mountPoints;
+    for (const QStorageInfo &storage : QStorageInfo::mountedVolumes()) {
+        mountPoints << storage.rootPath();
+    }
+    QString absoluteFilePathWithSymLinksResolved = info.absoluteFilePath();
+    if (info.isSymLink()) {
+        absoluteFilePathWithSymLinksResolved = info.symLinkTarget();
+    }
+
+    if (mountPoints.contains(absoluteFilePathWithSymLinksResolved)) {
+        // Using Qt, get the device node of the mount point
+        // and then use the device node to get the icon
+        // qDebug() << "Mount point: " << info.absoluteFilePath();
+        QStorageInfo storageInfo(info.absoluteFilePath());
+        QString deviceNode = storageInfo.device();
+        qDebug() << "xxxxxxxxxxxxx Device node: " << deviceNode;
+        if (deviceNode.startsWith("/dev/da")){
+            return (QIcon::fromTheme("drive-removable-media"));
+        } else if (deviceNode.startsWith("/dev/sr") || deviceNode.startsWith("/dev/cd")) {
+            return (QIcon::fromTheme("media-optical"));
+        } else {
+            return (QIcon::fromTheme("drive-harddisk"));
+        }
+
     }
 
     // If it is not a bundle but a directory, then we always want to show the folder icon

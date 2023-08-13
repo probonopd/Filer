@@ -1129,39 +1129,35 @@ void FileManagerMainWindow::setDirectory(const QString &directory)
 
 void FileManagerMainWindow::openFolderInNewWindow(const QString &rootPath)
 {
+    // Make path absolute and resolve symlinks
+    QString resolvedRootPath = QFileInfo(rootPath).absoluteFilePath();
+    if (QFileInfo(resolvedRootPath).isSymLink()) {
+        resolvedRootPath = QFileInfo(resolvedRootPath).symLinkTarget();
+    }
+
     // Check if the path exists, show an error dialog if it is not
-    if (!QDir(rootPath).exists()) {
+    if (!QDir(resolvedRootPath).exists()) {
         QMessageBox::critical(nullptr, "Error", "This folder does not exist.");
         return;
     }
 
     // Check if the path exists and is a directory or a symlink to a directory, show an error dialog
     // if it is not
-    if (!QFileInfo(rootPath).exists() || !QFileInfo(rootPath).isDir()) {
+    if (!QFileInfo(resolvedRootPath).exists() || !QFileInfo(resolvedRootPath).isDir()) {
         QMessageBox::critical(nullptr, "Error", "This path is not a folder.");
         return;
     }
 
     // Check if the path is readable, show an error dialog if it is not
-    if (!QFileInfo(rootPath).isReadable()) {
+    if (!QFileInfo(resolvedRootPath).isReadable()) {
         QMessageBox::critical(nullptr, "Error", "This path is not readable.");
         return;
     }
 
-    QString resolvedRootPath = rootPath;
-
-    // If it is a symlink, resolve it
-    if (QFileInfo(rootPath).isSymLink()) {
-        resolvedRootPath = QFileInfo(rootPath).symLinkTarget();
-    }
-
-    // Get the normalized absolute path
-    resolvedRootPath = QDir(resolvedRootPath).canonicalPath();
-
     // Check if a window for the specified root path already exists
     bool windowExists = false;
     for (FileManagerMainWindow *window : instances()) {
-        if (window->m_fileSystemModel->rootPath() == rootPath) {
+        if (window->m_fileSystemModel->rootPath() == resolvedRootPath) {
             // A window for the specified root path already exists
             window->bringToFront();
             windowExists = true;
@@ -1173,7 +1169,7 @@ void FileManagerMainWindow::openFolderInNewWindow(const QString &rootPath)
         // No window for the specified root path exists, so create a new one
         // Not setting a parent, so that the window does not get destroyed when the parent gets
         // destroyed
-        FileManagerMainWindow *newWindow = new FileManagerMainWindow(nullptr, rootPath);
+        FileManagerMainWindow *newWindow = new FileManagerMainWindow(nullptr, resolvedRootPath);
         newWindow->show();
     }
 }
@@ -1540,4 +1536,17 @@ void FileManagerMainWindow::getInfo() {
         infoDialog->setAttribute(Qt::WA_DeleteOnClose);
         infoDialog->show();
     }
+}
+
+QStringList FileManagerMainWindow::getInstancePaths() const
+{
+    QStringList instancePaths;
+
+    // Iterate over the list of instances
+    for (FileManagerMainWindow *instance : instances()) {
+        // Add the path of the instance to the list
+        instancePaths << instance->m_currentDir;
+    }
+
+    return instancePaths;
 }

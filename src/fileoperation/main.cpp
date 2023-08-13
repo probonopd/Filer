@@ -77,6 +77,8 @@ int main(int argc, char *argv[])
         int result = a.exec();
         qDebug() << "Result:" << result;
         // If the result is 0, then the operation was successful
+        // TODO: We could do more checks here, e.g., if the target path exists,
+        // if its size matches the size of the source files, etc.
         if (result == 0) {
             QMessageBox::StandardButton reply = QMessageBox::question(
                     nullptr,

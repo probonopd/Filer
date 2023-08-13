@@ -25,7 +25,7 @@
  */
 
 #include "TrashHandler.h"
-#include <QCoreApplication>
+#include <QApplication>
 #include <QLocale>
 #include <QTranslator>
 #include <QStorageInfo>
@@ -34,6 +34,8 @@
 #include <QMessageBox>
 #include "SoundPlayer.h"
 #include <QTimer>
+#include "FileManagerMainWindow.h"
+#include <QThread>
 
 TrashHandler::TrashHandler(QWidget *parent) : QObject(parent) {
     m_trashPath = QDir::homePath() + "/.local/share/Trash/files";
@@ -63,6 +65,29 @@ void TrashHandler::moveToTrash(const QStringList& paths) {
         }
 
         if (mountPoints.contains(absoluteFilePathWithSymlinksResolved)) {
+            // Check if there is a window for the mount point open and if so, close it
+            // Get the list of open windows from FileManagerMainWindow
+            FileManagerMainWindow* mainWindow = qobject_cast<FileManagerMainWindow*>(qApp->activeWindow());
+
+            // Print all open windows
+            qDebug() << "Open windows:";
+            for (const QString &key : mainWindow->getInstancePaths()) {
+                qDebug() << key;
+            }
+
+            if (mainWindow->instanceExists(absoluteFilePathWithSymlinksResolved)) {
+                // Close the window for the mount point
+                FileManagerMainWindow* targetWindow = mainWindow->getInstanceForDirectory(absoluteFilePathWithSymlinksResolved);
+                if (targetWindow != nullptr) {
+                    targetWindow->close();
+                    // Process events to make sure the window is closed; for one second; FIXME: This is a hack and does not work
+                    // for (int i = 0; i < 200; i++) {
+                    //     QCoreApplication::processEvents();
+                    //     QThread::msleep(10);
+                    // }
+                }
+            }
+
             // Unmount the mount point
             // TODO: Might be necessary to call with sudo -A -E
             QProcess umount;

@@ -87,7 +87,7 @@ public slots:
 
     void moveEvent(QMoveEvent *event);
 
-
+    QStringList getInstancePaths() const;
 
 private:
     QStackedWidget *m_stackedWidget;
