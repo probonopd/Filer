@@ -12,6 +12,8 @@ public:
     };
 
     static const int MaxItems;
+
+    static const QString mediaPath;
 };
 
 #endif // GLOBALS_H

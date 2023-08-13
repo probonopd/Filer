@@ -53,6 +53,8 @@ public:
      */
     explicit VolumeWatcher(QObject *parent = nullptr);
 
+    static QString getMediaPath();
+
 private slots:
     /**
      * @brief Handles changes in the monitored directory.
@@ -62,6 +64,7 @@ private slots:
 
 private:
     QFileSystemWatcher m_watcher; /**< The QFileSystemWatcher used to monitor changes. */
+    QString m_mediaPath; /**< The path of the directory to monitor. */
 };
 
 #endif // VOLUMEWATCHER_H

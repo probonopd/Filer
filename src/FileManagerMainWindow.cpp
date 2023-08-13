@@ -69,6 +69,7 @@
 #include "ApplicationBundle.h"
 #include "TrashHandler.h"
 #include "InfoDialog.h"
+#include "AppGlobals.h"
 
 /*
  * This creates a FileManagerMainWindow object with a QTreeView and QListView widget.
@@ -837,19 +838,15 @@ void FileManagerMainWindow::createMenus()
     });
 
     QMenu *devicesMenu = new QMenu(tr("Devices"), this);
-    // devicesMenu->setShortcut(QKeySequence("Ctrl+Shift+U")); // FIXME: This does not work because we have a submenu
-    // connect(devicesMenu, &QAction::triggered, this, [this]() { openFolderInNewWindow("/media"); }); // FIXME: As above
     goMenu->addMenu(devicesMenu);
-    // Add a submenu to the Devices menu with one entry for each of the directories in /media;
-    // this needs to be done dynamically because the contents of /media can change
     connect(devicesMenu, &QMenu::aboutToShow, this, [this, devicesMenu, goMenu]() {
         devicesMenu->clear();
-        QDir mediaDir("/media");
+        QDir mediaDir(AppGlobals::mediaPath);
         if (mediaDir.exists()) {
             for (const QString &entry : mediaDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot)) {
                 QAction *action = devicesMenu->addAction(entry);
                 connect(action, &QAction::triggered, this,
-                        [this, entry]() { openFolderInNewWindow("/media/" + entry); });
+                        [this, entry]() { openFolderInNewWindow(AppGlobals::mediaPath +"/" + entry); });
             }
         }
     });

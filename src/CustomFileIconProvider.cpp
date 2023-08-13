@@ -38,6 +38,7 @@
 #include <QApplication>
 #include <QStorageInfo>
 #include <QThread>
+#include "AppGlobals.h"
 
 CustomFileIconProvider::CustomFileIconProvider()
         : iconCreator(new CombinedIconCreator) // "Initialize the pointer in the constructor"
@@ -79,8 +80,17 @@ QIcon CustomFileIconProvider::icon(const QFileInfo &info) const
         absoluteFilePathWithSymLinksResolved = info.symLinkTarget();
     }
 
+    // How many directories deep is AppGlobals::mediaPath?
+    int mediaPathDepth = AppGlobals::mediaPath.count("/");
+
+    // How many directories deep is the current file?
+    int fileDepth = absoluteFilePathWithSymLinksResolved.count("/");
+
+    // Is the current file in a subdirectory of AppGlobals::mediaPath but not in a sub-subdirectory?
+    bool isMediaPath = (absoluteFilePathWithSymLinksResolved.startsWith(AppGlobals::mediaPath) && (fileDepth == mediaPathDepth + 1));
+
     // If it is a directory and the symlink target is a mount point, then we want to show the drive icon
-    if (info.isDir() && absoluteFilePathWithSymLinksResolved.startsWith("/media/") && !absoluteFilePathWithSymLinksResolved.endsWith("/media")) {
+    if (info.isDir() && isMediaPath) {
         // Using Qt, get the device node of the mount point
         // and then use the device node to get the icon
         // qDebug() << "Mount point: " << info.absoluteFilePath();

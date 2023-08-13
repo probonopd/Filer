@@ -33,13 +33,17 @@
 #include <QStorageInfo>
 #include <QThread>
 #include <QApplication>
+#include <QProcess>
 
 VolumeWatcher::VolumeWatcher(QObject *parent) : QObject(parent)
 {
-    m_watcher.addPath("/media"); // Monitor the /media directory
+
+    m_mediaPath = getMediaPath();
+
+    m_watcher.addPath(m_mediaPath);
 
     // Run initially
-    handleDirectoryChange("/media");
+    handleDirectoryChange(m_mediaPath);
 
     connect(&m_watcher, &QFileSystemWatcher::directoryChanged, this, &VolumeWatcher::handleDirectoryChange);
     // We also need to get notified when directories are deleted, so we monitor the parent directory like this:
@@ -63,7 +67,7 @@ void VolumeWatcher::handleDirectoryChange(const QString &path)
             foreach (const QFileInfo &entryInfo, entries) {
             if (entryInfo.isSymLink()) {
                 // If links to /media
-                if (entryInfo.symLinkTarget().startsWith("/media/")) {
+                if (entryInfo.symLinkTarget().startsWith(m_mediaPath + "/")) {
                     symlinkPaths.append(entryInfo.fileName());
                 }
             }
@@ -107,11 +111,36 @@ void VolumeWatcher::handleDirectoryChange(const QString &path)
 
     // Clean up symlinks for targets that no longer exist in /media/
     for (const QString &symlinkPath : symlinkPaths) {
-        QString fullPath = "/media/" + symlinkPath;
+        QString fullPath = m_mediaPath + "/" + symlinkPath;
         if (!QFile::exists(fullPath)) {
             QFile::remove(QDir::homePath() + "/Desktop/" + symlinkPath);
             qDebug() << "Symlink removed for" << fullPath;
         }
     }
+}
 
+QString VolumeWatcher::getMediaPath() {
+    QString mediaPath;
+    // Check whether a process "udisksd" is running; if yes, we assume that /media/$USER is managed by udisksd
+    // and should be used instead of /media which is managed e.g., by /usr/local/sbin/automount on FreeBSD
+    // pidof udisksd
+    QProcess pidof;
+    pidof.start("pidof udisksd");
+    pidof.waitForFinished();
+    if (pidof.exitCode() == 0) {
+        qDebug() << "Using /media/$USER since udisksd is running";
+        QString candidate = "/media/" + qgetenv("USER");
+        QDir().mkdir(mediaPath);
+        if (QDir(mediaPath).exists()) {
+            mediaPath = candidate;
+        } else {
+            // We cannot use /media/$USER, so we fall back to /media
+            qDebug() << "Using /media";
+            mediaPath = "/media";
+        }
+    } else {
+        qDebug() << "Using /media";
+        mediaPath = "/media";
+    }
+    return mediaPath;
 }
