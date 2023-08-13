@@ -1,0 +1,6 @@
+Package: hellodesktop-filer
+Version: 1.0
+Maintainer: probono <probonopd@users.noreply.github.com>
+Architecture: amd64
+Depends: libqt5widgets5, libqt5multimedia5, libzstd1, zlib1g
+Description: Filer.app - The file manager of helloDesktop
