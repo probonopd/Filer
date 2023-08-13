@@ -159,5 +159,11 @@ int main(int argc, char *argv[])
     // Show the main window
     mainWindow.show();
 
+    // Show volumes on the Desktop
+    // FIXME: Replace this by a QProxyModel or something more appropriate
+
+    // Install a QFileSystemWatcher on /media, and whenever a new directory appears, symlink it to ~/Desktop
+    // when a directory disappears, remove the symlink
+
     return app.exec();
 }
