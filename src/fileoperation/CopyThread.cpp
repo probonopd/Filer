@@ -18,16 +18,31 @@ void CopyThread::run() {
         QFileInfo toInfo(toPath);
         QDir toDir(toPath);
 
+        // Check if source is readable
         if (!fromInfo.exists() || !fromInfo.isReadable()) {
             emit error(tr("Source path does not exist or is not accessible."));
             return;
         }
 
+        // Check if source is a directory
         if (toInfo.exists() && !toInfo.isDir()) {
             emit error(tr("Target path must be a directory."));
             return;
         }
 
+        // Check if destination is writable
+        if (!toInfo.isWritable()) {
+            emit error(tr("Target path is not writable."));
+            return;
+        }
+
+        // Check if destination is a subdirectory of the source
+        if (toInfo.absoluteFilePath().startsWith(fromInfo.absoluteFilePath())) {
+            emit error(tr("Target path is a subdirectory of the source."));
+            return;
+        }
+
+        // Check if destination already exists
         QString toPath = toInfo.absoluteFilePath() + QDir::separator() + fromInfo.fileName();
         if (QFileInfo(toPath).exists()) {
             emit error(tr("Target already exists at the destination."));
