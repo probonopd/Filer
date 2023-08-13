@@ -99,7 +99,6 @@ void VolumeWatcher::handleDirectoryChange(const QString &path)
     }
 
     // Clean up symlinks for targets that no longer exist in /media
-
     for (const QString &symlinkPath : symlinkPaths) {
         QString fullPath = "/media/" + symlinkPath;
         if (!QFile::exists(fullPath)) {
@@ -107,8 +106,5 @@ void VolumeWatcher::handleDirectoryChange(const QString &path)
             qDebug() << "Symlink removed for" << fullPath;
         }
     }
-
-
-
 
 }
