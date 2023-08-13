@@ -786,10 +786,25 @@ void FileManagerMainWindow::createMenus()
         QMessageBox::information(nullptr, (" "), tr("This feature is still in development."));
     });
 
-    goMenu->addAction(tr("Devices"));
-    goMenu->actions().last()->setShortcut(QKeySequence("Ctrl+Shift+U"));
+    QMenu *devicesMenu = new QMenu(tr("Devices"), this);
+    goMenu->actions().last()->setShortcut(QKeySequence("Ctrl+Shift+U")); // FIXME: This does not work because we have a submenu
     connect(goMenu->actions().last(), &QAction::triggered, this,
-            [this]() { openFolderInNewWindow("/media"); });
+            [this]() { openFolderInNewWindow("/media"); }); // FIXME: As above
+    goMenu->addMenu(devicesMenu);
+    // Add a submenu to the Devices menu with one entry for each of the directories in /media;
+    // this needs to be done dynamically because the contents of /media can change
+    connect(devicesMenu, &QMenu::aboutToShow, this, [this, devicesMenu, goMenu]() {
+        devicesMenu->clear();
+        QDir mediaDir("/media");
+        if (mediaDir.exists()) {
+            for (const QString &entry : mediaDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot)) {
+                QAction *action = devicesMenu->addAction(entry);
+                connect(action, &QAction::triggered, this,
+                        [this, entry]() { openFolderInNewWindow("/media/" + entry); });
+            }
+        }
+    });
+
     goMenu->addAction(tr("Applications"));
     goMenu->actions().last()->setShortcut(QKeySequence("Ctrl+Shift+A"));
     connect(goMenu->actions().last(), &QAction::triggered, this,
