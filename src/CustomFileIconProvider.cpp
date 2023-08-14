@@ -32,12 +32,14 @@
 #include "ExtendedAttributes.h"
 
 #include <QDebug>
+#include <QProcess>
 #include <QFile>
 #include <QIcon>
 #include <QPainter>
 #include <QApplication>
 #include <QStorageInfo>
 #include <QThread>
+#include <QImageReader>
 #include "AppGlobals.h"
 
 CustomFileIconProvider::CustomFileIconProvider()
@@ -125,6 +127,49 @@ QIcon CustomFileIconProvider::icon(const QFileInfo &info) const
     // If it is not a bundle but a directory, then we always want to show the folder icon
     if (info.isDir()) {
         return (QIcon::fromTheme("folder"));
+    }
+
+    // If it is an .exe file, then we want to show the ICO from the .exe file
+    if (info.suffix().compare("exe", Qt::CaseInsensitive) == 0)
+    {
+        qDebug() << "File extension is .exe: " << info.absoluteFilePath();
+
+        // Call icoextract executable to extract the icon
+        QProcess icoExtractProcess;
+        QStringList arguments;
+        arguments << info.absoluteFilePath() << "/tmp/icoextract.ico";
+        icoExtractProcess.start("icoextract", arguments);
+        if (!icoExtractProcess.waitForStarted() || !icoExtractProcess.waitForFinished())
+        {
+            qDebug() << "Failed to run icoextract.";
+            return QIcon::fromTheme("application-x-ms-dos-executable");
+        }
+
+        // Read the extracted icon
+        QFile iconFile("/tmp/icoextract.ico");
+        if (!iconFile.open(QIODevice::ReadOnly))
+        {
+            qDebug() << "Failed to open icon file.";
+            return QIcon::fromTheme("application-x-ms-dos-executable");
+        }
+        QByteArray iconData = iconFile.readAll();
+        iconFile.close();
+        qDebug() << "Icon data size: " << iconData.size();
+
+        // Load the icon data into a QImage
+        QImage iconImage;
+        if (iconImage.loadFromData(reinterpret_cast<const uchar*>(iconData.constData()), iconData.size(), "ico"))
+        {
+            // Create a QIcon from the QImage
+            QIcon extractedIcon;
+            extractedIcon.addPixmap(QPixmap::fromImage(iconImage));
+            return extractedIcon;
+        }
+        else
+        {
+            qDebug() << "Failed to load icon image.";
+            return QIcon::fromTheme("application-x-ms-dos-executable");
+        }
     }
 
     // If the file has the executable bit set and is not a directory,
