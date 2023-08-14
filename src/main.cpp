@@ -29,14 +29,15 @@
 #include <QCommandLineParser>
 #include <QMessageBox>
 #include <QStandardPaths>
-#include <QSharedMemory>
 #include <QDebug>
 #include <QTranslator>
 #include <QProcess>
 #include <QDBusMessage>
 #include <QDBusConnection>
+#include <QDBusConnectionInterface>
 #include <QThread>
 #include <QString>
+#include <QUrl>
 
 #include "FileManagerMainWindow.h"
 #include "DBusInterface.h"
@@ -49,6 +50,8 @@
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
+
+    QDBusConnection connection = QDBusConnection::sessionBus();
 
     // Set the application name
     QCoreApplication::setApplicationName("Filer");
@@ -67,53 +70,58 @@ int main(int argc, char *argv[])
     // that cause the already running file manager to open the paths
     QStringList pathsToBeOpened = parser.positionalArguments();
     if (! pathsToBeOpened.isEmpty()) {
-
-        // Create a D-Bus message to call the ShowFolders method
-        QDBusMessage message = QDBusMessage::createMethodCall(
-                "org.freedesktop.FileManager1",    // Service name
-                "/org/freedesktop/FileManager1",  // Object path
-                "org.freedesktop.FileManager1",    // Interface name
-                "ShowFolders"                        // Method name
-        );
-
-        // Set the arguments for the method call
-        message << pathsToBeOpened;
-
-        // Send the D-Bus message and get the reply
-        QDBusMessage reply = QDBusConnection::sessionBus().call(message);
-
-        if (reply.type() == QDBusMessage::ReplyMessage) {
-            qDebug() << "ShowFolders method called successfully";
-        } else if (reply.type() == QDBusMessage::ErrorMessage) {
-            qDebug() << "Failed to call ShowFolders method: " << reply.errorMessage();
+        // Check whether another instance of a file manager is already running
+        // by checking whether the D-Bus ""org.freedesktop.FileManager1" service is available
+        if (! connection.interface()->isServiceRegistered("org.freedesktop.FileManager1")) {
+            qDebug() << "No other file manager is running";
         } else {
-            qDebug() << "Failed to call ShowFolders method";
+            qDebug() << "Another file manager is already running";
+            // Call the ShowFolders method on the running file manager
+            // to open the paths that were passed as arguments
+
+            // Create a D-Bus message to call the ShowFolders method
+            // void DBusInterface::ShowFolders(const QStringList &uriList, const QString &startUpId)
+            QStringList uriList;
+            foreach (QString path, pathsToBeOpened) {
+                uriList.append(QUrl::fromLocalFile(path).toString());
+            }
+            QString startUpId = "Filer";
+            QDBusMessage message = QDBusMessage::createMethodCall("org.freedesktop.FileManager1", "/org/freedesktop/FileManager1", "org.freedesktop.FileManager1", "ShowFolders");
+            message << uriList << startUpId;
+
+            // Send the D-Bus message and get the reply
+            // Print the message to the console
+            qDebug() << message;
+            QDBusMessage reply = QDBusConnection::sessionBus().call(message);
+
+            if (reply.type() == QDBusMessage::ReplyMessage) {
+                // Print reply
+                qDebug() << reply;
+                qDebug() << "ShowFolders method called successfully";
+            } else if (reply.type() == QDBusMessage::ErrorMessage) {
+                qWarning() << "Failed to call ShowFolders method: " << reply.errorMessage();
+                return 1;
+            } else {
+                qWarning() << "Failed to call ShowFolders method";
+                return 1;
+            }
+            return 0;
         }
-        app.quit();
+
+
+    } else {
+        // No arguments were passed to the application
+        // Check whether another instance of a file manager is already running
+        // by checking whether the D-Bus ""org.freedesktop.FileManager1" service is available
+        if (! connection.interface()->isServiceRegistered("org.freedesktop.FileManager1")) {
+            qDebug() << "No other file manager is running";
+        } else {
+            QMessageBox::critical(nullptr, 0,
+                                  QObject::tr("Another file manager is already running.\nPlease quit it first."));
+            return 0;
+        }
     }
 
-    // Check whether another instance of this application is already running
-    const QString sharedMemoryKey = qApp->applicationName();
-    QSharedMemory sharedMemory(sharedMemoryKey);
-    qDebug() << "Attempting to attach to shared memory...";
-    if (sharedMemory.attach()) {
-        qDebug() << "Shared memory segment already exists.";
-        QString text = QObject::tr("Another instance of %1 is already running.").arg(qApp->applicationName());
-        QMessageBox::critical(0, qApp->applicationName(), text);
-        return 1;
-    }
-    qDebug() << "Trying to create shared memory...";
-    if (!sharedMemory.create(1)) {
-        qDebug() << "Failed to create shared memory segment.";
-        QString text = QObject::tr("Failed to create shared memory segment. Please close any other instances of %1.").arg(qApp->applicationName());
-        QMessageBox::critical(0, qApp->applicationName(), text);
-        return 1;
-    }
-    qDebug() << "Shared memory segment created successfully.";
-    // Properly detach the shared memory when the application exits
-    QObject::connect(&app, &QCoreApplication::aboutToQuit, [&sharedMemory]() {
-        sharedMemory.detach();
-    });
 
     // On the $PATH check for the existence of the following commands:
     // - open

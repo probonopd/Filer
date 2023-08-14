@@ -128,7 +128,7 @@ ApplicationBundle::Type ApplicationBundle::type() const
 
 QIcon ApplicationBundle::icon() const
 {
-    qDebug() << "m_icon:" << m_icon;
+    // qDebug() << "m_icon:" << m_icon;
     if (m_type == Type::DesktopFile) {
         // Get the icon from the theme if it is a desktop file
         QIcon icon = QIcon::fromTheme(m_icon);
@@ -170,7 +170,7 @@ QIcon ApplicationBundle::icon() const
 
 QString ApplicationBundle::iconName() const
 {
-    qDebug() << "m_icon:" << m_icon;
+    // qDebug() << "m_icon:" << m_icon;
     return m_icon;
 }
 

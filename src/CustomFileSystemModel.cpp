@@ -83,7 +83,7 @@ QString CustomFileSystemModel::openWith(const QFileInfo& fileInfo) const {
         // qDebug() << "Updating model with open-with attribute for " << filePath << ": " << attributeValue;
         openWithAttributes[index] = attributeValue.toUtf8();
     } else {
-        qDebug() << "Did not find " << filePath << " in the model. FIXME: Find the reason why this happens. Working around for now.";
+        // qDebug() << "Did not find " << filePath << " in the model. FIXME: Find the reason why this happens. Working around for now.";
         // Once we have solved this condition, we can use an index instead of a QFileInfo for this method.
     }
 
@@ -114,7 +114,7 @@ QPoint CustomFileSystemModel::getIconCoordinates(const QFileInfo& fileInfo) cons
             qDebug() << "Updating model with coordinates for " << filePath << ": " << coords;
             iconCoordinates[index] = coords;
         } else {
-            qDebug() << "Did not find " << filePath << " in the model. FIXME: Find the reason why this happens. Working around for now.";
+            // qDebug() << "Did not find " << filePath << " in the model. FIXME: Find the reason why this happens. Working around for now.";
             // Once we have solved this condition, we can use an index instead of a QFileInfo for this method.
         }
     }

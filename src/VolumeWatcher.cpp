@@ -83,8 +83,8 @@ void VolumeWatcher::handleDirectoryChange(const QString &path)
             if (!QFile::exists(symlinkPath)) {
                 // Wait until a mount point appears at the target or 5 seconds have passed
                 int counter = 0;
+                QStringList mountPoints;
                 while (true) {
-                    QStringList mountPoints;
                     for (const QStorageInfo &storage : QStorageInfo::mountedVolumes()) {
                         mountPoints << storage.rootPath();
                     }
@@ -94,15 +94,19 @@ void VolumeWatcher::handleDirectoryChange(const QString &path)
                     QThread::msleep(100);
                     qApp->processEvents();
                     qDebug() << "Waiting for mount point to appear at" << fullPath;
+                    // TODO: Replace this by an asynchronous approach
                     counter++;
-                    if (counter > 50) {
-                        // Give up after 5 seconds
+                    if (counter > 10) {
+                        // Give up after 1 second
                         break;
                     }
                 }
-
-                QFile::link(fullPath, symlinkPath);
-                qDebug() << "Symlink created for" << fullPath;
+                if (mountPoints.contains(fullPath)) {
+                    QFile::link(fullPath, symlinkPath);
+                    qDebug() << "Symlink created for" << fullPath;
+                } else {
+                    qDebug() << "Giving up on" << fullPath;
+                }
             } else {
                 qDebug() << "Symlink already exists for" << fullPath;
             }

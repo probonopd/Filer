@@ -36,6 +36,7 @@
 #include <QTimer>
 #include "FileManagerMainWindow.h"
 #include <QThread>
+#include "AppGlobals.h"
 
 TrashHandler::TrashHandler(QWidget *parent) : QObject(parent) {
     m_trashPath = QDir::homePath() + "/.local/share/Trash/files";
@@ -45,11 +46,17 @@ TrashHandler::TrashHandler(QWidget *parent) : QObject(parent) {
 
 void TrashHandler::moveToTrash(const QStringList& paths) {
 
+    qDebug() << "moveToTrash" << paths;
+
     // This is used to know which sound to play at the end
     bool unmounted = false;
     bool filesMoved = false;
 
     foreach (const QString &path, paths) {
+
+        // Be conservative and assume that the path is a mount point
+        // until we have proven otherwise
+        bool isMountpoint = true;
 
         QFileInfo fileInfo(path);
 
@@ -64,19 +71,20 @@ void TrashHandler::moveToTrash(const QStringList& paths) {
             absoluteFilePathWithSymlinksResolved = fileInfo.symLinkTarget();
         }
 
-        if (mountPoints.contains(absoluteFilePathWithSymlinksResolved)) {
+        if (! mountPoints.contains(absoluteFilePathWithSymlinksResolved)) {
+            isMountpoint = false;
+        }
+
+        if (isMountpoint) {
+            qDebug() << "Path" << absoluteFilePathWithSymlinksResolved << "is a mount point";
+
             // Check if there is a window for the mount point open and if so, close it
             // Get the list of open windows from FileManagerMainWindow
             FileManagerMainWindow* mainWindow = qobject_cast<FileManagerMainWindow*>(qApp->activeWindow());
 
-            // Print all open windows
-            qDebug() << "Open windows:";
-            for (const QString &key : mainWindow->getInstancePaths()) {
-                qDebug() << key;
-            }
-
             if (mainWindow->instanceExists(absoluteFilePathWithSymlinksResolved)) {
                 // Close the window for the mount point
+                qDebug() << "Closing window for mount point" << absoluteFilePathWithSymlinksResolved;
                 FileManagerMainWindow* targetWindow = mainWindow->getInstanceForDirectory(absoluteFilePathWithSymlinksResolved);
                 if (targetWindow != nullptr) {
                     targetWindow->close();
@@ -93,30 +101,32 @@ void TrashHandler::moveToTrash(const QStringList& paths) {
             QProcess umount;
             // If eject-and-clean exists, use it; otherwise use umount
             // eject-and-clean is a wrapper around umount that also cleans up the mount point
-            if (QFile::exists("eject-and-clean")) {
+            if (QFile::exists("/usr/local/bin/eject-and-clean")) {
                 umount.start("eject-and-clean", QStringList() << absoluteFilePathWithSymlinksResolved);
+                qDebug() << "eject-and-clean" << absoluteFilePathWithSymlinksResolved;
             } else {
                 umount.start("umount", QStringList() << absoluteFilePathWithSymlinksResolved);
+                qDebug() << "umount" << absoluteFilePathWithSymlinksResolved;
             }
-            umount.waitForFinished(10000);
+            qDebug() << "Waiting for umount to finish";
+            umount.waitForFinished(10000); // Wait for 10 seconds; it can really take that long...
             if (umount.exitCode() == 0) {
                 unmounted = true;
-                // Successfully unmounted the mount point, now remove the mount point
-                QDir mountPointDir(absoluteFilePathWithSymlinksResolved);
-                // Using sudo, remove the mount point directory if it is still there
-                if (!mountPointDir.exists()) {
-                    QProcess removeMountPoint;
-                    removeMountPoint.start("sudo", QStringList() << "-A" << "-E" << "rm" << "-r" << mountPointDir.absolutePath());
-                    removeMountPoint.waitForFinished(2000);
-                    if (removeMountPoint.exitCode() != 0) {
-                        QMessageBox::critical(nullptr, tr("Error"),
-                                              tr("Failed to remove the mount point directory: ") + mountPointDir.absolutePath());
-                    }
-                }
             } else {
                 QMessageBox::critical(nullptr, tr("Error"),
                                       tr("Failed to unmount the mount point: ") + absoluteFilePathWithSymlinksResolved);
             }
+            continue;
+        }
+
+        if (isMountpoint) {
+            qDebug() << "Path" << absoluteFilePathWithSymlinksResolved << "is a mount point, skipping";
+            continue;
+        }
+
+        // If path is /media or /media/$USER, we refuse to move it to the trash
+        if (absoluteFilePathWithSymlinksResolved == AppGlobals::mediaPath) {
+            qDebug() << "Path" << absoluteFilePathWithSymlinksResolved << "is in" << AppGlobals::mediaPath << ", skipping";
             continue;
         }
 
@@ -248,14 +258,26 @@ void TrashHandler::moveToTrash(const QStringList& paths) {
                     // Delete the file/directory permanently
                     if (fileInfo.isDir()) {
                         if (!QDir(path).removeRecursively()) {
-                            QMessageBox::critical(nullptr, tr("Error"),
-                                                  tr("Failed to delete the directory permanently. Please check file permissions."));
+                            // Use sudo -A -E rm -rf <path> to delete the directory
+                            QProcess p;
+                            p.start("sudo", QStringList() << "-A" << "-E" << "rm" << "-rf" << path);
+                            p.waitForFinished(-1);
+                            if (p.exitCode() != 0) {
+                                QMessageBox::critical(nullptr, tr("Error"),
+                                                      tr("Failed to delete the directory permanently. Please check file permissions."));
+                            }
                             continue;
                         }
                     } else {
                         if (!QFile::remove(path)) {
-                            QMessageBox::critical(nullptr, tr("Error"),
-                                                  tr("Failed to delete the file permanently. Please check file permissions."));
+                            // Use sudo -A -E rm -f <path> to delete the file
+                            QProcess p;
+                            p.start("sudo", QStringList() << "-A" << "-E" << "rm" << "-f" << path);
+                            p.waitForFinished(-1);
+                            if (p.exitCode() != 0) {
+                                QMessageBox::critical(nullptr, tr("Error"),
+                                                      tr("Failed to delete the file permanently. Please check file permissions."));
+                            }
                             continue;
                         }
                     }

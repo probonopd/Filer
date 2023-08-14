@@ -51,8 +51,8 @@ QString LaunchDB::applicationForFile(const QFileInfo &fileInfo) const {
 
     // Get the MIME type of the file
     QMimeType mimeType = db->mimeTypeForFile(absoluteFilePath);
-    qDebug("");
-    qDebug("'%s' has MIME type '%s'", qPrintable(absoluteFilePath), qPrintable(mimeType.name()));
+    // qDebug("");
+    // qDebug("'%s' has MIME type '%s'", qPrintable(absoluteFilePath), qPrintable(mimeType.name()));
 
     // If we have "text/x-pdf, see whether ~/.local/share/launch/MIME/text_x-pdf/ exists (just as an example)
     QString mimeDir = QDir::homePath() + "/.local/share/launch/MIME/" + mimeType.name().replace("/", "_");

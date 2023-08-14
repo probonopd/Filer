@@ -181,7 +181,7 @@ QIcon CustomFileIconProvider::icon(const QFileInfo &info) const
         // qDebug() << "-> openWith:" << openWith << "for" << info.absoluteFilePath();
         ApplicationBundle bundle(openWith);
         if (bundle.isValid()) {
-            qDebug("Info: %s is a valid application bundle", qPrintable(openWith));
+            // qDebug("Info: %s is a valid application bundle", qPrintable(openWith));
             QIcon applicationIcon = QIcon(bundle.icon()).pixmap(16, 16);
             if (applicationIcon.isNull()) {
                 qDebug("Warning: %s does not have an icon", qPrintable(openWith));
@@ -191,7 +191,7 @@ QIcon CustomFileIconProvider::icon(const QFileInfo &info) const
             QIcon combinedIcon = iconCreator->createCombinedIcon(applicationIcon);
             return (combinedIcon);
         } else {
-            qDebug("Info: %s is not a valid application bundle", qPrintable(openWith));
+            // qDebug("Info: %s is not a valid application bundle", qPrintable(openWith));
         }
     }
 
