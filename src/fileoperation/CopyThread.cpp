@@ -55,6 +55,15 @@ void CopyThread::run() {
             return;
         }
 
+        // Handle symlinks
+        if (fromInfo.isSymLink()) {
+            QString symlinkTarget = fromInfo.symLinkTarget();
+            if (!QFile::link(symlinkTarget, toPath)) {
+                emit error(tr("Failed to copy symbolic link."));
+                return;
+            }
+        }
+
         QString toSubdir = toDir.filePath(fromInfo.fileName());
         if (fromInfo.isDir()) {
             qDebug() << "Creating target subdirectory" << toSubdir;
@@ -103,7 +112,14 @@ void CopyThread::run() {
                 QString relativePath = it.filePath().mid(fromPath.size() + 1);
                 QString targetFilePath = toSubdir + QDir::separator() + relativePath;
 
-                if (QFileInfo(it.fileInfo()).isDir()) {
+                if (it.fileInfo().isSymLink()) {
+                    // Handle symbolic link within subdirectory
+                    QString symlinkTarget = it.fileInfo().symLinkTarget();
+                    if (!QFile::link(symlinkTarget, targetFilePath)) {
+                        emit error(tr("Failed to copy symbolic link."));
+                        return;
+                    }
+                } else if (QFileInfo(it.fileInfo()).isDir()) {
                     QDir(targetFilePath).mkpath(".");
                 } else {
                     QFile sourceFile(it.filePath());
