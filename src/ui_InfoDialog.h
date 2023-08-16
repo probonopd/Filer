@@ -197,7 +197,7 @@ public:
         createdLabel->setText(QCoreApplication::translate("InfoDialog", "Created:", nullptr));
         changeOpenWithButton->setText(QCoreApplication::translate("InfoDialog", "Change...", nullptr));
         modifiedLabel->setText(QCoreApplication::translate("InfoDialog", "Modified:", nullptr));
-        executableCheckBox->setText(QCoreApplication::translate("InfoDialog", "Excute as an application", nullptr));
+        executableCheckBox->setText(QCoreApplication::translate("InfoDialog", "Execute as an application", nullptr));
         pathLabel->setText(QCoreApplication::translate("InfoDialog", "Path:", nullptr));
         typeLabel_2->setText(QCoreApplication::translate("InfoDialog", "Open With:", nullptr));
         typeLabel->setText(QCoreApplication::translate("InfoDialog", "Type:", nullptr));
