@@ -537,6 +537,8 @@ void FileManagerMainWindow::createMenus()
     fileMenu->actions().last()->setShortcut(QKeySequence("Ctrl+N"));
     fileMenu->actions().last()->setEnabled(false);
 
+    fileMenu->addSeparator();
+
     // Open
     fileMenu->addAction(tr("Open"));
     m_openAction = fileMenu->actions().last();
@@ -569,6 +571,20 @@ void FileManagerMainWindow::createMenus()
     if (m_isFirstInstance) {
         fileMenu->actions().last()->setEnabled(false);
     }
+
+    fileMenu->addSeparator();
+
+    // Show Contents
+    m_showContentsAction = new QAction(tr("Show Contents"), this);
+    fileMenu->addAction(m_showContentsAction);
+    m_showContentsAction->setEnabled(false);
+    connect(m_showContentsAction, &QAction::triggered, this, [this]() {
+        QModelIndexList selectedIndexes = m_treeView->selectionModel()->selectedIndexes();
+        for (QModelIndex index : selectedIndexes) {
+            QString filePath = m_fileSystemModel->filePath(index);
+            openFolderInNewWindow(filePath);
+        }
+    });
 
     fileMenu->addSeparator();
 
@@ -1420,6 +1436,23 @@ void FileManagerMainWindow::updateMenus()
         m_openWithAction->setEnabled(true);
         m_moveToTrashAction->setEnabled(true);
         m_getInfoAction->setEnabled(true);
+        bool allSelectedItemsCanShowContents = true;
+        for (const QModelIndex &index : selectedIndexes) {
+            // Check if the selected item can show its contents
+            QString filePath = m_fileSystemModel->filePath(index);
+            ApplicationBundle* bundle = new ApplicationBundle(filePath);
+            if (bundle->isValid() && bundle->type() != ApplicationBundle::Type::DesktopFile) {
+                // Do nothing in this case
+            } else {
+                allSelectedItemsCanShowContents = false;
+            }
+            delete bundle;
+        }
+        if (allSelectedItemsCanShowContents) {
+            m_showContentsAction->setEnabled(true);
+        } else {
+            m_showContentsAction->setEnabled(false);
+        }
     }
 }
 

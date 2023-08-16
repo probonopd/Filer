@@ -54,6 +54,8 @@ public:
 
     ~FileManagerMainWindow();
 
+    QItemSelectionModel *m_selectionModel;
+
     QString directory() const;
     void setDirectory(const QString &directory);
 
@@ -98,7 +100,7 @@ private:
 
     QTreeView *m_treeView;
     CustomListView *m_iconView;
-    QItemSelectionModel *m_selectionModel;
+
     QMenuBar *m_menuBar;
 
     QStatusBar *m_statusBar;
@@ -107,6 +109,7 @@ private:
 
     QAction *m_openAction;
     QAction *m_openWithAction;
+    QAction *m_showContentsAction;
     QAction *m_getInfoAction;
     QAction *m_renameAction;
 

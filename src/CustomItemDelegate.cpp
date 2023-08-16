@@ -288,6 +288,9 @@ bool CustomItemDelegate::editorEvent(QEvent *event, QAbstractItemModel *model,
             parent = parent->parent();
         }
 
+        // Set the item that was clicked on selected
+        mainWindow->m_selectionModel->setCurrentIndex(index, QItemSelectionModel::Select);
+
         // Open
         QAction *openAction = new QAction("Open", &menu);
         openAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_O));
@@ -308,15 +311,21 @@ bool CustomItemDelegate::editorEvent(QEvent *event, QAbstractItemModel *model,
 
         QAction *showContentsAction = new QAction(tr("Show Contents"), this);
         showContentsAction->setEnabled(false);
-//        ApplicationBundle* bundle = new ApplicationBundle(filePath);
-//        if (bundle->isValid() && bundle->type() != ApplicationBundle::Type::DesktopFile) {
-//            showContentsAction->setEnabled(true);
-//        }
-//        delete bundle;
-        connect(showContentsAction, &QAction::triggered, [=]() {
-            mainWindow->openFolderInNewWindow(filePath);
-        });
         menu.addAction(showContentsAction);
+        connect(showContentsAction, &QAction::triggered, [=]() {
+            // Get all selected items
+            QModelIndexList selectedIndexes = mainWindow->getCurrentView()->selectionModel()->selectedIndexes();
+            for (QModelIndex index : selectedIndexes) {
+                mainWindow->openFolderInNewWindow(filePath);
+            }
+        });
+        ApplicationBundle* bundle = new ApplicationBundle(filePath);
+        if (bundle->isValid() && bundle->type() != ApplicationBundle::Type::DesktopFile) {
+            showContentsAction->setEnabled(true);
+        } else {
+            showContentsAction->setEnabled(false);
+        }
+        delete bundle;
 
         menu.addSeparator();
 
