@@ -142,3 +142,21 @@ add_custom_command(TARGET Filer POST_BUILD
         ${APPLICATION_BUNDLE_PATH}/bin/fileoperation
         COMMENT "Copying fileoperation binary to bundle..."
 )
+
+install(TARGETS Filer RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
+
+# Install the application bundle in /System
+install(DIRECTORY
+        ${APPLICATION_BUNDLE_PATH}
+    DESTINATION ${CMAKE_INSTALL_PREFIX}/../
+    )
+
+# Set executable permissions
+install(CODE "
+    execute_process(
+        COMMAND chmod +x ${CMAKE_INSTALL_PREFIX}/../${APPLICATION_BUNDLE_NAME}/Filer
+    )
+    execute_process(
+        COMMAND chmod +x ${CMAKE_INSTALL_PREFIX}/../${APPLICATION_BUNDLE_NAME}/bin/fileoperation
+    )
+    ")
