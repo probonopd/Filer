@@ -64,6 +64,7 @@ $(function() {
   <div class="summary">
 <a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-attribs">Public Attributes</a> &#124;
 <a href="classApplicationBundle-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">ApplicationBundle Class Reference</div>  </div>
@@ -139,6 +140,26 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a87933516c1bddbe580ff66a069540cf8"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classApplicationBundle.html#a87933516c1bddbe580ff66a069540cf8">isCommandLineTool</a> () const</td></tr>
 <tr class="memdesc:a87933516c1bddbe580ff66a069540cf8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if the application bundle is a command line tool.  <a href="classApplicationBundle.html#a87933516c1bddbe580ff66a069540cf8">More...</a><br /></td></tr>
 <tr class="separator:a87933516c1bddbe580ff66a069540cf8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa63533713787422b51008cd1a38ed60e"><td class="memItemLeft" align="right" valign="top">QString&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classApplicationBundle.html#aa63533713787422b51008cd1a38ed60e">typeName</a> () const</td></tr>
+<tr class="memdesc:aa63533713787422b51008cd1a38ed60e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the name of the type as a string.  <a href="classApplicationBundle.html#aa63533713787422b51008cd1a38ed60e">More...</a><br /></td></tr>
+<tr class="separator:aa63533713787422b51008cd1a38ed60e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
+Public Attributes</h2></td></tr>
+<tr class="memitem:a523811e33db7a75c076ca35194606423"><td class="memItemLeft" align="right" valign="top">QString&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classApplicationBundle.html#a523811e33db7a75c076ca35194606423">m_path</a></td></tr>
+<tr class="separator:a523811e33db7a75c076ca35194606423"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9f5cd487c42ebdb0f9f01af6aa4be4e1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classApplicationBundle.html#a9f5cd487c42ebdb0f9f01af6aa4be4e1">m_isValid</a></td></tr>
+<tr class="separator:a9f5cd487c42ebdb0f9f01af6aa4be4e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a638205ce53b6e01a97948a606fab4408"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classApplicationBundle.html#ad3f6ead97dd4f556572804fba8ff290a">Type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classApplicationBundle.html#a638205ce53b6e01a97948a606fab4408">m_type</a></td></tr>
+<tr class="separator:a638205ce53b6e01a97948a606fab4408"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aab700305142b506cce92919da440fa4a"><td class="memItemLeft" align="right" valign="top">QString&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classApplicationBundle.html#aab700305142b506cce92919da440fa4a">m_name</a></td></tr>
+<tr class="separator:aab700305142b506cce92919da440fa4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9962a689c0380523e1360fd694009c93"><td class="memItemLeft" align="right" valign="top">QString&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classApplicationBundle.html#a9962a689c0380523e1360fd694009c93">m_icon</a></td></tr>
+<tr class="separator:a9962a689c0380523e1360fd694009c93"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adf7ee015589b836133233cbfa89919e2"><td class="memItemLeft" align="right" valign="top">QString&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classApplicationBundle.html#adf7ee015589b836133233cbfa89919e2">m_executable</a></td></tr>
+<tr class="separator:adf7ee015589b836133233cbfa89919e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a97ff69a38d5cea47cac432ddcf28712a"><td class="memItemLeft" align="right" valign="top">QStringList&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classApplicationBundle.html#a97ff69a38d5cea47cac432ddcf28712a">m_arguments</a></td></tr>
+<tr class="separator:a97ff69a38d5cea47cac432ddcf28712a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Represents an application bundle or executable in various formats. </p>
@@ -386,6 +407,132 @@ Public Member Functions</h2></td></tr>
 
 <p>Returns the type of the application bundle. </p>
 <dl class="section return"><dt>Returns</dt><dd>The type. </dd></dl>
+
+</div>
+</div>
+<a id="aa63533713787422b51008cd1a38ed60e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa63533713787422b51008cd1a38ed60e">&#9670;&nbsp;</a></span>typeName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">QString ApplicationBundle::typeName </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Gets the name of the type as a string. </p>
+<dl class="section return"><dt>Returns</dt><dd>The type name. </dd></dl>
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="a97ff69a38d5cea47cac432ddcf28712a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a97ff69a38d5cea47cac432ddcf28712a">&#9670;&nbsp;</a></span>m_arguments</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">QStringList ApplicationBundle::m_arguments</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>The list of arguments. </p>
+
+</div>
+</div>
+<a id="adf7ee015589b836133233cbfa89919e2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adf7ee015589b836133233cbfa89919e2">&#9670;&nbsp;</a></span>m_executable</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">QString ApplicationBundle::m_executable</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>The path to the executable. </p>
+
+</div>
+</div>
+<a id="a9962a689c0380523e1360fd694009c93"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9962a689c0380523e1360fd694009c93">&#9670;&nbsp;</a></span>m_icon</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">QString ApplicationBundle::m_icon</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>The path of the application's icon. </p>
+
+</div>
+</div>
+<a id="a9f5cd487c42ebdb0f9f01af6aa4be4e1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9f5cd487c42ebdb0f9f01af6aa4be4e1">&#9670;&nbsp;</a></span>m_isValid</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool ApplicationBundle::m_isValid</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Indicates if the bundle is valid. </p>
+
+</div>
+</div>
+<a id="aab700305142b506cce92919da440fa4a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aab700305142b506cce92919da440fa4a">&#9670;&nbsp;</a></span>m_name</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">QString ApplicationBundle::m_name</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>The name of the application. </p>
+
+</div>
+</div>
+<a id="a523811e33db7a75c076ca35194606423"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a523811e33db7a75c076ca35194606423">&#9670;&nbsp;</a></span>m_path</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">QString ApplicationBundle::m_path</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>The path of the application bundle. </p>
+
+</div>
+</div>
+<a id="a638205ce53b6e01a97948a606fab4408"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a638205ce53b6e01a97948a606fab4408">&#9670;&nbsp;</a></span>m_type</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classApplicationBundle.html#ad3f6ead97dd4f556572804fba8ff290a">Type</a> ApplicationBundle::m_type</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>The type of the application bundle. </p>
 
 </div>
 </div>
