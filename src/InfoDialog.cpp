@@ -93,6 +93,16 @@ InfoDialog::InfoDialog(const QString &filePath, QWidget *parent) :
     setMinimumWidth(400);
     setMaximumWidth(400);
 
+    // Fix the first column to the width of the longest label
+    ui->gridLayout->setColumnStretch(0, 0);
+
+    // Add a horizontal spacer to the right of the icon
+    ui->gridLayout->addItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum), 0, 2, 1, 1);
+
+    // Set width of the button to the width needed for the text
+    ui->changeOpenWithButton->setFixedWidth(ui->changeOpenWithButton->fontMetrics().boundingRect(ui->changeOpenWithButton->text()).width() + 50);
+
+
     ui->iconInfo->setStyleSheet("QLabel { border: 1px solid grey; }");
     ui->iconInfo->setFixedSize(128, 128);
     ui->iconInfo->setAlignment(Qt::AlignCenter);
@@ -139,7 +149,14 @@ InfoDialog::~InfoDialog()
 
 void InfoDialog::setupInformation()
 {
-    qDebug() << fileInfo.absoluteFilePath();
+
+    QFile file(filePath);
+    if (file.exists() && file.permissions() & QFile::WriteOwner) {
+        isEditable = true;
+    } else {
+        isEditable = false;
+    }
+
     QIcon icon = QIcon::fromTheme("unknown");
     ui->iconInfo->setPixmap(icon.pixmap(128, 128));
 
@@ -155,14 +172,25 @@ void InfoDialog::setupInformation()
     if (!i.isNull()) {
         ui->iconInfo->setPixmap(i.pixmap(128, 128));
     }
-    QString openWith = model->openWith(filePath); // Used below
+    openWith = model->openWith(filePath); // Used below
     delete model;
     delete iconProvider;
 
     ui->pathInfo->setText(filePath);
     ui->pathInfo->setTextInteractionFlags(Qt::TextSelectableByMouse | Qt::TextSelectableByKeyboard);
 
-    ui->sizeInfo->setText(QString::number(fileInfo.size()) + " bytes");
+    // Convert the size into a human-readable format
+    QString sizeString;
+    if (fileInfo.size() < 1024) {
+        sizeString = QString::number(fileInfo.size()) + " B";
+    } else if (fileInfo.size() < 1024 * 1024) {
+        sizeString = QString::number(fileInfo.size() / 1024.0, 'f', 2) + " KB";
+    } else if (fileInfo.size() < 1024 * 1024 * 1024) {
+        sizeString = QString::number(fileInfo.size() / (1024.0 * 1024.0), 'f', 2) + " MB";
+    } else {
+        sizeString = QString::number(fileInfo.size() / (1024.0 * 1024.0 * 1024.0), 'f', 2) + " GB";
+    }
+    ui->sizeInfo->setText(sizeString + " (" + QString::number(fileInfo.size()) + " bytes)");
 
     ui->createdInfo->setText(fileInfo.created().toString(Qt::DefaultLocaleLongDate));
 
@@ -184,7 +212,11 @@ void InfoDialog::setupInformation()
     // Check if the item is an application bundle and return the icon
     ApplicationBundle *b = new ApplicationBundle(filePath);
     if (b->isValid()) {
+        ui->openWithInfo->setText("launch");
         ui->typeInfo->setText(b->typeName());
+        if (b->type() == ApplicationBundle::Type::AppBundle || b->type() == ApplicationBundle::Type::AppDir) {
+            ui->executableCheckBox->setChecked(true);
+        }
     }
     delete b;
 
@@ -194,7 +226,11 @@ void InfoDialog::setupInformation()
     delete db;
 
     ui->openWithInfo->setText(openWith);
-
+    if (openWith.isEmpty() || ! isEditable) {
+        ui->changeOpenWithButton->setEnabled(false);
+    } else {
+        ui->changeOpenWithButton->setEnabled(true);
+    }
 }
 
 void InfoDialog::changeOpenWith()
@@ -228,10 +264,23 @@ void InfoDialog::updatePermissions()
     // Set permissions checkbox to true, false, or tristate
     if (permissions & QFile::ExeOwner && permissions & QFile::ExeGroup && permissions & QFile::ExeOther) {
         ui->executableCheckBox->setCheckState(Qt::Checked);
+        ui->openWithInfo->setText("launch");
     } else if (!(permissions & QFile::ExeOwner) && !(permissions & QFile::ExeGroup) && !(permissions & QFile::ExeOther)) {
         ui->executableCheckBox->setCheckState(Qt::Unchecked);
+        ui->openWithInfo->setText(openWith);
     } else {
         ui->executableCheckBox->setCheckState(Qt::PartiallyChecked);
+        ui->openWithInfo->setText(openWith);
+    }
+
+    // For directories, we don't check the checkbox and we disable it
+    if (fileInfo.isDir()) {
+        ui->executableCheckBox->setCheckState(Qt::Unchecked);
+        ui->executableCheckBox->setEnabled(false);
+    } else if (isEditable) {
+        ui->executableCheckBox->setEnabled(true);
+    } else {
+        ui->executableCheckBox->setEnabled(false);
     }
 }
 
@@ -256,6 +305,7 @@ void InfoDialog::setExecutable()
     }
     if (process.exitCode() != 0) {
         QMessageBox::warning(this, tr("Error"), tr("Error setting permissions."));
+        updatePermissions();
     }
 }
 
@@ -323,7 +373,7 @@ void InfoDialog::pasteIcon()
 // Event filter for the icon label to change the border when clicked
 bool InfoDialog::eventFilter(QObject *obj, QEvent *event) {
     if (event->type() == QEvent::MouseButtonPress) {
-        if (obj == ui->iconInfo) {
+        if (obj == ui->iconInfo && isEditable) {
             ui->iconInfo->setStyleSheet("QLabel { border: 2px solid black; }");
             labelActive = true;
             iconClickedHandled = true;

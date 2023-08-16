@@ -67,10 +67,12 @@ private:
     Ui::InfoDialog *ui; /**< The user interface components. */
     QString filePath; /**< The path of the file or directory. */
     QFileInfo fileInfo; /**< File information. */
+    QString openWith; /**< The application to open the file with. */
     QFileSystemWatcher fileWatcher; /**< File system watcher to monitor changes. */
     static QMap<QString, InfoDialog*> instances; /**< Map of file paths to InfoDialog instances; all instances share this. */
     bool labelActive = false; /**< Whether the icon label is active. */
     bool iconClickedHandled = false; /**< Whether the icon click event was handled. */
+    bool isEditable = false; /**< Whether the file is editable by the current user. */
 
     /**
      * @brief Event filter for the icon label to change the border when clicked.
@@ -127,6 +129,8 @@ private slots:
      * @brief Slot to open the chooser to select an application to open the file with.
      */
     void changeOpenWith();
+
+
 };
 
 #endif // INFODIALOG_H
