@@ -1538,7 +1538,7 @@ void FileManagerMainWindow::getInfo() {
         // Get the absolute path of the item represented by the index, using the model
         QString filePath = m_fileSystemModel->data(index, QFileSystemModel::FilePathRole).toString();
         // Destroy the dialog when it is closed
-        InfoDialog *infoDialog = new InfoDialog(filePath);
+        InfoDialog *infoDialog = InfoDialog::getInstance(filePath, this);
         infoDialog->setAttribute(Qt::WA_DeleteOnClose);
         infoDialog->show();
     }

@@ -125,8 +125,13 @@ public:
      */
     bool isCommandLineTool() const;
 
-private:
-    QString m_path;         /**< The path of the application bundle. */
+    /**
+     * @brief Gets the name of the type as a string.
+     * @return The type name.
+     */
+    QString typeName() const;
+
+QString m_path;         /**< The path of the application bundle. */
     bool m_isValid;         /**< Indicates if the bundle is valid. */
     Type m_type;            /**< The type of the application bundle. */
     QString m_name;         /**< The name of the application. */

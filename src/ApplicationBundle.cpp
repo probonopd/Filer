@@ -230,3 +230,19 @@ bool ApplicationBundle::isCommandLineTool() const
     }
     return false;
 }
+
+QString ApplicationBundle::typeName() const {
+    switch (m_type) {
+    case Type::Unknown:
+        return tr("Application");
+    case Type::AppBundle:
+        return tr("Application") + " (.app bundle)";
+    case Type::AppDir:
+        return tr("Application") + " (AppDir)";
+    case Type::AppImage:
+        return tr("Application") + " (AppImage)";
+    case Type::DesktopFile:
+        return tr("Application") + " (.desktop file)";
+    }
+    return "Unknown";
+}

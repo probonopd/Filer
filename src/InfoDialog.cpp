@@ -36,6 +36,30 @@
 #include <QGraphicsScene>
 #include <QGraphicsPixmapItem>
 #include <QDebug>
+#include <QMimeDatabase>
+#include "ApplicationBundle.h"
+#include "CustomFileSystemModel.h"
+#include "CustomItemDelegate.h"
+#include <QProcess>
+#include <QClipboard>
+#include <QMouseEvent>
+
+QMap<QString, InfoDialog*> InfoDialog::instances; // All instances of InfoDialog share this map
+
+// Use this to get an instance of InfoDialog (existing or new)
+InfoDialog* InfoDialog::getInstance(const QString &filePath, QWidget *parent)
+{
+    if (instances.contains(filePath)) {
+        InfoDialog *existingDialog = instances.value(filePath);
+        existingDialog->raise();
+        existingDialog->activateWindow();
+        return existingDialog;
+    }
+
+    InfoDialog *newDialog = new InfoDialog(filePath, parent);
+    instances.insert(filePath, newDialog);
+    return newDialog;
+}
 
 InfoDialog::InfoDialog(const QString &filePath, QWidget *parent) :
         QDialog(parent),
@@ -43,9 +67,52 @@ InfoDialog::InfoDialog(const QString &filePath, QWidget *parent) :
         filePath(filePath),
         fileInfo(filePath)
 {
+
+    this->filePath = filePath;
+
+    // Check if an instance already exists for this file
+    if (instances.contains(filePath)) {
+        InfoDialog *existingDialog = instances.value(filePath);
+        existingDialog->raise(); // Bring the existing dialog to the front
+        existingDialog->activateWindow();
+        reject(); // Reject the new instance before showing it
+        return;
+    }
+
+    instances.insert(filePath, this);
+
     ui->setupUi(this);
 
+    // Connect the fileChanged slot to the fileChanged signal of the watcher
+    connect(&fileWatcher, &QFileSystemWatcher::fileChanged, this, &InfoDialog::fileChanged);
+    fileWatcher.addPath(filePath);
+
     setWindowTitle(filePath.mid(filePath.lastIndexOf("/") + 1) + " Info");
+
+    // Make the window unresizable horizontally
+    setMinimumWidth(400);
+    setMaximumWidth(400);
+
+    ui->iconInfo->setStyleSheet("QLabel { border: 1px solid grey; }");
+    ui->iconInfo->setFixedSize(128, 128);
+    ui->iconInfo->setAlignment(Qt::AlignCenter);
+    // Make the icon selectable
+    ui->iconInfo->setFocusPolicy(Qt::ClickFocus);
+
+    // Install an event filter so that we can react to any clicks, on the icon or elsewhere
+    this->installEventFilter(this);
+    ui->iconInfo->installEventFilter(this);
+
+    // Make it so that one can copy and paste the icon
+    ui->iconInfo->setContextMenuPolicy(Qt::ActionsContextMenu);
+    QAction *copyAction = new QAction(tr("Copy"), this);
+    copyAction->setShortcut(Qt::CTRL + Qt::Key_C);
+    connect(copyAction, &QAction::triggered, this, &InfoDialog::copyIcon);
+    ui->iconInfo->addAction(copyAction);
+    QAction *pasteAction = new QAction(tr("Paste"), this);
+    pasteAction->setShortcut(Qt::CTRL + Qt::Key_V);
+    connect(pasteAction, &QAction::triggered, this, &InfoDialog::pasteIcon);
+    ui->iconInfo->addAction(pasteAction);
 
     setupInformation();
 
@@ -57,11 +124,16 @@ InfoDialog::InfoDialog(const QString &filePath, QWidget *parent) :
     connect(closeAction, &QAction::triggered, this, &InfoDialog::close);
     addAction(closeAction);
 
+    connect(ui->executableCheckBox, &QCheckBox::clicked, this, &InfoDialog::setExecutable);
 
+    connect(ui->changeOpenWithButton, &QPushButton::clicked, this, &InfoDialog::changeOpenWith);
+
+    bool iconClickedHandled = false;
 }
 
 InfoDialog::~InfoDialog()
 {
+    instances.remove(filePath);
     delete ui;
 }
 
@@ -69,28 +141,23 @@ void InfoDialog::setupInformation()
 {
     qDebug() << fileInfo.absoluteFilePath();
     QIcon icon = QIcon::fromTheme("unknown");
-
-    // Make the window unresizable horizontally
-    setMinimumWidth(400);
-    setMaximumWidth(400);
-
     ui->iconInfo->setPixmap(icon.pixmap(128, 128));
-    ui->iconInfo->setStyleSheet("border: 1px solid grey;");
-    ui->iconInfo->setFixedSize(128, 128);
-    ui->iconInfo->setAlignment(Qt::AlignCenter);
-    // Make the icon selectable
-    ui->iconInfo->setFocusPolicy(Qt::ClickFocus);
 
-    // Make it so that one can copy and paste the icon
-    ui->iconInfo->setContextMenuPolicy(Qt::ActionsContextMenu);
-    QAction *copyAction = new QAction(tr("Copy"), this);
-    copyAction->setShortcut(Qt::CTRL + Qt::Key_C);
-    // connect(copyAction, &QAction::triggered, this, &InfoDialog::copyIcon);
-    ui->iconInfo->addAction(copyAction);
-    QAction *pasteAction = new QAction(tr("Paste"), this);
-    pasteAction->setShortcut(Qt::CTRL + Qt::Key_V);
-    // connect(pasteAction, &QAction::triggered, this, &InfoDialog::pasteIcon);
-    ui->iconInfo->addAction(pasteAction);
+    // Get the icon from CustomFileIconProvider
+    CustomFileIconProvider *iconProvider = new CustomFileIconProvider();
+    CustomFileSystemModel *model = new CustomFileSystemModel();
+    // Parent directory of filePath
+    QString parentDir = filePath.mid(0, filePath.lastIndexOf("/"));
+    // Need to set a model so that we can get the proper document icon
+    model->setRootPath(parentDir);
+    iconProvider->setModel(model);
+    QIcon i = iconProvider->icon(fileInfo);
+    if (!i.isNull()) {
+        ui->iconInfo->setPixmap(i.pixmap(128, 128));
+    }
+    QString openWith = model->openWith(filePath); // Used below
+    delete model;
+    delete iconProvider;
 
     ui->pathInfo->setText(filePath);
     ui->pathInfo->setTextInteractionFlags(Qt::TextSelectableByMouse | Qt::TextSelectableByKeyboard);
@@ -101,20 +168,94 @@ void InfoDialog::setupInformation()
 
     ui->modifiedInfo->setText(fileInfo.lastModified().toString(Qt::DefaultLocaleLongDate));
 
-    QFile::Permissions permissions = fileInfo.permissions();
+    updatePermissions();
+
+    ui->typeInfo->setText(tr("Unknown"));
+
+    QMimeDatabase *db = new QMimeDatabase();
+    QMimeType mime = db->mimeTypeForFile(filePath);
+    // Get the description of the MIME type
+    QString description = mime.comment();
+    if (!description.isEmpty()) {
+        ui->typeInfo->setText(description);
+    }
+
+    // Check if it is a bundle and if it is, show its type
+    // Check if the item is an application bundle and return the icon
+    ApplicationBundle *b = new ApplicationBundle(filePath);
+    if (b->isValid()) {
+        ui->typeInfo->setText(b->typeName());
+    }
+    delete b;
+
+    if (!mime.name().isEmpty()) {
+        ui->typeInfo->setText(ui->typeInfo->text() + " (" + mime.name() + ")");
+    }
+    delete db;
+
+    ui->openWithInfo->setText(openWith);
+
+}
+
+void InfoDialog::changeOpenWith()
+{
+    // Print the name of the called function
+    qDebug() << Q_FUNC_INFO;
+
+    // Use the "open" command to open the file
+    QProcess process;
+    process.setProgram("open");
+    process.setArguments({ "--chooser", filePath });
+    process.startDetached();
+}
+
+void InfoDialog::updatePermissions()
+{
+    QFile file(filePath);
+
+    if (!file.exists())
+    {
+        qDebug() << "File does not exist.";
+        return;
+    }
+
+    QFile::Permissions permissions = file.permissions();
 
     QString permissionsString = getPermissionsString(permissions);
 
     ui->permissionsInfo->setText(permissionsString);
 
-    if (fileInfo.isDir()) {
-        // In the GUI, we always use the word "Folder" instead of "Directory"
-        ui->typeInfo->setText(tr("Folder"));
-    } else if (fileInfo.isFile()) {
-        // In the GUI, we always use the word "Document" instead of "File"
-        ui->typeInfo->setText(tr("Document"));
+    // Set permissions checkbox to true, false, or tristate
+    if (permissions & QFile::ExeOwner && permissions & QFile::ExeGroup && permissions & QFile::ExeOther) {
+        ui->executableCheckBox->setCheckState(Qt::Checked);
+    } else if (!(permissions & QFile::ExeOwner) && !(permissions & QFile::ExeGroup) && !(permissions & QFile::ExeOther)) {
+        ui->executableCheckBox->setCheckState(Qt::Unchecked);
     } else {
-        ui->typeInfo->setText(tr("Unknown"));
+        ui->executableCheckBox->setCheckState(Qt::PartiallyChecked);
+    }
+}
+
+void InfoDialog::setExecutable()
+{
+    QFile file(filePath);
+
+    if (!file.exists())
+    {
+        qDebug() << "File does not exist.";
+        return;
+    }
+
+    QFile::Permissions permissions = file.permissions();
+    QProcess process;
+    if (ui->executableCheckBox->checkState() == Qt::Checked) {
+        process.start("chmod", QStringList() << "+x" << filePath);
+        process.waitForFinished();
+    } else {
+        process.start("chmod", QStringList() << "-x" << filePath);
+        process.waitForFinished();
+    }
+    if (process.exitCode() != 0) {
+        QMessageBox::warning(this, tr("Error"), tr("Error setting permissions."));
     }
 }
 
@@ -146,4 +287,56 @@ QString InfoDialog::getPermissionsString(QFile::Permissions permissions)
     else result += "-";
 
     return result;
+}
+
+void InfoDialog::fileChanged(const QString &path)
+{
+    qDebug() << "File changed: " << path;
+    if (path == filePath)
+    {
+        fileInfo.refresh(); // Refresh the file information
+        setupInformation(); // Update displayed information
+        updatePermissions();
+    }
+}
+
+void InfoDialog::copyIcon()
+{
+    QClipboard *clipboard = QApplication::clipboard();
+    clipboard->setPixmap(*ui->iconInfo->pixmap());
+}
+
+void InfoDialog::pasteIcon()
+{
+    // Try to construct a QIcon from the clipboard
+    QClipboard *clipboard = QApplication::clipboard();
+    QIcon icon = QIcon(clipboard->pixmap());
+    if (!icon.isNull()) {
+        ui->iconInfo->setPixmap(icon.pixmap(128, 128));
+        // Info dialog saying that storing the icon in the file is not implemented yet
+        QMessageBox::information(this, tr("Not implemented"), tr("Storing the icon in the file is not implemented yet."));
+    } else {
+        qDebug() << "Could not construct icon from clipboard.";
+    }
+}
+
+// Event filter for the icon label to change the border when clicked
+bool InfoDialog::eventFilter(QObject *obj, QEvent *event) {
+    if (event->type() == QEvent::MouseButtonPress) {
+        if (obj == ui->iconInfo) {
+            ui->iconInfo->setStyleSheet("QLabel { border: 2px solid black; }");
+            labelActive = true;
+            iconClickedHandled = true;
+        } else {
+            if (!iconClickedHandled) {
+                ui->iconInfo->setStyleSheet("QLabel { border: 1px solid grey; }");
+                labelActive = false;
+            } else {
+                iconClickedHandled = false;
+            }
+        }
+    }
+
+    // Call the base event filter to ensure proper event handling
+    return QObject::eventFilter(obj, event);
 }

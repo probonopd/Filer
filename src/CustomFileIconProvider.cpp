@@ -50,6 +50,7 @@ CustomFileIconProvider::CustomFileIconProvider()
     // qDebug() << "currentThemeName: " << currentThemeName;
 
     CombinedIconCreator iconCreator;
+    m_model = nullptr;
 }
 
 CustomFileIconProvider::~CustomFileIconProvider()
@@ -64,6 +65,7 @@ CustomFileIconProvider::~CustomFileIconProvider()
  */
 QIcon CustomFileIconProvider::icon(const QFileInfo &info) const
 {
+    qDebug() << "CustomFileIconProvider::icon: " << info.absoluteFilePath();
 
     // Check if the item is an application bundle and return the icon
     ApplicationBundle bundle(info.absoluteFilePath());
@@ -219,25 +221,32 @@ QIcon CustomFileIconProvider::icon(const QFileInfo &info) const
     }
     */
 
-    // Retrieve the "open-with" attribute from the stored attributes in the model.
-    QString openWith = QString(m_model->openWith(filePath)); // NOTE: We would like to do this with the index, but we don't have a valid index at this point for unknown reasons
-    // qDebug() << "openWith: " << openWith;
-    if (!openWith.isEmpty()) {
-        // qDebug() << "-> openWith:" << openWith << "for" << info.absoluteFilePath();
-        ApplicationBundle bundle(openWith);
-        if (bundle.isValid()) {
-            // qDebug("Info: %s is a valid application bundle", qPrintable(openWith));
-            QIcon applicationIcon = QIcon(bundle.icon()).pixmap(16, 16);
-            if (applicationIcon.isNull()) {
-                qDebug("Warning: %s does not have an icon", qPrintable(openWith));
-                applicationIcon = QIcon::fromTheme("unknown");
+    qDebug() << "filePath alive:" << filePath;
+    if (m_model != nullptr) {
+        // Retrieve the "open-with" attribute from the stored attributes in the model.
+        QString openWith = QString(m_model->openWith(
+                filePath)); // NOTE: We would like to do this with the index, but we don't have a valid index at this point for unknown reasons
+        qDebug() << "openWith: " << openWith;
+        if (!openWith.isEmpty()) {
+            // qDebug() << "-> openWith:" << openWith << "for" << info.absoluteFilePath();
+            ApplicationBundle bundle(openWith);
+            if (bundle.isValid()) {
+                // qDebug("Info: %s is a valid application bundle", qPrintable(openWith));
+                QIcon applicationIcon = QIcon(bundle.icon()).pixmap(16, 16);
+                if (applicationIcon.isNull()) {
+                    qDebug("Warning: %s does not have an icon", qPrintable(openWith));
+                    applicationIcon = QIcon::fromTheme("unknown");
+                }
+                // return(applicationIcon);
+                QIcon combinedIcon = iconCreator->createCombinedIcon(applicationIcon);
+                return (combinedIcon);
+            } else {
+                // qDebug("Info: %s is not a valid application bundle", qPrintable(openWith));
             }
-            // return(applicationIcon);
-            QIcon combinedIcon = iconCreator->createCombinedIcon(applicationIcon);
-            return (combinedIcon);
-        } else {
-            // qDebug("Info: %s is not a valid application bundle", qPrintable(openWith));
         }
+        qDebug() << "openWith is empty for " << info.absoluteFilePath();
+    } else {
+        qDebug() << "m_model is null; may need to set it";
     }
 
 /*
@@ -291,7 +300,9 @@ QIcon CustomFileIconProvider::icon(const QFileInfo &info) const
         qDebug() << "No icon found for mime type" << mimedb_icon_name << "in path" << icon_path;
     }
 */
+
     // As a last resort, return "?" icon for everything else
+    qDebug() << "No icon found for file" << info.absoluteFilePath();
     return (QIcon::fromTheme("unknown"));
 }
 

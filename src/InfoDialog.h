@@ -29,6 +29,7 @@
 
 #include <QDialog>
 #include <QFileInfo>
+#include <QFileSystemWatcher>
 
 namespace Ui {
     class InfoDialog;
@@ -54,10 +55,30 @@ public:
      */
     ~InfoDialog();
 
+    /**
+     * @brief Gets the instance of the InfoDialog for the given file path if it exists, otherwise creates it.
+     * @param filePath The path of the file or directory to display information for.
+     * @param parent The parent widget (optional).
+     * @return The instance of the InfoDialog for the given file path.
+     */
+    static InfoDialog* getInstance(const QString &filePath, QWidget *parent = nullptr);
+
 private:
     Ui::InfoDialog *ui; /**< The user interface components. */
     QString filePath; /**< The path of the file or directory. */
     QFileInfo fileInfo; /**< File information. */
+    QFileSystemWatcher fileWatcher; /**< File system watcher to monitor changes. */
+    static QMap<QString, InfoDialog*> instances; /**< Map of file paths to InfoDialog instances; all instances share this. */
+    bool labelActive = false; /**< Whether the icon label is active. */
+    bool iconClickedHandled = false; /**< Whether the icon click event was handled. */
+
+    /**
+     * @brief Event filter for the icon label to change the border when clicked.
+     * @param obj The object that the event was sent to.
+     * @param event The event that was sent.
+     * @return True if the event was handled, otherwise false.
+     */
+    bool eventFilter(QObject *obj, QEvent *event);
 
     /**
      * @brief Converts file permissions to a human-readable string.
@@ -71,11 +92,41 @@ private:
      */
     void setupInformation();
 
+    /**
+    * @brief Set executable permissions on the file based on the state of the checkbox.
+    */
+    void setExecutable();
+
+    /**
+     * @brief Update permissions in the dialog based on the permissions of the file.
+     */
+    void updatePermissions();
+
+    /**
+     * @brief Copy the icon to the clipboard.
+     */
+    void copyIcon();
+
+    /**
+     * @brief Paste the icon from the clipboard.
+     */
+    void pasteIcon();
+
 private slots:
     /**
      * @brief Slot to open the file using the default associated application.
      */
     void openFile();
+
+    /**
+     * @brief Slot to handle file changes.
+     */
+    void fileChanged(const QString &path);
+
+    /**
+     * @brief Slot to open the chooser to select an application to open the file with.
+     */
+    void changeOpenWith();
 };
 
 #endif // INFODIALOG_H

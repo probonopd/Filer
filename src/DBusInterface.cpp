@@ -135,10 +135,11 @@ void DBusInterface::ShowItemProperties(const QStringList &uriList, const QString
         // Convert the URL to a local file path
         QUrl fileUrl(fileUrlString);
         QString filePath = fileUrl.toLocalFile();
-        // Destroy the dialog when it is closed
-        InfoDialog *infoDialog = new InfoDialog(filePath);
+        InfoDialog *infoDialog = InfoDialog::getInstance(filePath);
         infoDialog->setAttribute(Qt::WA_DeleteOnClose);
         infoDialog->show();
+        // Delete the InfoDialog after it has been closed
+        connect(infoDialog, &InfoDialog::destroyed, infoDialog, &QObject::deleteLater);
     }
 }
 
