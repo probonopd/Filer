@@ -46,6 +46,7 @@
 #include "AppGlobals.h"
 #include "FileOperationManager.h"
 #include "VolumeWatcher.h"
+#include <QDBusInterface>
 
 int main(int argc, char *argv[])
 {
@@ -122,6 +123,40 @@ int main(int argc, char *argv[])
         }
     }
 
+    // On systems that are supposed to have a global menu bar, wait for the
+    // global menu bar service to appear on D-Bus before we do anything in order to
+    // prevent Filer from launching the desktop before the global menu is ready
+    QString globalMenuEnv  = QString::fromLocal8Bit(qgetenv("UBUNTU_MENUPROXY"));
+    if ( ! globalMenuEnv.isEmpty() ) {
+        qDebug("UBUNTU_MENUPROXY is set, waiting for global menu to appear on D-Bus...");
+
+        using namespace std::chrono;
+        using namespace std::chrono_literals;
+
+        QDeadlineTimer deadline(7s);
+
+        while(true) {
+            QDBusInterface* menuIface = new QDBusInterface(
+                    QStringLiteral("com.canonical.AppMenu.Registrar"),
+                    QStringLiteral("/com/canonical/AppMenu/Registrar"));
+            if (menuIface) {
+                if (menuIface->isValid()) {
+                    qDebug("Global menu is available");
+                    break;
+                }
+                delete menuIface;
+                menuIface = 0;
+            }
+            QThread::msleep(100);
+            QCoreApplication::processEvents();
+
+            if(deadline.hasExpired()){
+                QMessageBox::warning(nullptr, " ", "Global menu did not appear in time on D-Bus.\nContinuing without global menu.");
+                qunsetenv("UBUNTU_MENUPROXY");
+                break;
+            }
+        }
+    }
 
     // On the $PATH check for the existence of the following commands:
     // - open
