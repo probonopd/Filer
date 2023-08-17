@@ -47,6 +47,7 @@
 #include "FileOperationManager.h"
 #include "VolumeWatcher.h"
 #include <QDBusInterface>
+#include <QDeadlineTimer>
 
 int main(int argc, char *argv[])
 {
