@@ -1170,9 +1170,9 @@ void FileManagerMainWindow::openFolderInNewWindow(const QString &rootPath)
         return;
     }
 
-    // Check if the path is readable, show an error dialog if it is not
-    if (!QFileInfo(resolvedRootPath).isReadable()) {
-        QMessageBox::critical(nullptr, "Error", "This path is not readable.");
+    // Check if the user has read and execute permissions for the path;
+    // do nothing if the user does not have read and execute permissions
+    if (!QFileInfo(resolvedRootPath).isReadable() || !QFileInfo(resolvedRootPath).isExecutable()) {
         return;
     }
 

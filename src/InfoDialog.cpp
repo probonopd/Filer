@@ -273,13 +273,15 @@ void InfoDialog::updatePermissions()
         ui->openWithInfo->setText(openWith);
     }
 
-    // For directories, we don't check the checkbox and we disable it
     if (fileInfo.isDir()) {
+        // For directories, we don't check the checkbox and we disable it
         ui->executableCheckBox->setCheckState(Qt::Unchecked);
         ui->executableCheckBox->setEnabled(false);
     } else if (isEditable) {
+        // For files, enable the checkbox if the file is editable
         ui->executableCheckBox->setEnabled(true);
     } else {
+        // For files, disable the checkbox if the file is not editable
         ui->executableCheckBox->setEnabled(false);
     }
 }
@@ -348,8 +350,15 @@ void InfoDialog::fileChanged(const QString &path)
         setupInformation(); // Update displayed information
         updatePermissions();
     }
-}
 
+    // The MainWindow (currently) only watches the directory, not the items inside it;
+    // so we touch the parent directory to trigger a refresh. This does result in
+    // an updated icon when the permissions have been changed
+    QProcess process;
+    qDebug() << "Touching parent directory: " << fileInfo.dir().path();
+    process.start("touch", QStringList() << fileInfo.dir().path());
+    process.waitForFinished();
+}
 void InfoDialog::copyIcon()
 {
     QClipboard *clipboard = QApplication::clipboard();

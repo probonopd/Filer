@@ -64,7 +64,6 @@ ApplicationBundle::ApplicationBundle(const QString& path)
             // qDebug() << path << "is an application bundle";
             m_name = QFileInfo(dir.path()).completeBaseName();
             // qDebug() << "Name:" << m_name;
-
             // Check if the Resources directory contains an icon file with the same name as the dir
             QDir resourcesDir(dir.filePath("Resources"));
             // qDebug() << "resourcesDir: " << resourcesDir;
@@ -73,7 +72,11 @@ ApplicationBundle::ApplicationBundle(const QString& path)
                     << m_name + ".ico" << m_name + ".icns";
             resourcesDir.setNameFilters(filters);
             if (resourcesDir.exists()) {
-                m_icon = resourcesDir.filePath(resourcesDir.entryList(filters).first());
+                QStringList icons = resourcesDir.entryList();
+                qDebug() << icons;
+                if (icons.size() > 0) {
+                    m_icon = resourcesDir.filePath(icons.at(0));
+                }
             }
         } else if (QFileInfo(dir.filePath("AppRun")).isExecutable()) {
             m_type = Type::AppDir;
@@ -132,6 +135,10 @@ QIcon ApplicationBundle::icon() const
     if (m_type == Type::DesktopFile) {
         // Get the icon from the theme if it is a desktop file
         QIcon icon = QIcon::fromTheme(m_icon);
+        if (icon.isNull()) {
+            // If the icon is not found in the theme, return the default icon
+            return QIcon::fromTheme("application-x-executable");
+        }
         return icon;
     } else if (m_type == Type::AppImage) {
         // Determine the ELF offset
@@ -158,6 +165,10 @@ QIcon ApplicationBundle::icon() const
         }
     } else {
         // Get the icon from the icon file if it exists
+        if (m_icon.isEmpty()) {
+            // Get the default icon if the icon file does not exist
+            return QIcon::fromTheme("application-x-executable");
+        }
         QFile file(m_icon);
         if (file.exists()) {
             return QIcon(m_icon);

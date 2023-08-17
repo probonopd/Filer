@@ -68,10 +68,14 @@ QIcon CustomFileIconProvider::icon(const QFileInfo &info) const
     qDebug() << "CustomFileIconProvider::icon: " << info.absoluteFilePath();
 
     // Check if the item is an application bundle and return the icon
-    ApplicationBundle bundle(info.absoluteFilePath());
-    if (bundle.isValid()) {
+    ApplicationBundle *bundle = new ApplicationBundle(info.absoluteFilePath());
+    // Schedule bundle for deletion
+    bundle->moveToThread(QApplication::instance()->thread());
+    QMetaObject::invokeMethod(bundle, "deleteLater", Qt::QueuedConnection);
+
+    if (bundle->isValid()) {
         // qDebug() << "Bundle is valid: " << info.absoluteFilePath();
-        return (bundle.icon());
+        return (bundle->icon());
     }
 
     // Check if the path is a mount point using QStorageInfo
@@ -126,9 +130,33 @@ QIcon CustomFileIconProvider::icon(const QFileInfo &info) const
         }
     }
 
-    // If it is not a bundle but a directory, then we always want to show the folder icon
+    // If it is not a bundle but a directory, then we want to show the folder icon
     if (info.isDir()) {
-        return (QIcon::fromTheme("folder"));
+        // If it is lacking permissions, then we want to show the locked folder icon; TODO: Use emblem instead?
+        if (!QFileInfo(info.absoluteFilePath()).isReadable() || !QFileInfo(info.absoluteFilePath()).isExecutable()) {
+            // Try to get folder-locked icon from the current theme,
+            // fall back to other icons if it is not available
+            if (QIcon::hasThemeIcon("folder-locked")) {
+                return (QIcon::fromTheme("folder-locked"));
+            } else if (QIcon::hasThemeIcon("lock")) {
+                return (QIcon::fromTheme("lock"));
+            } else {
+                return (QIcon::fromTheme("cancel"));
+            }
+        } else {
+            return (QIcon::fromTheme("folder"));
+        }
+    }
+
+    // If we have no read permissions, show the lock icon; TODO: Use emblem instead?
+    if (!QFileInfo(info.absoluteFilePath()).isReadable()) {
+        // Try to get lock icon from the current theme,
+        // fall back to other icons if it is not available
+        if (QIcon::hasThemeIcon("lock")) {
+            return (QIcon::fromTheme("lock"));
+        } else {
+            return (QIcon::fromTheme("cancel"));
+        }
     }
 
     // If it is an .exe file, then we want to show the ICO from the .exe file
