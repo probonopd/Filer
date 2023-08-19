@@ -35,6 +35,19 @@
 #include <QDir>
 #include <QMessageBox>
 
+// TODO: Support Trash on non-root volumes. Verify the following logic with a Mac and implement it:
+// When you put a file in the Trash and that file is located on a removable drive
+// (such as an external hard drive, USB flash drive, or network drive), the file is moved
+// to a hidden directory on that removable drive.
+// Within this ".Trashes" directory, there are subdirectories named after the user's UID
+// (user identifier). The actual numeric UID of the user on the system is used as the name
+// of these subdirectories to ensure separation of trashed files between different users.
+// So, the path to the ".Trashes" directory on a removable drive would look something like this:
+// "/Volumes/YourRemovableDrive/.Trashes"
+// Inside the ".Trashes" directory, you would find subdirectories named after user UIDs, like:
+// "/Volumes/YourRemovableDrive/.Trashes/501"
+// And within each of these UID-named subdirectories, trashed files are stored.
+
 /**
  * @brief The TrashHandler class provides functionality to manage a "Trash" (virtual trash) for files and directories.
  */
@@ -64,10 +77,10 @@ public:
      * @brief Retrieves the path to the "Trash" directory.
      * @return The path to the trash directory.
      */
-    QString getTrashPath() const;
+    static QString getTrashPath();
 
 private:
-    QString m_trashPath; /**< The path to the trash directory. */
+    static QString m_trashPath; /**< The path to the trash directory. */
     QWidget *m_parent; /**< The parent QWidget used for displaying message boxes. */
     bool m_dialogShown = false; /**< Flag to track if the empty trash confirmation dialog has been shown. */
 };

@@ -357,6 +357,7 @@ bool CustomItemDelegate::editorEvent(QEvent *event, QAbstractItemModel *model,
         duplicateAction->setEnabled(false);
         menu.addAction(duplicateAction);
 
+
         QAction *moveToTrashAction = new QAction(tr("Move to Trash"), this);
         menu.addAction(moveToTrashAction);
         moveToTrashAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Backspace));
@@ -364,8 +365,18 @@ bool CustomItemDelegate::editorEvent(QEvent *event, QAbstractItemModel *model,
             TrashHandler trashHandler;
             trashHandler.moveToTrash({filePath});
         });
-        TrashHandler trashHandler;
-        if (filePath.startsWith(trashHandler.getTrashPath())) {
+        QString resolvedFilePath = filePath;
+        // TODO: Remove the following if statement once we no longer use symlinks to the Trash folder
+        if (QFileInfo(filePath).isSymLink()) {
+            QString linkTarget = QFileInfo(filePath).symLinkTarget();
+            if (!linkTarget.isEmpty()) {
+                QString parentPath = QFileInfo(filePath).dir().absolutePath();
+                if (parentPath == QDir::homePath() + "/Desktop") {
+                    resolvedFilePath = linkTarget;
+                }
+            }
+        }
+        if(resolvedFilePath.startsWith(TrashHandler::getTrashPath())) {
             moveToTrashAction->setEnabled(false);
         }
 

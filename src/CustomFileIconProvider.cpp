@@ -41,6 +41,7 @@
 #include <QThread>
 #include <QImageReader>
 #include "AppGlobals.h"
+#include "TrashHandler.h"
 
 CustomFileIconProvider::CustomFileIconProvider()
         : iconCreator(new CombinedIconCreator) // "Initialize the pointer in the constructor"
@@ -126,6 +127,20 @@ QIcon CustomFileIconProvider::icon(const QFileInfo &info) const
 
     // If it is not a bundle but a directory, then we want to show the folder icon
     if (info.isDir()) {
+        // Check if it is the Trash
+        // Resolve symlinks
+        QString absoluteFilePathWithSymLinksResolved = info.absoluteFilePath();
+        if (info.isSymLink()) {
+            absoluteFilePathWithSymLinksResolved = info.symLinkTarget();
+        }
+        if (absoluteFilePathWithSymLinksResolved == TrashHandler::getTrashPath()) {
+            // Check if there are files inside the Trash using QDir::isEmpty()
+            if (!QDir(TrashHandler::getTrashPath()).isEmpty()) {
+                return (QIcon::fromTheme("user-trash-full"));
+            } else {
+                return (QIcon::fromTheme("user-trash"));
+            }
+        }
         // If it is lacking permissions, then we want to show the locked folder icon; TODO: Use emblem instead?
         if (!QFileInfo(info.absoluteFilePath()).isReadable() || !QFileInfo(info.absoluteFilePath()).isExecutable()) {
             // Try to get folder-locked icon from the current theme,

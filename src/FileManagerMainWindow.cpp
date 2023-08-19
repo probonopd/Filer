@@ -767,6 +767,7 @@ void FileManagerMainWindow::createMenus()
     });
     m_moveToTrashAction = editMenu->actions().last();
     m_moveToTrashAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Backspace));
+
     editMenu->addSeparator();
     QAction *selectAllAction = new QAction(tr("Select All"), this);
     selectAllAction->setShortcut(QKeySequence("Ctrl+A"));
@@ -1462,6 +1463,30 @@ void FileManagerMainWindow::updateMenus()
             m_showContentsAction->setEnabled(true);
         } else {
             m_showContentsAction->setEnabled(false);
+        }
+    }
+
+    // Disable the Move to Trash action if the selected item is already in the trash
+    // or it is a symlink to the Trash folder
+    QStringList filePaths;
+    for (const QModelIndex &index : selectedIndexes) {
+        filePaths.append(m_fileSystemModel->filePath(index));
+    }
+    for (const QString &filePath : filePaths) {
+        QString resolvedFilePath = filePath;
+        // TODO: Remove the following if statement once we no longer use symlinks to the Trash folder
+        if (QFileInfo(filePath).isSymLink()) {
+            QString linkTarget = QFileInfo(filePath).symLinkTarget();
+            if (!linkTarget.isEmpty()) {
+                QString parentPath = QFileInfo(filePath).dir().absolutePath();
+                if (parentPath == QDir::homePath() + "/Desktop") {
+                    resolvedFilePath = linkTarget;
+                }
+            }
+        }
+
+        if(resolvedFilePath.startsWith(TrashHandler::getTrashPath())) {
+            m_moveToTrashAction->setEnabled(false);
         }
     }
 }

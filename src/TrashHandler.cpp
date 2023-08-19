@@ -38,8 +38,9 @@
 #include <QThread>
 #include "AppGlobals.h"
 
+QString TrashHandler::m_trashPath = QDir::homePath() + "/.local/share/Trash/files";
+
 TrashHandler::TrashHandler(QWidget *parent) : QObject(parent) {
-    m_trashPath = QDir::homePath() + "/.local/share/Trash/files";
     m_parent = parent;
     m_dialogShown = false;
 }
@@ -347,6 +348,6 @@ bool TrashHandler::emptyTrash() {
     return true;
 }
 
-QString TrashHandler::getTrashPath() const {
+QString TrashHandler::getTrashPath() {
     return m_trashPath;
 }

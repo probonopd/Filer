@@ -35,6 +35,7 @@
 #include <QApplication>
 #include <QProcess>
 #include "AppGlobals.h"
+#include "TrashHandler.h"
 
 VolumeWatcher::VolumeWatcher(QObject *parent) : QObject(parent)
 {
@@ -43,11 +44,19 @@ VolumeWatcher::VolumeWatcher(QObject *parent) : QObject(parent)
 
     m_watcher.addPath(m_mediaPath);
 
-    // Run initially
+    // Handle "/", which is the "Hard Disk"
     QString hardDiskName = tr("Hard Disk");
     if (! QFile::exists(QDir::homePath() + "/Desktop/" + AppGlobals::hardDiskName)) {
         QFile::link("/", QDir::homePath() + "/Desktop/" + AppGlobals::hardDiskName);
     }
+
+    // Handle the Trash
+    if (! QFile::exists(QDir::homePath() + "/Desktop/" + tr("Trash"))) {
+        QString trashPath = TrashHandler::getTrashPath();
+        QFile::link(trashPath, QDir::homePath() + "/Desktop/" + tr("Trash"));
+    }
+
+    // Run initially
     handleDirectoryChange(m_mediaPath);
 
     connect(&m_watcher, &QFileSystemWatcher::directoryChanged, this, &VolumeWatcher::handleDirectoryChange);
