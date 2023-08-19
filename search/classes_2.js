@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['dbusinterface_96',['DBusInterface',['../classDBusInterface.html',1,'']]],
-  ['desktopfile_97',['DesktopFile',['../classDesktopFile.html',1,'']]]
+  ['dbusinterface_97',['DBusInterface',['../classDBusInterface.html',1,'']]],
+  ['desktopfile_98',['DesktopFile',['../classDesktopFile.html',1,'']]]
 ];

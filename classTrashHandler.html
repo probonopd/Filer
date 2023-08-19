@@ -101,15 +101,18 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:afc29eb8a2534d085b73eb45fe603f2ef"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTrashHandler.html#afc29eb8a2534d085b73eb45fe603f2ef">moveToTrash</a> (const QStringList &amp;paths)</td></tr>
 <tr class="memdesc:afc29eb8a2534d085b73eb45fe603f2ef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Moves files and directories to the "Trash" (virtual trash).  <a href="classTrashHandler.html#afc29eb8a2534d085b73eb45fe603f2ef">More...</a><br /></td></tr>
 <tr class="separator:afc29eb8a2534d085b73eb45fe603f2ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0fd0f323b9cb82f0fea42eec9014c060"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTrashHandler.html#a0fd0f323b9cb82f0fea42eec9014c060">emptyTrash</a> ()</td></tr>
-<tr class="memdesc:a0fd0f323b9cb82f0fea42eec9014c060"><td class="mdescLeft">&#160;</td><td class="mdescRight">Empties the "Trash" by deleting all files and directories in the virtual trash.  <a href="classTrashHandler.html#a0fd0f323b9cb82f0fea42eec9014c060">More...</a><br /></td></tr>
-<tr class="separator:a0fd0f323b9cb82f0fea42eec9014c060"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
+<tr class="memitem:a0fd0f323b9cb82f0fea42eec9014c060"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTrashHandler.html#a0fd0f323b9cb82f0fea42eec9014c060">emptyTrash</a> ()</td></tr>
+<tr class="memdesc:a0fd0f323b9cb82f0fea42eec9014c060"><td class="mdescLeft">&#160;</td><td class="mdescRight">Empties the "Trash" by deleting all files and directories in the virtual trash.  <a href="classTrashHandler.html#a0fd0f323b9cb82f0fea42eec9014c060">More...</a><br /></td></tr>
+<tr class="separator:a0fd0f323b9cb82f0fea42eec9014c060"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abea475c1f1ddb922d123070aa9baed85"><td class="memItemLeft" align="right" valign="top">static QString&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTrashHandler.html#abea475c1f1ddb922d123070aa9baed85">getTrashPath</a> ()</td></tr>
 <tr class="memdesc:abea475c1f1ddb922d123070aa9baed85"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves the path to the "Trash" directory.  <a href="classTrashHandler.html#abea475c1f1ddb922d123070aa9baed85">More...</a><br /></td></tr>
 <tr class="separator:abea475c1f1ddb922d123070aa9baed85"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aad14b3804ddc3b8df4b1484ea8dceff2"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTrashHandler.html#aad14b3804ddc3b8df4b1484ea8dceff2">isEmpty</a> ()</td></tr>
+<tr class="memdesc:aad14b3804ddc3b8df4b1484ea8dceff2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if the "Trash" is empty.  <a href="classTrashHandler.html#aad14b3804ddc3b8df4b1484ea8dceff2">More...</a><br /></td></tr>
+<tr class="separator:aad14b3804ddc3b8df4b1484ea8dceff2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>The <a class="el" href="classTrashHandler.html" title="The TrashHandler class provides functionality to manage a &quot;Trash&quot; (virtual trash) for files and direc...">TrashHandler</a> class provides functionality to manage a "Trash" (virtual trash) for files and directories. </p>
@@ -146,6 +149,9 @@ Static Public Member Functions</h2></td></tr>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">bool TrashHandler::emptyTrash </td>
@@ -154,6 +160,11 @@ Static Public Member Functions</h2></td></tr>
           <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 <p>Empties the "Trash" by deleting all files and directories in the virtual trash. </p>
@@ -186,6 +197,34 @@ Static Public Member Functions</h2></td></tr>
 
 <p>Retrieves the path to the "Trash" directory. </p>
 <dl class="section return"><dt>Returns</dt><dd>The path to the trash directory. </dd></dl>
+
+</div>
+</div>
+<a id="aad14b3804ddc3b8df4b1484ea8dceff2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aad14b3804ddc3b8df4b1484ea8dceff2">&#9670;&nbsp;</a></span>isEmpty()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool TrashHandler::isEmpty </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Checks if the "Trash" is empty. </p>
+<dl class="section return"><dt>Returns</dt><dd>True if the trash is empty, false otherwise. </dd></dl>
 
 </div>
 </div>

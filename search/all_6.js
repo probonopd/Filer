@@ -6,5 +6,6 @@ var searchData=
   ['installeventfilteronview_46',['installEventFilterOnView',['../classCustomItemDelegate.html#ac56331b63d239a4f27b27507d695cef5',1,'CustomItemDelegate']]],
   ['isanimationrunning_47',['isAnimationRunning',['../classCustomItemDelegate.html#a0c1764db0b5af7e379146cef59c76a9b',1,'CustomItemDelegate']]],
   ['iscommandlinetool_48',['isCommandLineTool',['../classApplicationBundle.html#a87933516c1bddbe580ff66a069540cf8',1,'ApplicationBundle::isCommandLineTool()'],['../classDesktopFile.html#a95063032ec1823e73cb0e49a6e00b911',1,'DesktopFile::isCommandLineTool()']]],
-  ['isvalid_49',['isValid',['../classApplicationBundle.html#a377dc1f5576f2d7746f265d91e2466cd',1,'ApplicationBundle']]]
+  ['isempty_49',['isEmpty',['../classTrashHandler.html#aad14b3804ddc3b8df4b1484ea8dceff2',1,'TrashHandler']]],
+  ['isvalid_50',['isValid',['../classApplicationBundle.html#a377dc1f5576f2d7746f265d91e2466cd',1,'ApplicationBundle']]]
 ];
