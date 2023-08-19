@@ -105,6 +105,16 @@ QIcon CustomFileIconProvider::icon(const QFileInfo &info) const
         QStorageInfo storageInfo(info.absoluteFilePath());
         QString deviceNode = storageInfo.device();
         qDebug() << "Device node: " << deviceNode;
+
+        // Set the icon depending on the file system type; unlike device nodes,
+        // this also works for mounted disk images
+        QString fileSystemType = storageInfo.fileSystemType();
+        qDebug() << "File system type: " << fileSystemType;
+        if (fileSystemType == "iso9660" | fileSystemType == "udf" | fileSystemType == "cd9660") {
+            return (QIcon::fromTheme("media-optical"));
+        }
+
+        // Set the icon depending on the device node
         if (deviceNode.startsWith("/dev/da")){
             return (QIcon::fromTheme("drive-removable-media"));
         } else if (deviceNode.startsWith("/dev/sr") || deviceNode.startsWith("/dev/cd")) {
