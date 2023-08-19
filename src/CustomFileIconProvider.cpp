@@ -98,7 +98,7 @@ QIcon CustomFileIconProvider::icon(const QFileInfo &info) const
     bool isMediaPath = (absoluteFilePathWithSymLinksResolved.startsWith(AppGlobals::mediaPath) && (fileDepth == mediaPathDepth + 1));
 
     // If it is a directory and the symlink target is a mount point, then we want to show the drive icon
-    if (info.isDir() && isMediaPath) {
+    if (info.isDir() && isMediaPath || info.isDir() && mountPoints.contains(absoluteFilePathWithSymLinksResolved)) {
         // Using Qt, get the device node of the mount point
         // and then use the device node to get the icon
         // qDebug() << "Mount point: " << info.absoluteFilePath();
@@ -115,22 +115,6 @@ QIcon CustomFileIconProvider::icon(const QFileInfo &info) const
         }
 
         // Set the icon depending on the device node
-        if (deviceNode.startsWith("/dev/da")){
-            return (QIcon::fromTheme("drive-removable-media"));
-        } else if (deviceNode.startsWith("/dev/sr") || deviceNode.startsWith("/dev/cd")) {
-            return (QIcon::fromTheme("media-optical"));
-        } else {
-            return (QIcon::fromTheme("drive-harddisk"));
-        }
-    }
-
-    if (info.isDir() && mountPoints.contains(absoluteFilePathWithSymLinksResolved)) {
-        // Using Qt, get the device node of the mount point
-        // and then use the device node to get the icon
-        // qDebug() << "Mount point: " << info.absoluteFilePath();
-        QStorageInfo storageInfo(info.absoluteFilePath());
-        QString deviceNode = storageInfo.device();
-        qDebug() << "Device node: " << deviceNode;
         if (deviceNode.startsWith("/dev/da")){
             return (QIcon::fromTheme("drive-removable-media"));
         } else if (deviceNode.startsWith("/dev/sr") || deviceNode.startsWith("/dev/cd")) {
