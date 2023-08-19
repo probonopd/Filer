@@ -34,6 +34,19 @@
 #include <QFile>
 #include <QDebug>
 #include <QMessageBox>
+#include <QCryptographicHash>
+
+// Initialize the static member; this will be used by all instances of CombinedIconCreator
+QHash<QByteArray, QIcon> CombinedIconCreator::cachedIcons;
+
+// Used for caching icons
+QByteArray generateIconChecksum(const QIcon& icon) {
+    QByteArray data;
+    QDataStream stream(&data, QIODevice::WriteOnly);
+    stream << icon;  // Serialize the QIcon
+    QString hash = QCryptographicHash::hash(data, QCryptographicHash::Sha1).toHex();
+    return hash.toUtf8();
+}
 
 bool isVibrantColor(const QColor& color) {
     // Threshold values to define vibrant colors
@@ -83,6 +96,15 @@ QColor CombinedIconCreator::findDominantColor(const QPixmap& pixmap) const {
 }
 
 QIcon CombinedIconCreator::createCombinedIcon(const QIcon& applicationIcon) const {
+
+    // Check if the icon is already cached
+    QByteArray checksum = generateIconChecksum(applicationIcon);
+    if (cachedIcons.contains(checksum)) {
+        return cachedIcons[checksum];
+    } else {
+        qDebug() << "XXXXXXXXXXXX Icon not cached yet; number of cached icons:" << cachedIcons.size();
+    }
+
     // qDebug() << "Creating combined icon";
     // Try to load the document icon from the path ./Resources/document.png relative to the application executable path
     // If the icon cannot be loaded, use the default document icon from the icon theme
@@ -112,9 +134,9 @@ QIcon CombinedIconCreator::createCombinedIcon(const QIcon& applicationIcon) cons
     // QColor dominantColor = findDominantColor(application_pixmap);
     // NOTE: We could use the dominant color to colorize the document icon
 
-    QPixmap combined_icon(32, 32);
-    combined_icon.fill(Qt::transparent); // Fill the pixmap with transparent background
-    QPainter painter(&combined_icon);
+    QPixmap combinedIcon(32, 32);
+    combinedIcon.fill(Qt::transparent); // Fill the pixmap with transparent background
+    QPainter painter(&combinedIcon);
     QPixmap coloredPixmap(document_pixmap.size());
     coloredPixmap.fill(Qt::transparent);
     painter.drawPixmap(0, 0, document_pixmap);
@@ -129,5 +151,8 @@ QIcon CombinedIconCreator::createCombinedIcon(const QIcon& applicationIcon) cons
 
     painter.end();
     // qDebug() << "Combined icon created";
-    return QIcon(combined_icon);
+
+    // Cache the icon
+    cachedIcons.insert(generateIconChecksum(applicationIcon), combinedIcon);
+    return QIcon(combinedIcon);
 }

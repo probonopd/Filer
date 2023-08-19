@@ -61,6 +61,10 @@ public:
 
 private:
     QColor findDominantColor(const QPixmap& pixmap) const;
+
+    // Static hash to store cached icons; this will be used by all instances of CombinedIconCreator
+    static QHash<QByteArray, QIcon> cachedIcons;
+
 };
 
 #endif // COMBINEDICONCREATOR_H
