@@ -14,6 +14,7 @@ public:
     static const int MaxItems;
 
     static const QString mediaPath;
+    static const QString hardDiskName;
 };
 
 #endif // GLOBALS_H

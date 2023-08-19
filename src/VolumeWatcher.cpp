@@ -34,6 +34,7 @@
 #include <QThread>
 #include <QApplication>
 #include <QProcess>
+#include "AppGlobals.h"
 
 VolumeWatcher::VolumeWatcher(QObject *parent) : QObject(parent)
 {
@@ -43,6 +44,10 @@ VolumeWatcher::VolumeWatcher(QObject *parent) : QObject(parent)
     m_watcher.addPath(m_mediaPath);
 
     // Run initially
+    QString hardDiskName = tr("Hard Disk");
+    if (! QFile::exists(QDir::homePath() + "/Desktop/" + AppGlobals::hardDiskName)) {
+        QFile::link("/", QDir::homePath() + "/Desktop/" + AppGlobals::hardDiskName);
+    }
     handleDirectoryChange(m_mediaPath);
 
     connect(&m_watcher, &QFileSystemWatcher::directoryChanged, this, &VolumeWatcher::handleDirectoryChange);

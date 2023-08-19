@@ -248,6 +248,11 @@ FileManagerMainWindow::FileManagerMainWindow(QWidget *parent, const QString &ini
     // Set the window title to the root path of the QFileSystemModel
     setWindowTitle(QFileInfo(m_fileSystemModel->rootPath()).fileName());
 
+    // If we are at /, set the window title to "/"
+    if (m_fileSystemModel->rootPath() == "/") {
+        setWindowTitle(AppGlobals::hardDiskName);
+    }
+
     // Create an instance of the CustomItemDelegate class;
     // we need this so that we have control over how the items (icons with text)
     // get drawn
