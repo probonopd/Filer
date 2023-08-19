@@ -104,9 +104,13 @@ $(function() {
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160; </div>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;<span class="keyword">private</span>:</div>
 <div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    QColor findDominantColor(<span class="keyword">const</span> QPixmap&amp; pixmap) <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;};</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160; </div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;<span class="preprocessor">#endif </span><span class="comment">// COMBINEDICONCREATOR_H</span></div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160; </div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    <span class="comment">// Static hash to store cached icons; this will be used by all instances of CombinedIconCreator</span></div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    <span class="keyword">static</span> QHash&lt;QByteArray, QIcon&gt; cachedIcons;</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160; </div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;};</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160; </div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;<span class="preprocessor">#endif </span><span class="comment">// COMBINEDICONCREATOR_H</span></div>
 <div class="ttc" id="aclassCombinedIconCreator_html"><div class="ttname"><a href="classCombinedIconCreator.html">CombinedIconCreator</a></div><div class="ttdoc">The CombinedIconCreator class is responsible for creating combined icons by overlaying a document ico...</div><div class="ttdef"><b>Definition:</b> CombinedIconCreator.h:58</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
