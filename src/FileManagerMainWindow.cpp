@@ -443,6 +443,11 @@ void FileManagerMainWindow::saveWindowGeometry()
     } else {
         m_extendedAttributes->write("WindowView", "2");
     }
+
+    // Show global menu for Filer when it is launched
+    if(m_isFirstInstance) {
+        activateWindow();
+    }
 }
 
 // Callback function for when the user moves the window
