@@ -253,6 +253,11 @@ FileManagerMainWindow::FileManagerMainWindow(QWidget *parent, const QString &ini
         setWindowTitle(AppGlobals::hardDiskName);
     }
 
+    // If we are at the Trash, set the window title to "Trash"
+    if (m_fileSystemModel->rootPath() == TrashHandler::getTrashPath()) {
+        setWindowTitle(tr("Trash"));
+    }
+
     // Create an instance of the CustomItemDelegate class;
     // we need this so that we have control over how the items (icons with text)
     // get drawn
@@ -780,10 +785,17 @@ void FileManagerMainWindow::createMenus()
     m_renameAction =
             editMenu->addAction(tr("Rename..."), this, &FileManagerMainWindow::renameSelectedItem);
 
-    // Set the shortcut key for the Rename action to Ctrl+R
     m_renameAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_R));
-
     editMenu->addAction(m_renameAction);
+
+    editMenu->addSeparator();
+
+    // Create the "Empty Trash" action
+    m_emptyTrashAction = new QAction(tr("Empty Trash"), this);
+    editMenu->addAction(m_emptyTrashAction);
+    connect(m_emptyTrashAction, &QAction::triggered, this, [this]() {
+        TrashHandler::emptyTrash();
+    });
 
     // Add the Edit menu to the menu bar
     m_menuBar->addMenu(editMenu);
@@ -1488,6 +1500,13 @@ void FileManagerMainWindow::updateMenus()
         if(resolvedFilePath.startsWith(TrashHandler::getTrashPath())) {
             m_moveToTrashAction->setEnabled(false);
         }
+    }
+
+    // Disable the Empty Trash action if the trash is already empty
+    if (TrashHandler::isEmpty()) {
+        m_emptyTrashAction->setEnabled(false);
+    } else {
+        m_emptyTrashAction->setEnabled(true);
     }
 }
 

@@ -48,6 +48,7 @@
 #include "VolumeWatcher.h"
 #include <QDBusInterface>
 #include <QDeadlineTimer>
+#include "TrashHandler.h"
 
 int main(int argc, char *argv[])
 {
@@ -210,6 +211,10 @@ int main(int argc, char *argv[])
     // Install a QFileSystemWatcher on /media, and whenever a new directory appears, symlink it to ~/Desktop
     // when a directory disappears, remove the symlink
     VolumeWatcher watcher;
+
+    // Tell the application to reload the desktop whenever
+    // something changes in the trash directory
+    TrashHandler trashHandler;
 
     return app.exec();
 }

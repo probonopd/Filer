@@ -91,6 +91,8 @@ public slots:
 
     QStringList getInstancePaths() const;
 
+    void updateMenus();
+
 private:
     QStackedWidget *m_stackedWidget;
 
@@ -114,6 +116,7 @@ private:
     QAction *m_renameAction;
 
     QAction *m_moveToTrashAction;
+    QAction *m_emptyTrashAction;
 
     QAction *m_showHideStatusBarAction;
 
@@ -125,7 +128,6 @@ private:
     void updateStatusBar();
     void copySelectedItems(const QString &destinationPath);
     void moveSelectedItems(const QString &destinationPath);
-    void updateMenus();
 
     void saveWindowGeometry();
 

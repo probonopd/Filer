@@ -37,12 +37,25 @@
 #include "FileManagerMainWindow.h"
 #include <QThread>
 #include "AppGlobals.h"
+#include <QFileSystemWatcher>
 
 QString TrashHandler::m_trashPath = QDir::homePath() + "/.local/share/Trash/files";
 
 TrashHandler::TrashHandler(QWidget *parent) : QObject(parent) {
     m_parent = parent;
     m_dialogShown = false;
+
+    // Tell the application to reload the desktop whenever
+    // the filesystem at TrashHandler::getTrashPath() changes
+    QFileSystemWatcher *fileSystemWatcher = new QFileSystemWatcher(this);
+    fileSystemWatcher->addPath(TrashHandler::getTrashPath());
+    connect(fileSystemWatcher, &QFileSystemWatcher::directoryChanged, this, [=]() {
+        qDebug() << "TrashHandler::trashChanged";
+        // Reload the desktop
+        QProcess p;
+        p.start("touch", QStringList() << QDir::homePath() + QDir::separator() + "Desktop");
+        p.waitForFinished(-1);
+    });
 }
 
 void TrashHandler::moveToTrash(const QStringList& paths) {
@@ -305,10 +318,13 @@ void TrashHandler::moveToTrash(const QStringList& paths) {
 bool TrashHandler::emptyTrash() {
     QDir trashDir(m_trashPath);
 
-    if (!trashDir.exists()) {
-        QMessageBox::information(nullptr, tr("Empty Trash"),
-                                 tr("Trash is already empty."));
-        return true;
+    // Ask user for confirmation
+    int result = QMessageBox::warning(nullptr, tr("Trash"),
+                                      tr("Do you want to permanently delete all items in the Trash?"),
+                                      QMessageBox::Yes | QMessageBox::No,
+                                      QMessageBox::No);
+    if (result != QMessageBox::Yes) {
+        return false;
     }
 
     // Remove all files and directories from the Trash directory
@@ -334,20 +350,28 @@ bool TrashHandler::emptyTrash() {
         }
     }
 
-    // Remove the Trash directory itself
-    if (!trashDir.rmdir(".")) {
-        QMessageBox::critical(nullptr, tr("Error"),
-                              tr("Failed to remove the Trash directory."));
-        return false;
-    }
-
     SoundPlayer::playSound("rustle.wav");
 
-    QMessageBox::information(nullptr, tr("Empty Trash"),
-                             tr("Trash has been emptied successfully."));
+    // Tell the main window to update its menus because there is now something in the Trash
+    // so the "Empty Trash" menu item should be enabled
+    FileManagerMainWindow* mainWindow = qobject_cast<FileManagerMainWindow*>(qApp->activeWindow());
+    mainWindow->updateMenus();
+
+    // Use QProcess to run the following command: "touch ~/Desktop"
+    // this will cause the Trash icon on the Desktop to be refreshed, so that
+    // it will show the empty Trash icon.
+    QProcess p;
+    p.start("touch", QStringList() << QDir::homePath() + QDir::separator() + "Desktop");
+    p.waitForFinished(-1);
+
     return true;
 }
 
 QString TrashHandler::getTrashPath() {
     return m_trashPath;
+}
+
+bool TrashHandler::isEmpty() {
+    QDir trashDir(m_trashPath);
+    return trashDir.isEmpty();
 }

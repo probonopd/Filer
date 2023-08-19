@@ -135,10 +135,10 @@ QIcon CustomFileIconProvider::icon(const QFileInfo &info) const
         }
         if (absoluteFilePathWithSymLinksResolved == TrashHandler::getTrashPath()) {
             // Check if there are files inside the Trash using QDir::isEmpty()
-            if (!QDir(TrashHandler::getTrashPath()).isEmpty()) {
-                return (QIcon::fromTheme("user-trash-full"));
-            } else {
+            if (TrashHandler::isEmpty()) {
                 return (QIcon::fromTheme("user-trash"));
+            } else {
+                return (QIcon::fromTheme("user-trash-full"));
             }
         }
         // If it is lacking permissions, then we want to show the locked folder icon; TODO: Use emblem instead?

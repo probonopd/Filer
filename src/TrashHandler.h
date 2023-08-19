@@ -71,13 +71,19 @@ public:
      * @brief Empties the "Trash" by deleting all files and directories in the virtual trash.
      * @return True if the trash was emptied successfully, false otherwise.
      */
-    bool emptyTrash();
+    static bool emptyTrash();
 
     /**
      * @brief Retrieves the path to the "Trash" directory.
      * @return The path to the trash directory.
      */
     static QString getTrashPath();
+
+    /**
+     * @brief Checks if the "Trash" is empty.
+     * @return True if the trash is empty, false otherwise.
+     */
+    static bool isEmpty();
 
 private:
     static QString m_trashPath; /**< The path to the trash directory. */

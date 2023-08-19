@@ -357,7 +357,6 @@ bool CustomItemDelegate::editorEvent(QEvent *event, QAbstractItemModel *model,
         duplicateAction->setEnabled(false);
         menu.addAction(duplicateAction);
 
-
         QAction *moveToTrashAction = new QAction(tr("Move to Trash"), this);
         menu.addAction(moveToTrashAction);
         moveToTrashAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_Backspace));
