@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['name_150',['name',['../classApplicationBundle.html#a886fd92f032eaa4130af5da67e21d29c',1,'ApplicationBundle']]]
+  ['movetotrash_155',['moveToTrash',['../classTrashHandler.html#afc29eb8a2534d085b73eb45fe603f2ef',1,'TrashHandler']]],
+  ['movewithprogress_156',['moveWithProgress',['../classFileOperationManager.html#a00b4ad1e188cfd6cb9c30846f849441e',1,'FileOperationManager']]]
 ];
