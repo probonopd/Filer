@@ -52,7 +52,8 @@ set(PROJECT_SOURCES
         SqshArchiveReader.cpp SqshArchiveReader.h
         TrashHandler.cpp TrashHandler.h
         FileOperationManager.cpp FileOperationManager.h
-        VolumeWatcher.cpp VolumeWatcher.h ../../../../../usr/home/user/Desktop/Filer/src/CustomItemDelegate.cpp ../../../../../usr/home/user/Desktop/Filer/src/CustomFileIconProvider.cpp)
+        VolumeWatcher.cpp VolumeWatcher.h
+        )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(Filer
