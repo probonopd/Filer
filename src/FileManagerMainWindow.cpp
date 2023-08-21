@@ -70,6 +70,7 @@
 #include "TrashHandler.h"
 #include "InfoDialog.h"
 #include "AppGlobals.h"
+#include "CustomProxyModel.h"
 
 /*
  * This creates a FileManagerMainWindow object with a QTreeView and QListView widget.
@@ -209,7 +210,7 @@ FileManagerMainWindow::FileManagerMainWindow(QWidget *parent, const QString &ini
 
     m_fileSystemModel = new CustomFileSystemModel(this);
     m_fileSystemModel->setRootPath(m_currentDir);
-    m_proxyModel = new QSortFilterProxyModel(this);
+    m_proxyModel = new CustomProxyModel(this);
     m_proxyModel->setSourceModel(m_fileSystemModel);
 
     // For testing, filter out anything that starts with "z"
@@ -1540,11 +1541,9 @@ void FileManagerMainWindow::updateEmptyTrashMenu() {
     if (TrashHandler::isEmpty()) {
         qDebug() << "Trash is empty, disabling Empty Trash action";
         m_emptyTrashAction->setEnabled(false);
-        qDebug() << "Disabled Empty Trash action";
     } else {
         qDebug() << "Trash is not empty, enabling Empty Trash action";
         m_emptyTrashAction->setEnabled(true);
-        qDebug() << "Enabled Empty Trash action";
     }
 }
 

@@ -109,8 +109,8 @@ void VolumeWatcher::handleDirectoryChange(const QString &path)
                     qDebug() << "Waiting for mount point to appear at" << fullPath;
                     // TODO: Replace this by an asynchronous approach
                     counter++;
-                    if (counter > 10) {
-                        // Give up after 1 second
+                    if (counter > 20) {
+                        // Give up after 2 seconds
                         break;
                     }
                 }

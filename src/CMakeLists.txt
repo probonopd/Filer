@@ -41,6 +41,7 @@ set(PROJECT_SOURCES
         CustomFileSystemModel.cpp CustomFileSystemModel.h
         CustomItemDelegate.cpp CustomItemDelegate.h
         CustomListView.cpp CustomListView.h
+        CustomProxyModel.cpp CustomProxyModel.h
         DBusInterface.cpp DBusInterface.h
         DesktopFile.cpp DesktopFile.h
         ElfSizeCalculator.cpp ElfSizeCalculator.h
