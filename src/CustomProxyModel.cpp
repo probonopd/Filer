@@ -66,13 +66,23 @@ bool CustomProxyModel::lessThan(const QModelIndex &left, const QModelIndex &righ
         bool rightIsMountPoint = mountPoints.contains(rightFullPath);
         // qDebug() << "leftIsMountPoint:" << leftIsMountPoint << "rightIsMountPoint:" << rightIsMountPoint;
 
+        if ("/" == leftFullPath && "/" != rightFullPath) {
+            // Root directory comes before others
+            return false;
+        }
+
+        if ("/" != leftFullPath && "/" == rightFullPath) {
+            // Root directory comes before others
+            return true;
+        }
+
         if (leftIsMountPoint && !rightIsMountPoint) {
-            // Root directory comes before others, and mount points before non-mount points
+            // Mount points before non-mount points
             return false;
         }
 
         if (rightIsMountPoint && !leftIsMountPoint) {
-            // Root directory comes before others, and mount points before non-mount points
+            // Mount points before non-mount points
             return true;
         }
     }
