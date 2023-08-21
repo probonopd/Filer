@@ -41,6 +41,14 @@ bool CustomProxyModel::lessThan(const QModelIndex &left, const QModelIndex &righ
     QString rightPath = sourceModel()->data(right, Qt::DisplayRole).toString();
 
     QString leftFullPath = sourceModel()->index(left.row(), 0, left.parent()).data(Qt::UserRole + 1).toString();
+
+    // Check if leftFullPath is on the Desktop and if not, just return the superclasses' lessThan
+    // for performance reasons
+    QString parentOfLeftFullPath = QFileInfo(leftFullPath).dir().path();
+    if (parentOfLeftFullPath != QDir::homePath() + "/Desktop") {
+        return QSortFilterProxyModel::lessThan(left, right);
+    }
+
     QString rightFullPath = sourceModel()->index(right.row(), 0, right.parent()).data(Qt::UserRole + 1).toString();
 
     // Check if the fullPaths are symbolic links and if so, resolve them

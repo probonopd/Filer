@@ -37,7 +37,7 @@
  *
  * The CustomProxyModel class provides a custom proxy model for sorting items in views,
  * such as QTreeView or QListView. It extends QSortFilterProxyModel and adds custom behavior
- * like sorting mount points before non-mount points.
+ * like sorting mount points before non-mount points on the desktop.
  */
 class CustomProxyModel : public QSortFilterProxyModel
 {
@@ -58,7 +58,7 @@ public:
      * @param right The right index.
      * @return True if the item referred to by the left index is less than the item referred
      *         to by the right index; otherwise returns false. Mount points come before
-     *         non-mount points.
+     *         non-mount points on the desktop.
      */
     bool lessThan(const QModelIndex &left, const QModelIndex &right) const override;
 };
