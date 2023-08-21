@@ -100,32 +100,34 @@ $(function() {
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="preprocessor">#include &lt;QModelIndex&gt;</span></div>
 <div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="preprocessor">#include &quot;CustomFileSystemModel.h&quot;</span></div>
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="preprocessor">#include &quot;CombinedIconCreator.h&quot;</span></div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160; </div>
-<div class="line"><a name="l00043"></a><span class="lineno"><a class="line" href="classCustomFileIconProvider.html">   43</a></span>&#160;<span class="keyword">class </span><a class="code" href="classCustomFileIconProvider.html">CustomFileIconProvider</a> : <span class="keyword">public</span> QFileIconProvider</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;{</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    <a class="code" href="classCustomFileIconProvider.html#a322f569b919c68ec1fde054191bfe1f9">CustomFileIconProvider</a>();</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160; </div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    ~<a class="code" href="classCustomFileIconProvider.html">CustomFileIconProvider</a>();</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160; </div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    QIcon <a class="code" href="classCustomFileIconProvider.html#a2e44d2e48b65690d1d3ae2d0b8d8b6fc">icon</a>(<span class="keyword">const</span> QFileInfo &amp;info) <span class="keyword">const override</span>;</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160; </div>
-<div class="line"><a name="l00060"></a><span class="lineno"><a class="line" href="classCustomFileIconProvider.html#ae4a1e7f693687f0be2b62c94d921cea6">   60</a></span>&#160;    QString <a class="code" href="classCustomFileIconProvider.html#ae4a1e7f693687f0be2b62c94d921cea6">currentThemeName</a>; </div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classCustomFileIconProvider.html#ae1588bc21d87e25e4fd86fc6ca828b92">setModel</a>(<a class="code" href="classCustomFileSystemModel.html">CustomFileSystemModel</a>* model);</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160; </div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    <span class="keyword">const</span> <a class="code" href="classCustomFileSystemModel.html">CustomFileSystemModel</a>* m_model; </div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    <a class="code" href="classCombinedIconCreator.html">CombinedIconCreator</a>* iconCreator;; </div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;};</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160; </div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;<span class="preprocessor">#endif </span><span class="comment">// Filer_CUSTOMFILEICONPROVIDER_H</span></div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="preprocessor">#include &lt;QAbstractProxyModel&gt;</span></div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160; </div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="keyword">class </span>QAbstractItemModel;</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160; </div>
+<div class="line"><a name="l00046"></a><span class="lineno"><a class="line" href="classCustomFileIconProvider.html">   46</a></span>&#160;<span class="keyword">class </span><a class="code" href="classCustomFileIconProvider.html">CustomFileIconProvider</a> : <span class="keyword">public</span> QFileIconProvider</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;{</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    <a class="code" href="classCustomFileIconProvider.html#a322f569b919c68ec1fde054191bfe1f9">CustomFileIconProvider</a>();</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160; </div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    ~<a class="code" href="classCustomFileIconProvider.html">CustomFileIconProvider</a>();</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160; </div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    QIcon <a class="code" href="classCustomFileIconProvider.html#a2e44d2e48b65690d1d3ae2d0b8d8b6fc">icon</a>(<span class="keyword">const</span> QFileInfo &amp;info) <span class="keyword">const override</span>;</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160; </div>
+<div class="line"><a name="l00063"></a><span class="lineno"><a class="line" href="classCustomFileIconProvider.html#ae4a1e7f693687f0be2b62c94d921cea6">   63</a></span>&#160;    QString <a class="code" href="classCustomFileIconProvider.html#ae4a1e7f693687f0be2b62c94d921cea6">currentThemeName</a>; </div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classCustomFileIconProvider.html#a782951a5e9ef5717fc9e76eff1be6d26">setModel</a>(QAbstractProxyModel* model);</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160; </div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    <span class="keyword">const</span> QAbstractProxyModel* m_model; </div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    <a class="code" href="classCombinedIconCreator.html">CombinedIconCreator</a>* iconCreator;; </div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;};</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160; </div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;<span class="preprocessor">#endif </span><span class="comment">// Filer_CUSTOMFILEICONPROVIDER_H</span></div>
 <div class="ttc" id="aclassCombinedIconCreator_html"><div class="ttname"><a href="classCombinedIconCreator.html">CombinedIconCreator</a></div><div class="ttdoc">The CombinedIconCreator class is responsible for creating combined icons by overlaying a document ico...</div><div class="ttdef"><b>Definition:</b> CombinedIconCreator.h:58</div></div>
-<div class="ttc" id="aclassCustomFileIconProvider_html"><div class="ttname"><a href="classCustomFileIconProvider.html">CustomFileIconProvider</a></div><div class="ttdef"><b>Definition:</b> CustomFileIconProvider.h:44</div></div>
+<div class="ttc" id="aclassCustomFileIconProvider_html"><div class="ttname"><a href="classCustomFileIconProvider.html">CustomFileIconProvider</a></div><div class="ttdef"><b>Definition:</b> CustomFileIconProvider.h:47</div></div>
 <div class="ttc" id="aclassCustomFileIconProvider_html_a2e44d2e48b65690d1d3ae2d0b8d8b6fc"><div class="ttname"><a href="classCustomFileIconProvider.html#a2e44d2e48b65690d1d3ae2d0b8d8b6fc">CustomFileIconProvider::icon</a></div><div class="ttdeci">QIcon icon(const QFileInfo &amp;info) const override</div><div class="ttdoc">Retrieves the custom icon for the specified file info.</div><div class="ttdef"><b>Definition:</b> CustomFileIconProvider.cpp:67</div></div>
 <div class="ttc" id="aclassCustomFileIconProvider_html_a322f569b919c68ec1fde054191bfe1f9"><div class="ttname"><a href="classCustomFileIconProvider.html#a322f569b919c68ec1fde054191bfe1f9">CustomFileIconProvider::CustomFileIconProvider</a></div><div class="ttdeci">CustomFileIconProvider()</div><div class="ttdoc">Constructs a CustomFileIconProvider object.</div><div class="ttdef"><b>Definition:</b> CustomFileIconProvider.cpp:46</div></div>
-<div class="ttc" id="aclassCustomFileIconProvider_html_ae1588bc21d87e25e4fd86fc6ca828b92"><div class="ttname"><a href="classCustomFileIconProvider.html#ae1588bc21d87e25e4fd86fc6ca828b92">CustomFileIconProvider::setModel</a></div><div class="ttdeci">void setModel(CustomFileSystemModel *model)</div><div class="ttdoc">Sets the CustomFileSystemModel associated with the icon provider.</div><div class="ttdef"><b>Definition:</b> CustomFileIconProvider.cpp:346</div></div>
-<div class="ttc" id="aclassCustomFileIconProvider_html_ae4a1e7f693687f0be2b62c94d921cea6"><div class="ttname"><a href="classCustomFileIconProvider.html#ae4a1e7f693687f0be2b62c94d921cea6">CustomFileIconProvider::currentThemeName</a></div><div class="ttdeci">QString currentThemeName</div><div class="ttdef"><b>Definition:</b> CustomFileIconProvider.h:60</div></div>
-<div class="ttc" id="aclassCustomFileSystemModel_html"><div class="ttname"><a href="classCustomFileSystemModel.html">CustomFileSystemModel</a></div><div class="ttdef"><b>Definition:</b> CustomFileSystemModel.h:35</div></div>
+<div class="ttc" id="aclassCustomFileIconProvider_html_a782951a5e9ef5717fc9e76eff1be6d26"><div class="ttname"><a href="classCustomFileIconProvider.html#a782951a5e9ef5717fc9e76eff1be6d26">CustomFileIconProvider::setModel</a></div><div class="ttdeci">void setModel(QAbstractProxyModel *model)</div><div class="ttdoc">Sets the QAbstractProxyModel associated with the icon provider.</div><div class="ttdef"><b>Definition:</b> CustomFileIconProvider.cpp:348</div></div>
+<div class="ttc" id="aclassCustomFileIconProvider_html_ae4a1e7f693687f0be2b62c94d921cea6"><div class="ttname"><a href="classCustomFileIconProvider.html#ae4a1e7f693687f0be2b62c94d921cea6">CustomFileIconProvider::currentThemeName</a></div><div class="ttdeci">QString currentThemeName</div><div class="ttdef"><b>Definition:</b> CustomFileIconProvider.h:63</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['setmodel_157',['setModel',['../classCustomFileIconProvider.html#ae1588bc21d87e25e4fd86fc6ca828b92',1,'CustomFileIconProvider']]],
+  ['setmodel_157',['setModel',['../classCustomFileIconProvider.html#a782951a5e9ef5717fc9e76eff1be6d26',1,'CustomFileIconProvider']]],
   ['setselectionmodel_158',['setSelectionModel',['../classCustomItemDelegate.html#a9563864ffb8eb877057ff125ef3eaf9d',1,'CustomItemDelegate']]],
   ['showfolders_159',['ShowFolders',['../classDBusInterface.html#aaafc47482b3c8153d6b34708ff47cf71',1,'DBusInterface']]],
   ['showitemproperties_160',['ShowItemProperties',['../classDBusInterface.html#afe821fd1eebc5f477762135065593f24',1,'DBusInterface']]],
