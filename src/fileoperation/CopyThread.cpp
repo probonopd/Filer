@@ -3,6 +3,7 @@
 #include <QDir>
 #include <QDebug>
 #include <QDirIterator>
+#include <QProcess>
 
 CopyThread::CopyThread(const QStringList& fromPaths, const QString& toPath, QObject* parent)
         : QThread(parent), fromPaths(fromPaths), toPath(toPath) {
@@ -103,6 +104,9 @@ void CopyThread::run() {
 
                 sourceFile.close();
                 targetFile.close();
+
+                // Set permissions
+                targetFile.setPermissions(sourceFile.permissions());
             }
         } else if (fromInfo.isDir()) {
             QDirIterator it(fromPath, QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot, QDirIterator::Subdirectories);
@@ -144,6 +148,9 @@ void CopyThread::run() {
 
                         sourceFile.close();
                         targetFile.close();
+
+                        // Set permissions
+                        targetFile.setPermissions(sourceFile.permissions());
                     }
                 }
             }
@@ -152,6 +159,15 @@ void CopyThread::run() {
 
     emit progress(100);
     emit copyFinished();
+
+    // Touch the parent directory so that the file manager updates the view
+    // after the whole copy operation is completely finished and bundles have their contents;
+    // otherwise, the file manager will show a normal directory icon instead of
+    // a bundle icon because at the time when the directory was created, it was empty
+    // and the file manager at that time didn't know that it was a bundle.
+    QProcess p;
+    p.start("touch", QStringList() << toPath);
+    p.waitForFinished(-1);
 }
 
 qint64 CopyThread::calculateTotalSize() {

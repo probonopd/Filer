@@ -45,7 +45,7 @@
 #include "InfoDialog.h"
 
 // Constructor that takes a QObject pointer and a QFileSystemModel pointer as arguments
-CustomItemDelegate::CustomItemDelegate(QObject* parent, CustomFileSystemModel* fileSystemModel)
+CustomItemDelegate::CustomItemDelegate(QObject* parent, QAbstractProxyModel* fileSystemModel)
         : QStyledItemDelegate(parent), m_fileSystemModel(fileSystemModel)
 {
 
@@ -59,7 +59,9 @@ CustomItemDelegate::CustomItemDelegate(QObject* parent, CustomFileSystemModel* f
     iconProvider->setModel(m_fileSystemModel);
 
     // Set the icon provider for the model
-    m_fileSystemModel->setIconProvider(iconProvider);
+    // Get the model's source model and cast it as a CustomFileSystemModel
+    CustomFileSystemModel* customFileSystemModel = qobject_cast<CustomFileSystemModel*>(m_fileSystemModel->sourceModel());
+    customFileSystemModel->setIconProvider(iconProvider);
 
     // Create a QTimeLine instance for the animation
     animationTimeline = new QTimeLine(1000, this); // 1000 ms duration for the animation
@@ -132,8 +134,8 @@ void CustomItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
     // Check if it is the first instance
     bool isFirstInstance = mainWindow->isFirstInstance();
 
-    // Cast the sender to a QFileSystemModel
-    QFileSystemModel *model = this->m_fileSystemModel;
+    // Cast the sender to a QAbstractProxyModel
+    QAbstractProxyModel *model = this->m_fileSystemModel;
 
     // Get the current position of the delegate in the view
     QRect rect = option.rect;
@@ -155,7 +157,6 @@ void CustomItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
         customizedOption.palette.setColor(QPalette::Text, Qt::black);
     }
 
-    // Get the file path of the item
     QString filePath = index.data(Qt::UserRole + 1).toString();
 
     // Create a QFileInfo object for the item

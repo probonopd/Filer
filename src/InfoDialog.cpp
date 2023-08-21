@@ -43,6 +43,7 @@
 #include <QProcess>
 #include <QClipboard>
 #include <QMouseEvent>
+#include <QSortFilterProxyModel>
 
 QMap<QString, InfoDialog*> InfoDialog::instances; // All instances of InfoDialog share this map
 
@@ -162,18 +163,29 @@ void InfoDialog::setupInformation()
 
     // Get the icon from CustomFileIconProvider
     CustomFileIconProvider *iconProvider = new CustomFileIconProvider();
-    CustomFileSystemModel *model = new CustomFileSystemModel();
+
+    // CustomFileSystemModel *model = new CustomFileSystemModel();
     // Parent directory of filePath
     QString parentDir = filePath.mid(0, filePath.lastIndexOf("/"));
-    // Need to set a model so that we can get the proper document icon
-    model->setRootPath(parentDir);
+    // Need to set a model so that we can get the proper document icon.
+    // Since CustomFileIconProvider now needs a QAbstractProxyModel, we need to create one...
+    // TODO: Make this less convoluted, e.g,. by making CustomFileIconProvider take a QAbstractItemModel
+    //  in addition to a QAbstractProxyModel
+    CustomFileSystemModel *sourceModel = new CustomFileSystemModel();
+    sourceModel->setRootPath(parentDir);
+    QSortFilterProxyModel *model = new QSortFilterProxyModel();
+    qDebug() << "Still alive";
+    model->setSourceModel(sourceModel);
+    qDebug() << "Alive no more";
     iconProvider->setModel(model);
+
     QIcon i = iconProvider->icon(fileInfo);
     if (!i.isNull()) {
         ui->iconInfo->setPixmap(i.pixmap(128, 128));
     }
-    openWith = model->openWith(filePath); // Used below
+    openWith = sourceModel->openWith(filePath); // Used below
     delete model;
+    delete sourceModel;
     delete iconProvider;
 
     ui->pathInfo->setText(filePath);

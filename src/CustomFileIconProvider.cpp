@@ -258,12 +258,14 @@ QIcon CustomFileIconProvider::icon(const QFileInfo &info) const
     }
     */
 
-    qDebug() << "filePath alive:" << filePath;
     if (m_model != nullptr) {
         // Retrieve the "open-with" attribute from the stored attributes in the model.
-        QString openWith = QString(m_model->openWith(
+        // Get the model from the proxy model, because the proxy model has the stored attributes
+        // and the original model does not.
+        CustomFileSystemModel *model = qobject_cast<CustomFileSystemModel *>(m_model->sourceModel());
+        QString openWith = QString(model->openWith(
                 filePath)); // NOTE: We would like to do this with the index, but we don't have a valid index at this point for unknown reasons
-        qDebug() << "openWith: " << openWith;
+        // qDebug() << "openWith: " << openWith;
         if (!openWith.isEmpty()) {
             // qDebug() << "-> openWith:" << openWith << "for" << info.absoluteFilePath();
             ApplicationBundle bundle(openWith);
@@ -343,9 +345,9 @@ QIcon CustomFileIconProvider::icon(const QFileInfo &info) const
     return (QIcon::fromTheme("unknown"));
 }
 
-void CustomFileIconProvider::setModel(CustomFileSystemModel* model)
+void CustomFileIconProvider::setModel(QAbstractProxyModel* model)
 {
-    // Since we need to access the CustomFileSystemModel from the icon provider so that we can call openWith() on it,
+    // Since we need to access the QAbstractItemModel from the icon provider so that we can call openWith() on it,
     // we need to make it accessible to the icon provider
     m_model = model;
 }

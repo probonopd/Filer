@@ -110,6 +110,12 @@ void TrashHandler::moveToTrash(const QStringList& paths) {
                 }
             }
 
+            // Never unmount /
+            if (absoluteFilePathWithSymlinksResolved == "/") {
+                qDebug() << "Path" << absoluteFilePathWithSymlinksResolved << "is /, skipping";
+                continue;
+            }
+
             // Unmount the mount point
             // TODO: Might be necessary to call with sudo -A -E
             QProcess umount;
@@ -350,12 +356,11 @@ bool TrashHandler::emptyTrash() {
         }
     }
 
+    qDebug() << "TrashHandler::emptyTrash() - Trash is now empty";
+
     SoundPlayer::playSound("rustle.wav");
 
-    // Tell the main window to update its menus because there is now something in the Trash
-    // so the "Empty Trash" menu item should be enabled
-    FileManagerMainWindow* mainWindow = qobject_cast<FileManagerMainWindow*>(qApp->activeWindow());
-    mainWindow->updateMenus();
+    qDebug() << "TrashHandler::emptyTrash() - Updating Trash icon";
 
     // Use QProcess to run the following command: "touch ~/Desktop"
     // this will cause the Trash icon on the Desktop to be refreshed, so that
@@ -363,6 +368,8 @@ bool TrashHandler::emptyTrash() {
     QProcess p;
     p.start("touch", QStringList() << QDir::homePath() + QDir::separator() + "Desktop");
     p.waitForFinished(-1);
+
+    qDebug() << "TrashHandler::emptyTrash() - Done";
 
     return true;
 }

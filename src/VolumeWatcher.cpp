@@ -45,7 +45,6 @@ VolumeWatcher::VolumeWatcher(QObject *parent) : QObject(parent)
     m_watcher.addPath(m_mediaPath);
 
     // Handle "/", which is the "Hard Disk"
-    QString hardDiskName = tr("Hard Disk");
     if (! QFile::exists(QDir::homePath() + "/Desktop/" + AppGlobals::hardDiskName)) {
         QFile::link("/", QDir::homePath() + "/Desktop/" + AppGlobals::hardDiskName);
     }

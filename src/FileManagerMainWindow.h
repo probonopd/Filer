@@ -38,6 +38,7 @@
 #include "CustomFileSystemModel.h"
 #include "CustomListView.h"
 #include "ExtendedAttributes.h"
+#include <QSortFilterProxyModel>
 
 class FileManagerMainWindow : public QMainWindow
 {
@@ -68,6 +69,7 @@ public:
     void refresh();
 
     CustomFileSystemModel *m_fileSystemModel;
+    QSortFilterProxyModel *m_proxyModel;
 
     bool isFirstInstance() const;
 
@@ -89,9 +91,8 @@ public slots:
 
     void moveEvent(QMoveEvent *event);
 
-    QStringList getInstancePaths() const;
-
     void updateMenus();
+    void updateEmptyTrashMenu();
 
 private:
     QStackedWidget *m_stackedWidget;
@@ -130,6 +131,9 @@ private:
     void moveSelectedItems(const QString &destinationPath);
 
     void saveWindowGeometry();
+
+    void setFilterRegExpForHiddenFiles(QSortFilterProxyModel *proxyModel, const QString &hiddenFilePath);
+
 
     ExtendedAttributes *m_extendedAttributes;
 };

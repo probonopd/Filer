@@ -102,7 +102,7 @@ QIcon CombinedIconCreator::createCombinedIcon(const QIcon& applicationIcon) cons
     if (cachedIcons.contains(checksum)) {
         return cachedIcons[checksum];
     } else {
-        qDebug() << "XXXXXXXXXXXX Icon not cached yet; number of cached icons:" << cachedIcons.size();
+        qDebug() << "Icon not cached yet; number of cached icons:" << cachedIcons.size();
     }
 
     // qDebug() << "Creating combined icon";

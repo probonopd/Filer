@@ -67,7 +67,7 @@ public:
      * @param parent The parent QObject.
      * @param fileSystemModel A pointer to the CustomFileSystemModel.
      */
-    explicit CustomItemDelegate(QObject* parent = nullptr, CustomFileSystemModel* fileSystemModel = nullptr);
+    explicit CustomItemDelegate(QObject* parent = nullptr, QAbstractProxyModel* fileSystemModel = nullptr);
 
     // Destructor
     ~CustomItemDelegate();
@@ -165,7 +165,7 @@ protected:
 
 private:
     // Private member variable to hold a pointer to the QFileSystemModel object
-    CustomFileSystemModel *m_fileSystemModel;
+    QAbstractProxyModel *m_fileSystemModel;
 
     // We use this to flash the icon if the item was double-clicked
     bool iconShown = false;

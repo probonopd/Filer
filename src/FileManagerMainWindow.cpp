@@ -207,43 +207,37 @@ FileManagerMainWindow::FileManagerMainWindow(QWidget *parent, const QString &ini
     // Create an instance of our custom QFileIconProvider
     CustomFileIconProvider provider;
 
-    // m_fileSystemModel = new QFileSystemModel(this);
-    m_fileSystemModel = new CustomFileSystemModel(this); // Not really working correctly yet; FIXME
+    m_fileSystemModel = new CustomFileSystemModel(this);
+    m_fileSystemModel->setRootPath(m_currentDir);
+    m_proxyModel = new QSortFilterProxyModel(this);
+    m_proxyModel->setSourceModel(m_fileSystemModel);
 
-    provider.setModel(m_fileSystemModel);
+    // For testing, filter out anything that starts with "z"
+    // m_proxyModel->setFilterRegExp(QRegExp("^[^z].*"));
+    // Works!
+
+    // Call the function to set the filter based on the .hidden file
+    setFilterRegExpForHiddenFiles(m_proxyModel, m_currentDir + "/.hidden");
+
+    m_proxyModel->setDynamicSortFilter(true);
+    m_proxyModel->setSortCaseSensitivity(Qt::CaseInsensitive);
+
+    // Sort by type, and within types, by name
+    m_proxyModel->setSortRole(Qt::DecorationRole);
+    m_proxyModel->sort(0, Qt::AscendingOrder);
+
+    provider.setModel(m_proxyModel);
 
     // Make the file system model use the custom icon provider
     m_fileSystemModel->setIconProvider(&provider);
 
-    // Filter out items that should not be shown
-    m_fileSystemModel->setFilter(QDir::AllEntries | QDir::NoDotAndDotDot); // | QDir::Hidden
-
-    // Make it use the icon provider on files as well
-    m_fileSystemModel->setResolveSymlinks(true);
-
-    //////////////////////////////////
-    // TODO: Hide hidden files
-    //////////////////////////////////
-
     // Set the file system model as the model for the tree view and icon view
-    m_treeView->setModel(m_fileSystemModel);
-    m_iconView->setModel(m_fileSystemModel);
-
-    // Set the root path to the specified m_currentDir
-    m_fileSystemModel->setRootPath(m_currentDir);
+    m_treeView->setModel(m_proxyModel);
+    m_iconView->setModel(m_proxyModel);
 
     // Preload the data for the tree view (so that e.g., CustomIconProvider can know open-with attributes)
-    m_treeView->setRootIndex(m_fileSystemModel->index(m_currentDir));
-    m_iconView->setRootIndex(m_fileSystemModel->index(m_currentDir));
-
-
-    //////////////////////////////////////////////////////
-    // TODO: Add entries to the Desktop for Trash, Volumes
-    // by adding items to the file system model
-    m_fileSystemModel->insertRow(0, m_fileSystemModel->index(m_currentDir));
-    m_fileSystemModel->setData(
-            m_fileSystemModel->index(0, 0, m_fileSystemModel->index(m_currentDir)), "Trash");
-    //////////////////////////////////////////////////////
+    m_treeView->setRootIndex(m_proxyModel->mapFromSource(m_fileSystemModel->index(m_currentDir)));
+    m_iconView->setRootIndex(m_proxyModel->mapFromSource(m_fileSystemModel->index(m_currentDir)));
 
     // Set the window title to the root path of the QFileSystemModel
     setWindowTitle(QFileInfo(m_fileSystemModel->rootPath()).fileName());
@@ -251,6 +245,10 @@ FileManagerMainWindow::FileManagerMainWindow(QWidget *parent, const QString &ini
     // If we are at /, set the window title to "/"
     if (m_fileSystemModel->rootPath() == "/") {
         setWindowTitle(AppGlobals::hardDiskName);
+        // Resize the window since we cannot store the position and geometry
+        // of the root window in extended attributes appropriately
+        // TODO: Find a way to store the position and geometry of the root window
+        resize(600, 400);
     }
 
     // If we are at the Trash, set the window title to "Trash"
@@ -262,7 +260,7 @@ FileManagerMainWindow::FileManagerMainWindow(QWidget *parent, const QString &ini
     // we need this so that we have control over how the items (icons with text)
     // get drawn
 
-    CustomItemDelegate *customItemDelegate = new CustomItemDelegate(m_stackedWidget->currentWidget(), m_fileSystemModel);
+    CustomItemDelegate *customItemDelegate = new CustomItemDelegate(m_stackedWidget->currentWidget(), m_proxyModel);
 
     // Install the custom item delegate as an event filter on the tree view and icon view
     // so that we can intercept mouse events like QEvent::DragMove
@@ -273,7 +271,7 @@ FileManagerMainWindow::FileManagerMainWindow(QWidget *parent, const QString &ini
     m_treeView->setItemDelegate(customItemDelegate);
 
     // Create the selection model for the tree view and icon view
-    m_selectionModel = new QItemSelectionModel(m_fileSystemModel, this);
+    m_selectionModel = new QItemSelectionModel(m_proxyModel, this);
 
     // Set the selection model for the tree view and icon view
     m_treeView->setSelectionModel(m_selectionModel);
@@ -339,7 +337,7 @@ FileManagerMainWindow::FileManagerMainWindow(QWidget *parent, const QString &ini
     connect(
             m_iconView, &QTreeView::doubleClicked, this,
             [this](const QModelIndex &index) {
-                QString filePath = m_fileSystemModel->filePath(index);
+                QString filePath = m_fileSystemModel->filePath(m_proxyModel->mapToSource(index));
                 open(filePath);
             },
             Qt::QueuedConnection);
@@ -383,7 +381,9 @@ FileManagerMainWindow::FileManagerMainWindow(QWidget *parent, const QString &ini
     connect(
             m_treeView, &QTreeView::doubleClicked, this,
             [this](const QModelIndex &index) {
-                QString filePath = m_fileSystemModel->filePath(index);
+                qDebug() << "doubleClicked";
+                QString filePath = m_fileSystemModel->filePath(m_proxyModel->mapToSource(index));
+                qDebug() << "filePath:" << filePath;
                 open(filePath);
             },
             Qt::QueuedConnection);
@@ -560,8 +560,13 @@ void FileManagerMainWindow::createMenus()
     fileMenu->actions().last()->setShortcut(QKeySequence("Ctrl+O"));
     connect(fileMenu->actions().last(), &QAction::triggered, this, [this]() {
         QModelIndex index = m_treeView->currentIndex();
-        QString filePath = m_fileSystemModel->filePath(index);
-        open(filePath);
+        // Get all selected items
+        QModelIndexList selectedIndexes = getCurrentView()->selectionModel()->selectedIndexes();
+        for (QModelIndex index : selectedIndexes) {
+            // Get the absolute path of the item represented by the index, using the model
+            QString filePath = m_fileSystemModel->data(m_proxyModel->mapToSource(index), QFileSystemModel::FilePathRole).toString();
+            open(filePath);
+        }
     });
 
     // Open With...
@@ -570,19 +575,29 @@ void FileManagerMainWindow::createMenus()
     fileMenu->actions().last()->setShortcut(QKeySequence(Qt::CTRL + Qt::ALT + Qt::Key_O));
     connect(fileMenu->actions().last(), &QAction::triggered, this, [this]() {
         QModelIndex index = m_treeView->currentIndex();
-        QString filePath = m_fileSystemModel->filePath(index);
-        openWith(filePath);
+        // Get all selected items
+        QModelIndexList selectedIndexes = getCurrentView()->selectionModel()->selectedIndexes();
+        for (QModelIndex index : selectedIndexes) {
+            // Get the absolute path of the item represented by the index, using the model
+            QString filePath = m_fileSystemModel->data(m_proxyModel->mapToSource(index), QFileSystemModel::FilePathRole).toString();
+           openWith(filePath);
+        }
     });
 
     // Open and close current
     fileMenu->addAction(tr("Open and close current"));
     fileMenu->actions().last()->setShortcut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_O));
     connect(fileMenu->actions().last(), &QAction::triggered, [=]() {
-        QModelIndex index = m_treeView->currentIndex();
-        QString filePath = m_fileSystemModel->filePath(index);
-        open(filePath);
+        // Get all selected items
+        QModelIndexList selectedIndexes = getCurrentView()->selectionModel()->selectedIndexes();
+        for (QModelIndex index : selectedIndexes) {
+            // Get the absolute path of the item represented by the index, using the model
+            QString filePath = m_fileSystemModel->data(m_proxyModel->mapToSource(index), QFileSystemModel::FilePathRole).toString();
+            open(filePath);
+        }
         close();
     });
+
     if (m_isFirstInstance) {
         fileMenu->actions().last()->setEnabled(false);
     }
@@ -596,7 +611,7 @@ void FileManagerMainWindow::createMenus()
     connect(m_showContentsAction, &QAction::triggered, this, [this]() {
         QModelIndexList selectedIndexes = m_treeView->selectionModel()->selectedIndexes();
         for (QModelIndex index : selectedIndexes) {
-            QString filePath = m_fileSystemModel->filePath(index);
+            QString filePath = m_fileSystemModel->filePath(m_proxyModel->mapToSource(index));
             openFolderInNewWindow(filePath);
         }
     });
@@ -641,8 +656,8 @@ void FileManagerMainWindow::createMenus()
         // Get the file paths of the selected indexes
         QStringList filePaths;
         for (const QModelIndex &index : selectedIndexes) {
-            if (! filePaths.contains(m_fileSystemModel->filePath(index))) {
-                filePaths.append(m_fileSystemModel->filePath(index));
+            if (! filePaths.contains(m_fileSystemModel->filePath(m_proxyModel->mapToSource(index)))) {
+                filePaths.append(m_fileSystemModel->filePath(m_proxyModel->mapToSource(index)));
             }
         }
         qDebug() << "Copying the following files to the clipboard:";
@@ -671,8 +686,8 @@ void FileManagerMainWindow::createMenus()
         // Get the file paths of the selected indexes
         QStringList filePaths;
         for (const QModelIndex &index : selectedIndexes) {
-            if (! filePaths.contains(m_fileSystemModel->filePath(index))) {
-                filePaths.append(m_fileSystemModel->filePath(index));
+            if (! filePaths.contains(m_fileSystemModel->filePath(m_proxyModel->mapToSource(index)))) {
+                filePaths.append(m_fileSystemModel->filePath(m_proxyModel->mapToSource(index)));
             }
         }
         qDebug() << "Copying the following files to the clipboard:";
@@ -723,6 +738,8 @@ void FileManagerMainWindow::createMenus()
 
                 // Get the destination directory based on the root index of the current view
                 QModelIndex rootIndex = m_treeView->rootIndex();
+                // Map the root index to the source model
+                rootIndex = m_proxyModel->mapToSource(rootIndex);
                 QString destinationDirectory = m_fileSystemModel->filePath(rootIndex);
                 QStringList sourceFilePaths;
                 for (const QUrl &url : urls) {
@@ -739,6 +756,8 @@ void FileManagerMainWindow::createMenus()
 
                 // Get the destination directory based on the root index of the current view
                 QModelIndex rootIndex = m_treeView->rootIndex();
+                // Map the root index to the source model
+                rootIndex = m_proxyModel->mapToSource(rootIndex);
                 QString destinationDirectory = m_fileSystemModel->filePath(rootIndex);
                 QStringList sourceFilePaths;
                 for (const QUrl &url : urls) {
@@ -759,7 +778,7 @@ void FileManagerMainWindow::createMenus()
         // Get the file paths of the selected indexes
         QStringList filePaths;
                 for (const QModelIndex &index : selectedIndexes) {
-            filePaths.append(m_fileSystemModel->filePath(index));
+            filePaths.append(m_fileSystemModel->filePath(m_proxyModel->mapToSource(index)));
         }
         qDebug() << "Moving to trash the following files:";
         for (const QString &filePath : filePaths) {
@@ -795,6 +814,11 @@ void FileManagerMainWindow::createMenus()
     editMenu->addAction(m_emptyTrashAction);
     connect(m_emptyTrashAction, &QAction::triggered, this, [this]() {
         TrashHandler::emptyTrash();
+    });
+    // Whenever the Edit menu is about to be shown, check if the trash is empty
+    // and enable/disable the "Empty Trash" action accordingly
+    connect(editMenu, &QMenu::aboutToShow, this, [this, editMenu]() {
+        updateEmptyTrashMenu();
     });
 
     // Add the Edit menu to the menu bar
@@ -1024,7 +1048,7 @@ void FileManagerMainWindow::createMenus()
             shortcut, &QShortcut::activated, this,
             [this]() {
                 QModelIndex index = m_treeView->currentIndex();
-                QString filePath = m_fileSystemModel->filePath(index);
+                QString filePath = m_fileSystemModel->filePath(m_proxyModel->mapToSource(index));
                 open(filePath);
             },
             Qt::QueuedConnection);
@@ -1034,7 +1058,7 @@ void FileManagerMainWindow::createMenus()
             shortcut, &QShortcut::activated, this,
             [this]() {
                 QModelIndex index = m_treeView->currentIndex();
-                QString filePath = m_fileSystemModel->filePath(index);
+                QString filePath = m_fileSystemModel->filePath(m_proxyModel->mapToSource(index));
                 openWith(filePath);
             },
             Qt::QueuedConnection);
@@ -1044,7 +1068,7 @@ void FileManagerMainWindow::createMenus()
             shortcut, &QShortcut::activated, this,
             [this]() {
                 QModelIndex index = m_treeView->currentIndex();
-                QString filePath = m_fileSystemModel->filePath(index);
+                QString filePath = m_fileSystemModel->filePath(m_proxyModel->mapToSource(index));
                 open(filePath);
                 if (!m_isFirstInstance)
                     close();
@@ -1145,11 +1169,12 @@ void FileManagerMainWindow::updateStatusBar()
 
     // Get the selected indexes
     QModelIndexList selectedIndexes = m_treeView->selectionModel()->selectedIndexes();
+    qDebug() << "Selected indexes:" << selectedIndexes;
 
     // Calculate the size of the selected items on disk
     qint64 size = 0;
     for (const QModelIndex &index : selectedIndexes) {
-        size += m_fileSystemModel->size(index);
+        size += m_fileSystemModel->size(m_proxyModel->mapToSource(index));
     }
 
     // Format the size in a human-readable format using the user's locale settings
@@ -1158,6 +1183,9 @@ void FileManagerMainWindow::updateStatusBar()
     // Show the number of selected items and their size on disk in the status bar
     m_statusBar->showMessage(
             QString("%1 items selected (%2)").arg(selectedIndexes.size()).arg(sizeString));
+
+    // Print a message indicating that the function has completed
+    qDebug() << "Completed" << Q_FUNC_INFO;
 }
 
 // Getter method for the directory property
@@ -1174,6 +1202,8 @@ void FileManagerMainWindow::setDirectory(const QString &directory)
 
 void FileManagerMainWindow::openFolderInNewWindow(const QString &rootPath)
 {
+    qDebug() << Q_FUNC_INFO << rootPath;
+
     // Make path absolute and resolve symlinks
     QString resolvedRootPath = QFileInfo(rootPath).absoluteFilePath();
     if (QFileInfo(resolvedRootPath).isSymLink()) {
@@ -1188,6 +1218,7 @@ void FileManagerMainWindow::openFolderInNewWindow(const QString &rootPath)
 
     // Check if the path exists and is a directory or a symlink to a directory, show an error dialog
     // if it is not
+    qDebug() << "resolvedRootPath" << resolvedRootPath;
     if (!QFileInfo(resolvedRootPath).exists() || !QFileInfo(resolvedRootPath).isDir()) {
         QMessageBox::critical(nullptr, "Error", "This path is not a folder.");
         return;
@@ -1269,7 +1300,9 @@ void FileManagerMainWindow::open(const QString &filePath)
                 if (selectedIndex.isValid())
                 {
                     qDebug() << "Starting animation for selected index:" << selectedIndex;
-                    customDelegate->startAnimation(selectedIndex);
+                    // Mao the selected index to the source model
+                    const QModelIndex sourceIndex = m_proxyModel->mapToSource(selectedIndex);
+                    customDelegate->startAnimation(sourceIndex);
                 }
                 else
                 {
@@ -1304,7 +1337,7 @@ void FileManagerMainWindow::open(const QString &filePath)
 
         // Check if the filePath is a directory or a file
         if (QFileInfo(filePath).isDir()) {
-            QString rootPath = m_fileSystemModel->filePath(selectedIndex);
+            QString rootPath = m_fileSystemModel->filePath(m_proxyModel->mapToSource(m_selectionModel->currentIndex()));
             // If central widget is a tree view, open folder in existing window; else open in new
             // window
             if (m_treeView->isVisible()) {
@@ -1319,7 +1352,7 @@ void FileManagerMainWindow::open(const QString &filePath)
                 } else {
                     // If we don't, open a new window
                     qDebug() << "Opening new window:" << filePath;
-                    openFolderInNewWindow(rootPath);
+                    openFolderInNewWindow(filePath);
                 }
             }
         } else {
@@ -1430,18 +1463,15 @@ void FileManagerMainWindow::renameSelectedItem()
     }
 }
 
-void FileManagerMainWindow::updateMenus()
-{
+void FileManagerMainWindow::updateMenus() {
     // Print the name of the called function
     qDebug() << Q_FUNC_INFO;
 
-    // Get the list of selected indexes
+    // Get the list of selected items
     const QModelIndexList selectedIndexes = m_selectionModel->selectedIndexes();
 
     // Check if there is exactly one selected item
     if (selectedIndexes.size() == 1) {
-        // Get the selected index
-        const QModelIndex selectedIndex = selectedIndexes.first();
         m_renameAction->setEnabled(true);
     } else {
         // Disable the Rename action
@@ -1460,10 +1490,10 @@ void FileManagerMainWindow::updateMenus()
         m_moveToTrashAction->setEnabled(true);
         m_getInfoAction->setEnabled(true);
         bool allSelectedItemsCanShowContents = true;
-        for (const QModelIndex &index : selectedIndexes) {
+        for (const QModelIndex &index: selectedIndexes) {
             // Check if the selected item can show its contents
-            QString filePath = m_fileSystemModel->filePath(index);
-            ApplicationBundle* bundle = new ApplicationBundle(filePath);
+            QString filePath = m_fileSystemModel->filePath(m_proxyModel->mapToSource(index));
+            ApplicationBundle *bundle = new ApplicationBundle(filePath);
             if (bundle->isValid() && bundle->type() != ApplicationBundle::Type::DesktopFile) {
                 // Do nothing in this case
             } else {
@@ -1481,10 +1511,10 @@ void FileManagerMainWindow::updateMenus()
     // Disable the Move to Trash action if the selected item is already in the trash
     // or it is a symlink to the Trash folder
     QStringList filePaths;
-    for (const QModelIndex &index : selectedIndexes) {
-        filePaths.append(m_fileSystemModel->filePath(index));
+    for (const QModelIndex &index: selectedIndexes) {
+        filePaths.append(m_fileSystemModel->filePath(m_proxyModel->mapToSource(index)));
     }
-    for (const QString &filePath : filePaths) {
+    for (const QString &filePath: filePaths) {
         QString resolvedFilePath = filePath;
         // TODO: Remove the following if statement once we no longer use symlinks to the Trash folder
         if (QFileInfo(filePath).isSymLink()) {
@@ -1497,16 +1527,24 @@ void FileManagerMainWindow::updateMenus()
             }
         }
 
-        if(resolvedFilePath.startsWith(TrashHandler::getTrashPath())) {
+        if (resolvedFilePath.startsWith(TrashHandler::getTrashPath())) {
             m_moveToTrashAction->setEnabled(false);
         }
     }
+    updateEmptyTrashMenu();
+}
 
+void FileManagerMainWindow::updateEmptyTrashMenu() {
+    qDebug() << Q_FUNC_INFO;
     // Disable the Empty Trash action if the trash is already empty
     if (TrashHandler::isEmpty()) {
+        qDebug() << "Trash is empty, disabling Empty Trash action";
         m_emptyTrashAction->setEnabled(false);
+        qDebug() << "Disabled Empty Trash action";
     } else {
+        qDebug() << "Trash is not empty, enabling Empty Trash action";
         m_emptyTrashAction->setEnabled(true);
+        qDebug() << "Enabled Empty Trash action";
     }
 }
 
@@ -1585,17 +1623,19 @@ void FileManagerMainWindow::selectItems(const QStringList &paths)
         // Get the index of the item with the given path
         qDebug("Path: %s", path.toStdString().c_str());
         const QModelIndex index = m_fileSystemModel->index(path);
+        // Map the index to the proxy model
+        const QModelIndex proxyIndex = m_proxyModel->mapFromSource(index);
         // Check if the index is valid
-        if (!index.isValid()) {
+        if (!proxyIndex.isValid()) {
             // The index is invalid, so skip it
-            qDebug() << "Skipping invalid index" << index;
+            qDebug() << "Skipping invalid proxyIndex" << proxyIndex;
             continue;
         }
-        qDebug() << "Selecting item with path" << path << "and index" << index;
+        qDebug() << "Selecting item with path" << path << "and proxyIndex" << proxyIndex;
         // Unselect all items
         m_selectionModel->clearSelection();
         // Select the item
-        m_selectionModel->select(index, QItemSelectionModel::Select);
+        m_selectionModel->select(proxyIndex, QItemSelectionModel::Select);
 
         // Wait until the view is not busy
         while (currentActiveView->property("isBusy").toBool()) {
@@ -1604,7 +1644,7 @@ void FileManagerMainWindow::selectItems(const QStringList &paths)
         }
 
         // Scroll to the item based on the current active view
-        currentActiveView->scrollTo(index, QAbstractItemView::PositionAtCenter);
+        currentActiveView->scrollTo(proxyIndex, QAbstractItemView::PositionAtCenter);
     }
 
 }
@@ -1623,7 +1663,7 @@ void FileManagerMainWindow::getInfo() {
     QModelIndexList selectedIndexes = getCurrentView()->selectionModel()->selectedIndexes();
     for (QModelIndex index : selectedIndexes) {
         // Get the absolute path of the item represented by the index, using the model
-        QString filePath = m_fileSystemModel->data(index, QFileSystemModel::FilePathRole).toString();
+        QString filePath = m_fileSystemModel->data(m_proxyModel->mapToSource(index), QFileSystemModel::FilePathRole).toString();
         // Destroy the dialog when it is closed
         InfoDialog *infoDialog = InfoDialog::getInstance(filePath, this);
         infoDialog->setAttribute(Qt::WA_DeleteOnClose);
@@ -1631,15 +1671,43 @@ void FileManagerMainWindow::getInfo() {
     }
 }
 
-QStringList FileManagerMainWindow::getInstancePaths() const
+void FileManagerMainWindow::setFilterRegExpForHiddenFiles(QSortFilterProxyModel *proxyModel, const QString &hiddenFilePath)
 {
-    QStringList instancePaths;
+    QStringList hiddenFiles;
+    QFile hiddenFile(hiddenFilePath);
 
-    // Iterate over the list of instances
-    for (FileManagerMainWindow *instance : instances()) {
-        // Add the path of the instance to the list
-        instancePaths << instance->m_currentDir;
+    if (hiddenFile.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        QTextStream in(&hiddenFile);
+        while (!in.atEnd())
+        {
+            QString line = in.readLine().trimmed();
+            if (!line.isEmpty())
+                hiddenFiles.append(QRegExp::escape(line));
+        }
+        hiddenFile.close();
     }
 
-    return instancePaths;
+    if (!hiddenFiles.isEmpty())
+    {
+        // Construct a regular expression pattern that filters out filenames
+        // based on the contents of the hiddenFiles list and hides files starting with a dot.
+        // The pattern uses negative lookahead assertions to match filenames that should be hidden.
+        // - `^(?: ... )*$`: Anchors the pattern to the start and end of the filename and matches the entire filename.
+        // - `(?:(?! ... ).)*`: Uses negative lookahead to assert that the filename is not followed by any of the specified patterns or a dot (hiddenFiles.join('|') and \\.) at any position.
+        // - `hiddenFiles.join('|')`: Joins the hidden filenames with the OR operator (|) to create a pattern that matches any of the hidden filenames.
+        // - `\\.`: Matches a literal dot character to account for filenames starting with a dot.
+        // The resulting pattern hides files matching hidden filenames or starting with a dot, while showing other files.
+        QString pattern = "^(?:(?!" + hiddenFiles.join('|') + "|\\.).)*$";
+        QRegExp regExp(pattern);
+        qDebug() << "Filtering out hidden files using pattern:" << pattern;
+        proxyModel->setFilterRegExp(regExp);
+
+    }
+    else
+    {
+        proxyModel->setFilterRegExp(QRegExp()); // Reset filter
+        // Hide all files starting with a dot
+        proxyModel->setFilterRegExp(QRegExp("^[^.].*"));
+    }
 }

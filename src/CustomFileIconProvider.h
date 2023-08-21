@@ -33,6 +33,9 @@
 #include <QModelIndex>
 #include "CustomFileSystemModel.h"
 #include "CombinedIconCreator.h"
+#include <QAbstractProxyModel>
+
+class QAbstractItemModel;
 
 /**
  * @file CustomFileIconProvider.h
@@ -60,13 +63,13 @@ public:
     QString currentThemeName; /**< The name of the current theme. */
 
     /**
-     * @brief Sets the CustomFileSystemModel associated with the icon provider.
-     * @param model The CustomFileSystemModel to set.
+     * @brief Sets the QAbstractProxyModel associated with the icon provider.
+     * @param model The QAbstractProxyModel to set.
      */
-    void setModel(CustomFileSystemModel* model);
+    void setModel(QAbstractProxyModel* model);
 
 private:
-    const CustomFileSystemModel* m_model; /**< Pointer to the CustomFileSystemModel associated with the icon provider. */
+    const QAbstractProxyModel* m_model; /**< Pointer to the QAbstractProxyModel associated with the icon provider. */
     CombinedIconCreator* iconCreator;; /**< Pointer to the CombinedIconCreator associated with the icon provider. */
 };
 
