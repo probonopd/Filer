@@ -29,6 +29,7 @@
 #include <QDebug>
 #include <QStorageInfo>
 #include <QDir>
+#include "ApplicationBundle.h"
 
 CustomProxyModel::CustomProxyModel(QObject *parent)
         : QSortFilterProxyModel(parent)
@@ -74,6 +75,13 @@ bool CustomProxyModel::lessThan(const QModelIndex &left, const QModelIndex &righ
         bool rightIsMountPoint = mountPoints.contains(rightFullPath);
         // qDebug() << "leftIsMountPoint:" << leftIsMountPoint << "rightIsMountPoint:" << rightIsMountPoint;
 
+        ApplicationBundle *leftApplicationBundle = new ApplicationBundle(leftFullPath);
+        bool leftIsApplicationBundle = leftApplicationBundle->isValid();
+        ApplicationBundle *rightApplicationBundle = new ApplicationBundle(rightFullPath);
+        bool rightIsApplicationBundle = rightApplicationBundle->isValid();
+        delete leftApplicationBundle;
+        delete rightApplicationBundle;
+
         if ("/" == leftFullPath && "/" != rightFullPath) {
             // Root directory comes before others
             return false;
@@ -93,6 +101,17 @@ bool CustomProxyModel::lessThan(const QModelIndex &left, const QModelIndex &righ
             // Mount points before non-mount points
             return true;
         }
+
+        if (leftIsApplicationBundle && !rightIsApplicationBundle) {
+            // Application bundles before non-application bundles
+            return false;
+        }
+
+        if (rightIsApplicationBundle && !leftIsApplicationBundle) {
+            // Application bundles before non-application bundles
+            return true;
+        }
+
     }
 
     // Fallback to default sorting
