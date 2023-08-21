@@ -62,6 +62,9 @@ void CopyThread::run() {
             if (!QFile::link(symlinkTarget, toPath)) {
                 emit error(tr("Failed to copy symbolic link."));
                 return;
+            } else {
+                // We must not write into the symlink target, so we skip it
+                continue;
             }
         }
 
@@ -122,6 +125,9 @@ void CopyThread::run() {
                     if (!QFile::link(symlinkTarget, targetFilePath)) {
                         emit error(tr("Failed to copy symbolic link."));
                         return;
+                    } else {
+                        // We must not write into the symlink target, so we skip it
+                        continue;
                     }
                 } else if (QFileInfo(it.fileInfo()).isDir()) {
                     QDir(targetFilePath).mkpath(".");

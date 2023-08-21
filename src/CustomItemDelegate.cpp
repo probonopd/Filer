@@ -43,6 +43,7 @@
 #include "ApplicationBundle.h"
 #include "TrashHandler.h"
 #include "InfoDialog.h"
+#include "AppGlobals.h"
 
 // Constructor that takes a QObject pointer and a QFileSystemModel pointer as arguments
 CustomItemDelegate::CustomItemDelegate(QObject* parent, QAbstractProxyModel* fileSystemModel)
@@ -121,7 +122,7 @@ void CustomItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
      * in a QIconView, we need to update the model to reflect the new positions of the delegate.
      */
 
-    // Find out whether we are drawing for the first instane (desktop)
+    // Find out whether we are drawing for the first instance (desktop)
     // or for another instance (file manager window)
     QAbstractItemView *view = static_cast<QAbstractItemView *>(parent());
     // Get the parent (MainWindow) of the parent (QStackedWidget) of the view (CustomListView/QTreeView)
@@ -377,6 +378,22 @@ bool CustomItemDelegate::editorEvent(QEvent *event, QAbstractItemModel *model,
             }
         }
         if(resolvedFilePath.startsWith(TrashHandler::getTrashPath())) {
+            if (TrashHandler::isEmpty()) {
+                moveToTrashAction->setEnabled(false);
+            } else {
+                moveToTrashAction->setEnabled(true);
+            }
+            moveToTrashAction->setText(tr("Empty Trash"));
+            disconnect(moveToTrashAction, &QAction::triggered, nullptr, nullptr);
+            connect(moveToTrashAction, &QAction::triggered, [=]() {
+                TrashHandler::emptyTrash();
+            });
+        }
+        if (resolvedFilePath.startsWith(AppGlobals::mediaPath)) {
+            moveToTrashAction->setText(tr("Eject"));
+        }
+        if (resolvedFilePath == "/") {
+            moveToTrashAction->setText(tr("Eject"));
             moveToTrashAction->setEnabled(false);
         }
 
