@@ -37,7 +37,7 @@ A clean rewrite of the Filer for [helloSystem](https://hellosystem.github.io/) (
 |Use controls designed for mobile devices|Only uses controls designed for the desktop (e.g., real checkboxes)|DONE|
 |When you double click an application and it fails to run, nothing happens because the error goes to `/dev/stderr`, which is invisible|When you double click an application and it fails to run, the error is shown in a dialog on the screen|DONE via `launch`|
 |Are not optimized for managing and launching applications|Is optimized for managing and launching applications|DONE|
-|Cannot rename disks|Can rename disks|TODO via filesystem labels|
+|Cannot rename disks|Can rename disks|DONE via `renamedisk` helper command line tool|
 
 My conclusion is that most "desktop environments" are made by people who don't actually love the desktop. Or else, those basic things would work.
 

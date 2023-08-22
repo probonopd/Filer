@@ -3,6 +3,9 @@ cmake_minimum_required(VERSION 3.5)
 # Build fileoperation/
 add_subdirectory(fileoperation)
 
+# Build renamedisk/
+add_subdirectory(renamedisk)
+
 # Do not show deprecated warnings
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
 
@@ -145,6 +148,14 @@ add_custom_command(TARGET Filer POST_BUILD
         COMMENT "Copying fileoperation binary to bundle..."
 )
 
+# Copy renamedisk binary into the bundle under bin/
+add_custom_command(TARGET Filer POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy
+        $<TARGET_FILE:renamedisk>
+        ${APPLICATION_BUNDLE_PATH}/bin/renamedisk
+        COMMENT "Copying renamedisk binary to bundle..."
+)
+
 install(TARGETS Filer RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX})
 
 # Install the application bundle in /System
@@ -160,5 +171,6 @@ install(CODE "
     )
     execute_process(
         COMMAND chmod +x ${CMAKE_INSTALL_PREFIX}/../${APPLICATION_BUNDLE_NAME}/bin/fileoperation
+        COMMAND chmod +x ${CMAKE_INSTALL_PREFIX}/../${APPLICATION_BUNDLE_NAME}/bin/renamedisk
     )
     ")

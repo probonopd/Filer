@@ -71,6 +71,7 @@
 #include "InfoDialog.h"
 #include "AppGlobals.h"
 #include "CustomProxyModel.h"
+#include <QStorageInfo>
 
 /*
  * This creates a FileManagerMainWindow object with a QTreeView and QListView widget.
@@ -1453,8 +1454,75 @@ void FileManagerMainWindow::renameSelectedItem()
         return;
     }
 
+    qDebug() << "newName:" << newName;
+    qDebug() << "currentName:" << currentName;
+
+    // Check if the item to be renamed is a mountpoint
+    // Check if the path is a mount point using QStorageInfo
+    QStringList mountPoints;
+    for (const QStorageInfo &storage : QStorageInfo::mountedVolumes()) {
+        mountPoints << storage.rootPath();
+    }
+    qDebug() << "mountPoints:" << mountPoints;
+    const QString currentPath = m_proxyModel->mapToSource(selectedIndex).data(QFileSystemModel::FilePathRole).toString();
+    QString absoluteFilePath = QFileInfo(currentPath).absoluteFilePath();
+    // if absoluteFilePath is a symlink, resolve it
+    if (QFileInfo(absoluteFilePath).isSymLink()) {
+        absoluteFilePath = QFileInfo(absoluteFilePath).symLinkTarget();
+    }
+    qDebug() << "absoluteFilePath:" << absoluteFilePath;
+    qDebug() << "mountPoints:" << mountPoints;
+
+    if (mountPoints.contains(absoluteFilePath)) {
+
+        // The item to be renamed is a mountpoint, so we need to run:
+        // sudo -A -E renamedisk <old name> <new name>
+
+        // TODO: Possibly move everything in this if statement to a separate class,
+        // similar to the FileOperationManager class
+
+        QStringList renamediskBinaryCandidates;
+
+        renamediskBinaryCandidates << QCoreApplication::applicationDirPath() + QString("/bin/renamedisk")
+                                      << QCoreApplication::applicationDirPath() + QString("/../../Resources/renamedisk")
+                                      << QCoreApplication::applicationDirPath() + QString("/../bin/renamedisk")
+                                      << QCoreApplication::applicationDirPath() + QString("/renamedisk/renamedisk");
+
+        QString foundBinary;
+
+        for (const QString &renamediskBinaryCandidate : renamediskBinaryCandidates) {
+            if (QFile::exists(renamediskBinaryCandidate) && QFileInfo(renamediskBinaryCandidate).isExecutable()) {
+                foundBinary = renamediskBinaryCandidate;
+                break;
+            }
+        }
+
+        if (foundBinary.isEmpty()) {
+            // Not found
+            QMessageBox::critical(0, "Filer", "The 'renamedisk' command is missing. It should have been shipped with this application.");
+            return;
+        }
+
+        QString oldName = currentPath.split("/").last();
+        QProcess *p = new QProcess(this);
+        // TODO: Check if we need sudo at all for this kind of filesystem; e.g., if it's a FAT32 filesystem
+        // then we don't need sudo
+        p->setProgram("sudo");
+        p->setArguments({ "-A", "-E", foundBinary, absoluteFilePath, newName });
+        qDebug() << p->program() << "'" + p->arguments().join("' '") + "'";
+        p->start();
+        p->waitForFinished();
+        qDebug() << "renamedisk exit code:" << p->exitCode();
+        if (p->exitCode() != 0) {
+            QMessageBox::critical(this, tr("Error"), tr("Could not rename %1 to %2").arg(oldName).arg(newName));
+        } else {
+            qDebug() << "Renamed" << currentPath << "to" << newName;
+            // The view will automatically update itself; works
+        }
+        return;
+    }
+
     // Rename the selected item in the file system
-    const QString currentPath = m_fileSystemModel->filePath(selectedIndex);
     const QString newPath = currentPath.left(currentPath.lastIndexOf("/") + 1) + newName;
     if(!QFile::rename(currentPath, newPath)) {
         QMessageBox::critical(this, tr("Error"), tr("Could not rename %1 to %2").arg(currentPath).arg(newPath));
