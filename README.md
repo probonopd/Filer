@@ -34,7 +34,7 @@ A clean rewrite of the Filer for [helloSystem](https://hellosystem.github.io/) (
 |Use technical jargon like "executables", "files", "directories", "properties", "wallpaper"|Uses familiar desktop terminology like "applications", "documents", "folders", "info", "desktop picture"|DONE|
 |Do not show volumes (disks) on the desktop|Shows volumes (disks) on the desktop|DONE|
 |Cannot eject disks by dragging them to the Trash|Ejects disks by dragging them to the Trash|DONE|
-|Use controls designed for mobile devices|Only uses controls designed for the desktop (e.g., real checkboxes)|DONE|
+|Use controls designed for mobile devices like ![image](https://github.com/probonopd/Filer/assets/2480569/596e92c1-ac20-4212-9ac4-9fe3c6c7c5e2)|Only uses controls designed for the desktop (e.g., real checkboxes like ![image](https://github.com/probonopd/Filer/assets/2480569/326e6bc8-d669-42d3-a983-cd9380ae6df4)|DONE|
 |When you double click an application and it fails to run, nothing happens because the error goes to `/dev/stderr`, which is invisible|When you double click an application and it fails to run, the error is shown in a dialog on the screen|DONE via `launch`|
 |Are not optimized for managing and launching applications|Is optimized for managing and launching applications|DONE|
 |Cannot rename disks|Can rename disks|DONE via `renamedisk` helper command line tool|
