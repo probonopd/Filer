@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['launchdb_108',['LaunchDB',['../classLaunchDB.html',1,'']]]
+  ['launchdb_106',['LaunchDB',['../classLaunchDB.html',1,'']]]
 ];

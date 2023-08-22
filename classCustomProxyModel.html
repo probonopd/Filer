@@ -100,6 +100,21 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aa2876b59f5d211ef776339766009f201"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCustomProxyModel.html#aa2876b59f5d211ef776339766009f201">lessThan</a> (const QModelIndex &amp;left, const QModelIndex &amp;right) const override</td></tr>
 <tr class="memdesc:aa2876b59f5d211ef776339766009f201"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns whether the item referred to by the given index is less than the item referred to by the given other index. Used for sorting. Sorts mount points before non-mount points.  <a href="classCustomProxyModel.html#aa2876b59f5d211ef776339766009f201">More...</a><br /></td></tr>
 <tr class="separator:aa2876b59f5d211ef776339766009f201"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1ed15aeba798ba45349ad141ae37d07e"><td class="memItemLeft" align="right" valign="top"><a id="a1ed15aeba798ba45349ad141ae37d07e"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>dropMimeData</b> (const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &amp;parent) override</td></tr>
+<tr class="separator:a1ed15aeba798ba45349ad141ae37d07e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a21d6280161c18db218bfcba2c5ba4baa"><td class="memItemLeft" align="right" valign="top"><a id="a21d6280161c18db218bfcba2c5ba4baa"></a>
+Qt::DropActions&#160;</td><td class="memItemRight" valign="bottom"><b>supportedDropActions</b> () const override</td></tr>
+<tr class="separator:a21d6280161c18db218bfcba2c5ba4baa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a96a304688b4eb087b1d3c300b6fb2dd8"><td class="memItemLeft" align="right" valign="top"><a id="a96a304688b4eb087b1d3c300b6fb2dd8"></a>
+Qt::DropActions&#160;</td><td class="memItemRight" valign="bottom"><b>supportedDragActions</b> () const override</td></tr>
+<tr class="separator:a96a304688b4eb087b1d3c300b6fb2dd8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a57828a2daea3f09a39a5e0e90841a925"><td class="memItemLeft" align="right" valign="top"><a id="a57828a2daea3f09a39a5e0e90841a925"></a>
+Qt::ItemFlags&#160;</td><td class="memItemRight" valign="bottom"><b>flags</b> (const QModelIndex &amp;index) const override</td></tr>
+<tr class="separator:a57828a2daea3f09a39a5e0e90841a925"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae48cd69a1b02fce7b7809ff284d6e9fd"><td class="memItemLeft" align="right" valign="top"><a id="ae48cd69a1b02fce7b7809ff284d6e9fd"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>canDropMimeData</b> (const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &amp;parent) const override</td></tr>
+<tr class="separator:ae48cd69a1b02fce7b7809ff284d6e9fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A custom proxy model for sorting items in views. </p>

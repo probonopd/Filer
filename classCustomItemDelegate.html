@@ -132,14 +132,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:af99d6264377a681a997997cb6ec44592"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCustomItemDelegate.html#af99d6264377a681a997997cb6ec44592">paint</a> (QPainter *painter, const QStyleOptionViewItem &amp;option, const QModelIndex &amp;index) const override</td></tr>
 <tr class="memdesc:af99d6264377a681a997997cb6ec44592"><td class="mdescLeft">&#160;</td><td class="mdescRight">Renders the item's appearance using a QPainter.  <a href="classCustomItemDelegate.html#af99d6264377a681a997997cb6ec44592">More...</a><br /></td></tr>
 <tr class="separator:af99d6264377a681a997997cb6ec44592"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac56331b63d239a4f27b27507d695cef5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCustomItemDelegate.html#ac56331b63d239a4f27b27507d695cef5">installEventFilterOnView</a> (QAbstractItemView *view)</td></tr>
-<tr class="memdesc:ac56331b63d239a4f27b27507d695cef5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Installs event filters on the specified view to intercept events.  <a href="classCustomItemDelegate.html#ac56331b63d239a4f27b27507d695cef5">More...</a><br /></td></tr>
-<tr class="separator:ac56331b63d239a4f27b27507d695cef5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a70cd253e3b1717a04f88b2418ac19cf3"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCustomItemDelegate.html#a70cd253e3b1717a04f88b2418ac19cf3">eventFilter</a> (QObject *object, QEvent *event) override</td></tr>
-<tr class="memdesc:a70cd253e3b1717a04f88b2418ac19cf3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Overrides the event filter to handle events for the delegate.  <a href="classCustomItemDelegate.html#a70cd253e3b1717a04f88b2418ac19cf3">More...</a><br /></td></tr>
-<tr class="separator:a70cd253e3b1717a04f88b2418ac19cf3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9563864ffb8eb877057ff125ef3eaf9d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCustomItemDelegate.html#a9563864ffb8eb877057ff125ef3eaf9d">setSelectionModel</a> (QItemSelectionModel *selectionModel)</td></tr>
-<tr class="memdesc:a9563864ffb8eb877057ff125ef3eaf9d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the selection model for the delegate.  <a href="classCustomItemDelegate.html#a9563864ffb8eb877057ff125ef3eaf9d">More...</a><br /></td></tr>
+<tr class="memdesc:a9563864ffb8eb877057ff125ef3eaf9d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Installs event filters on the specified view to intercept events.  <a href="classCustomItemDelegate.html#a9563864ffb8eb877057ff125ef3eaf9d">More...</a><br /></td></tr>
 <tr class="separator:a9563864ffb8eb877057ff125ef3eaf9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa86f8a5d35607877fb961cc4c58efc13"><td class="memItemLeft" align="right" valign="top">QSize&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCustomItemDelegate.html#aa86f8a5d35607877fb961cc4c58efc13">sizeHint</a> (const QStyleOptionViewItem &amp;option, const QModelIndex &amp;index) const override</td></tr>
 <tr class="memdesc:aa86f8a5d35607877fb961cc4c58efc13"><td class="mdescLeft">&#160;</td><td class="mdescRight">Overrides the sizeHint method to set the size of the delegate items.  <a href="classCustomItemDelegate.html#aa86f8a5d35607877fb961cc4c58efc13">More...</a><br /></td></tr>
@@ -281,52 +275,6 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>editorEvent</b> (QEve
 
 </div>
 </div>
-<a id="a70cd253e3b1717a04f88b2418ac19cf3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a70cd253e3b1717a04f88b2418ac19cf3">&#9670;&nbsp;</a></span>eventFilter()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool CustomItemDelegate::eventFilter </td>
-          <td>(</td>
-          <td class="paramtype">QObject *&#160;</td>
-          <td class="paramname"><em>object</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">QEvent *&#160;</td>
-          <td class="paramname"><em>event</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Overrides the event filter to handle events for the delegate. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">object</td><td>The QObject that sent the event. </td></tr>
-    <tr><td class="paramname">event</td><td>The event to be filtered. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>True if the event was handled, otherwise false. </dd></dl>
-
-</div>
-</div>
 <a id="a4adf829ff88f65dfd018bdf77e0e0c91"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a4adf829ff88f65dfd018bdf77e0e0c91">&#9670;&nbsp;</a></span>fileDropped</h2>
 
@@ -366,32 +314,6 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>editorEvent</b> (QEve
   <table class="params">
     <tr><td class="paramname">filePath</td><td>The path of the dropped file. </td></tr>
     <tr><td class="paramname">iconPosition</td><td>The position of the icon. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="ac56331b63d239a4f27b27507d695cef5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac56331b63d239a4f27b27507d695cef5">&#9670;&nbsp;</a></span>installEventFilterOnView()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void CustomItemDelegate::installEventFilterOnView </td>
-          <td>(</td>
-          <td class="paramtype">QAbstractItemView *&#160;</td>
-          <td class="paramname"><em>view</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Installs event filters on the specified view to intercept events. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">view</td><td>The view on which to install the event filters. </td></tr>
   </table>
   </dd>
 </dl>
@@ -494,8 +416,22 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>editorEvent</b> (QEve
       </table>
 </div><div class="memdoc">
 
-<p>Sets the selection model for the delegate. </p>
+<p>Installs event filters on the specified view to intercept events. </p>
 <dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">view</td><td>The view on which to install the event filters.</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>Overrides the event filter to handle events for the delegate. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">object</td><td>The QObject that sent the event. </td></tr>
+    <tr><td class="paramname">event</td><td>The event to be filtered. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>True if the event was handled, otherwise false.</dd></dl>
+<p>Sets the selection model for the delegate. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">selectionModel</td><td>The QItemSelectionModel to use for selection. </td></tr>
   </table>
