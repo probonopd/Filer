@@ -1475,11 +1475,17 @@ void FileManagerMainWindow::renameSelectedItem()
 
     if (mountPoints.contains(absoluteFilePath)) {
 
+        // TODO: Possibly move everything in this if statement to a separate class,
+        // similar to the FileOperationManager class
+
         // The item to be renamed is a mountpoint, so we need to run:
         // sudo -A -E renamedisk <old name> <new name>
 
-        // TODO: Possibly move everything in this if statement to a separate class,
-        // similar to the FileOperationManager class
+        // Check if we are on FreeBSD and if we are not, show an error message
+        if (QSysInfo::kernelType() != "freebsd") {
+            QMessageBox::critical(0, "Filer", "The 'renamedisk' command has only been implemented for FreeBSD yet.");
+            return;
+        }
 
         QStringList renamediskBinaryCandidates;
 
