@@ -1514,6 +1514,10 @@ void FileManagerMainWindow::renameSelectedItem()
         p->waitForFinished();
         qDebug() << "renamedisk exit code:" << p->exitCode();
         if (p->exitCode() != 0) {
+            QStringList errorLines = QString(p->readAllStandardError()).split("\n");
+            for (const QString &errorLine : errorLines) {
+                qCritical() << errorLine;
+            }
             QMessageBox::critical(this, tr("Error"), tr("Could not rename %1 to %2").arg(oldName).arg(newName));
         } else {
             qDebug() << "Renamed" << currentPath << "to" << newName;

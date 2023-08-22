@@ -61,7 +61,7 @@ int main(int argc, char *argv[]) {
         for (const QString &line : lines) {
             // Split on one or multiple tabs
             QStringList parts = line.split(QRegExp("\\s+"));
-            qDebug() << parts;
+            // qDebug() << parts;
             if (parts.size() >= 2) {
                 mntdevs.append(parts[0]);
                 mntpoints.append(parts[1]);
