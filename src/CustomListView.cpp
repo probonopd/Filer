@@ -25,9 +25,29 @@
  */
 
 #include "CustomListView.h"
+#include <QMimeData>
+#include <QFileSystemModel>
+#include <QAbstractProxyModel>
+#include "CustomFileSystemModel.h"
 
 CustomListView::CustomListView(QWidget* parent) : QListView(parent) {
     should_paint_desktop_picture = false;
+
+    // https://doc.qt.io/qt-5/model-view-programming.html#using-convenience-views
+    setSelectionMode(QAbstractItemView::SingleSelection);
+    setDragEnabled(true);
+    setAcceptDrops(true);
+    viewport()->setAcceptDrops(true);
+    setDropIndicatorShown(true);
+    // Enable the user to move the items around within the view
+    setDragDropMode(QAbstractItemView::InternalMove);
+    // NOTE: the model used also has to provide support for drag and drop operations.
+    // The actions supported by a model can be specified by reimplementing the
+    // QAbstractItemModel::supportedDropActions() function.
+    // NOTE: Enabling drag and drop for items
+    // Models indicate to views which items can be dragged, and which will accept drops,
+    // by reimplementing the QAbstractItemModel::flags() function to provide suitable flags.
+
 }
 
 CustomListView::~CustomListView() {
@@ -86,4 +106,94 @@ void CustomListView::paintEvent(QPaintEvent* event)
 
     // Call super class paintEvent to draw the items
     QListView::paintEvent(event);
+}
+
+void CustomListView::dragEnterEvent(QDragEnterEvent* event)
+{
+    qDebug() << "CustomListView::dragEnterEvent";
+    qDebug() << "CustomListView::dragEnterEvent event->proposedAction()" << event->proposedAction();
+
+    if (event->mimeData()->hasFormat("text/uri-list")) {
+        event->acceptProposedAction();
+        qDebug() << "CustomListView::dragEnterEvent accepted";
+        QList<QUrl> urls = event->mimeData()->urls();
+        for (int i = 0; i < urls.size(); ++i) {
+            qDebug() << "CustomListView::dragEnterEvent url" << urls.at(i).toString();
+        }
+    } else {
+        qDebug() << "CustomListView::dragEnterEvent rejected";
+        event->ignore();
+    }
+    QListView::dragEnterEvent(event);
+}
+
+void CustomListView::dragMoveEvent(QDragMoveEvent* event)
+{
+    qDebug() << "CustomListView::dragMoveEvent";
+
+    if (event->mimeData()->hasFormat("text/uri-list")) {
+        event->acceptProposedAction();
+        qDebug() << "CustomListView::dragMoveEvent accepted";
+        QList<QUrl> urls = event->mimeData()->urls();
+        for (int i = 0; i < urls.size(); ++i) {
+            qDebug() << "CustomListView::dragMoveEvent url" << urls.at(i).toString();
+        }
+    } else {
+        qDebug() << "CustomListView::dragMoveEvent rejected";
+        event->ignore();
+    }
+    QListView::dragMoveEvent(event);
+}
+
+void CustomListView::dropEvent(QDropEvent* event)
+{
+    qDebug() << "CustomListView::dropEvent";
+
+    // NOTE: For this to work, the QListView must have viewport()->setAcceptDrops(true) set
+    // and the model must have supportedDragActions and supportedDropActions methods
+
+    // Print the MIME types
+    QStringList formats = event->mimeData()->formats();
+    for (int i = 0; i < formats.size(); ++i) {
+        qDebug() << "CustomListView::dropEvent format" << formats.at(i);
+    }
+
+    QList<QUrl> urls = event->mimeData()->urls();
+
+    // Get data
+    const QMimeData* data = event->mimeData();
+
+    // Check if all dropped urls start with http:// or https://
+    bool all_urls_are_http = true;
+    for (int i = 0; i < urls.size(); ++i) {
+        if (!urls.at(i).toString().startsWith("http://") && !urls.at(i).toString().startsWith("https://")) {
+            all_urls_are_http = false;
+        }
+    }
+
+    // Create a desktop file for URLs dropped from the web browser
+    // TODO: Move this into the model? So that all views can use it?
+    if (all_urls_are_http) {
+        qDebug() << "CustomListView::dropEvent all_urls_are_http";
+    }
+
+    // Check if all dropped urls start with file://
+    bool all_urls_are_file = true;
+    for (int i = 0; i < urls.size(); ++i) {
+        if (!urls.at(i).toString().startsWith("file://")) {
+            all_urls_are_file = false;
+        }
+    }
+
+    if (all_urls_are_file) {
+        qDebug() << "CustomListView::dropEvent all_urls_are_file";
+    }
+    QListView::dropEvent(event);
+
+    // Let the model handle the drop event
+    // QUESTION: Is this the correct way to do it? Is this documented anywhere?
+    QModelIndex index = indexAt(event->pos());
+    int row = index.row();
+    int column = index.column();
+    model()->dropMimeData(event->mimeData(), event->dropAction(), row, column, index);
 }

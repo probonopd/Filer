@@ -28,7 +28,9 @@
 #include "ExtendedAttributes.h"
 #include <QDebug>
 #include "ApplicationBundle.h"
-
+#include <QMimeData>
+#include <QUrl>
+#include <QMessageBox>
 
 CustomFileSystemModel::CustomFileSystemModel(QObject* parent)
         : QFileSystemModel(parent)
@@ -119,4 +121,144 @@ QPoint CustomFileSystemModel::getIconCoordinates(const QFileInfo& fileInfo) cons
         }
     }
     return coords;
+}
+
+// https://doc.qt.io/qt-5/model-view-programming.html#inserting-dropped-data-into-a-model
+// Dropped data is handled by a model's reimplementation of QAbstractItemModel::dropMimeData()
+bool CustomFileSystemModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent)
+{
+
+    qDebug() << "CustomFileSystemModel::dropMimeData";
+
+    // https://doc.qt.io/qt-5/model-view-programming.html#inserting-dropped-data-into-a-model
+    // When a drop occurs, the model index corresponding to the parent item will either be valid,
+    // indicating that the drop occurred on an item, or it will be invalid,
+    // indicating that the drop occurred somewhere in the view that corresponds to top level of the model.
+    QModelIndex index = parent;
+    QString dropTargetPath;
+    if (!index.isValid()) {
+        qDebug() << "CustomFileSystemModel::dropMimeData Drop occurred on top level of the model (not on an item)";
+        dropTargetPath = rootPath();
+        qDebug() << "CustomFileSystemModel::dropMimeData dropTargetPath:" << dropTargetPath;
+    } else {
+        qDebug() << "CustomFileSystemModel::dropMimeData Drop occurred on an item, TODO: Handle in item delegate";
+        // TODO: Handle this case in the item delegate since finding out which item was dropped on is not trivial here
+    }
+
+    if (data->hasUrls()) {
+        QList<QUrl> urls = data->urls();
+        for (int i = 0; i < urls.size(); ++i) {
+            if (urls.at(i).isLocalFile()) {
+                qDebug() << "CustomFileSystemModel::dropMimeData Dropped file" << urls.at(i).toLocalFile();
+            } else {
+                qDebug() << "CustomFileSystemModel::dropMimeData Dropped URL" << urls.at(i).toString();
+                int success = createBrowserBookmarkFile(data, dropTargetPath);
+                if (success) {
+                    qDebug() << "CustomFileSystemModel::dropMimeData Successfully created bookmark file";
+                } else {
+                    QMessageBox::warning(0, 0, tr("Could not create bookmark file"));
+                }
+            }
+        }
+
+        // Emit signals to update the view if needed
+        // ...
+
+        return true; // Signal that the drop operation was successful
+    }
+
+    return false; // Signal that the drop operation failed
+}
+
+
+//  These functions are used to specify the supported drag and drop actions.
+
+Qt::DropActions CustomFileSystemModel::supportedDropActions() const
+{
+    qDebug() << "CustomFileSystemModel::supportedDropActions";
+    return Qt::CopyAction | Qt::MoveAction;
+}
+
+Qt::DropActions CustomFileSystemModel::supportedDragActions() const
+{
+    qDebug() << "CustomFileSystemModel::supportedDragActions";
+    return Qt::CopyAction | Qt::MoveAction;
+}
+
+// https://doc.qt.io/qt-5/model-view-programming.html#enabling-drag-and-drop-for-items
+Qt::ItemFlags CustomFileSystemModel::flags(const QModelIndex &index) const
+{
+    Qt::ItemFlags defaultFlags = QFileSystemModel::flags(index);
+
+    if (index.isValid())
+        return Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled | defaultFlags;
+    else
+        return Qt::ItemIsDropEnabled | defaultFlags;
+}
+
+// https://doc.qt.io/qt-5/model-view-programming.html#inserting-dropped-data-into-a-model
+// Models can forbid dropping on certain items,
+// or depending on the dropped data, by reimplementing QAbstractItemModel::canDropMimeData().
+bool CustomFileSystemModel::canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const
+{
+
+    qDebug() << "CustomFileSystemModel::canDropMimeData";
+
+    if (data->hasUrls()) {
+        QList<QUrl> urls = data->urls();
+        for (int i = 0; i < urls.size(); ++i) {
+            QString filePath = urls.at(i).toLocalFile();
+            qDebug() << "CustomFileSystemModel::canDropMimeData Dropped file" << filePath;
+        }
+
+        // Emit signals to update the view if needed
+        // ...
+
+        return true; // Signal that the drop operation was successful
+    }
+
+    return false; // Signal that the drop operation failed
+}
+
+QString CustomFileSystemModel::makeFilenameSafe(const QString& input) const
+{
+    QString output = input;
+    // Convert the string to lowercase
+    output = output.toLower();
+    // Replace all non-alphanumeric characters with a hyphen
+    output = output.replace(QRegExp("[^a-z0-9]"), "-");
+    // Remove any leading or trailing hyphens
+    output = output.replace(QRegExp("^-"), "");
+    output = output.replace(QRegExp("-$"), "");
+    return output;
+}
+
+bool CustomFileSystemModel::createBrowserBookmarkFile(const QMimeData *data, QString dropTargetPath) const {
+    qDebug() << "CustomFileSystemModel::createBrowserBookmarkFile" << dropTargetPath;
+    QString titleText = "Link";
+    if(data->hasText()) {
+        titleText = data->text();
+    }
+
+    QFile file(dropTargetPath + "/" + makeFilenameSafe(titleText) + ".desktop");
+    qDebug() << "CustomFileSystemModel::createBrowserBookmarkFile" << file.fileName();
+    QString titleTextShort = titleText.split("/").last();
+    if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        QTextStream stream(&file);
+        stream << "[Desktop Entry]\n";
+        stream << "Name=" + titleTextShort + "\n";
+        stream << "Exec=open " << "\"" + data->urls().first().toString(QUrl::FullyEncoded) + "\"\n";
+        // stream << "URL=" << "\"" + data->urls().first().toString(QUrl::FullyEncoded) + "\"\n";
+        stream << "Type=Application\n";
+        stream << "Icon=gnome-globe\n";
+        file.close();
+        // chmod 0755 equivalent
+        file.setPermissions(QFile::ReadOwner | QFile::WriteOwner | QFile::ExeOwner |
+                            QFile::ReadGroup | QFile::ExeGroup |
+                            QFile::ReadOther | QFile::ExeOther);
+        qDebug() << "CustomFileSystemModel::createBrowserBookmarkFile Successfully created bookmark file";
+        return true;
+    }
+
+    return false;
 }

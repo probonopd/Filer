@@ -56,6 +56,10 @@ public:
 
     void paintEvent(QPaintEvent* event) override;
 
+    void dragEnterEvent(QDragEnterEvent* event) override;
+    void dragMoveEvent(QDragMoveEvent* event) override;
+    void dropEvent(QDropEvent* event) override;
+
 
 private:
     bool should_paint_desktop_picture = false;

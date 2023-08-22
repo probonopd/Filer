@@ -52,6 +52,15 @@ public:
     // we'll use the QFileInfo instead for now
     QPoint getIconCoordinates(const QFileInfo& fileInfo) const;
 
+    // This gets called when a file is dropped onto the view
+    bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) override;
+
+    //  These functions are used to set the supported drag and drop actions for the model.
+    Qt::DropActions supportedDropActions() const override;
+    Qt::DropActions supportedDragActions() const override;
+    Qt::ItemFlags flags(const QModelIndex &index) const override;
+    bool canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const override;
+
 private:
     // Private member variable to store "open-with" attributes.
     mutable QMap<QModelIndex, QByteArray> openWithAttributes;
@@ -60,5 +69,11 @@ private:
     mutable QMap<QModelIndex, QPoint> iconCoordinates;
 
     LaunchDB ldb;
+
+    // Private method to create a bookmark file via drag and drop, e.g., from a web browser
+    bool createBrowserBookmarkFile(const QMimeData *data, QString dropTargetPath) const;
+
+    // Private helper method to make a filename safe for the filesystem, e.g., for saving bookmarks from a web browser
+    QString makeFilenameSafe(const QString& input) const;
 
 };

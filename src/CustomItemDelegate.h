@@ -93,7 +93,7 @@ public:
      * @brief Installs event filters on the specified view to intercept events.
      * @param view The view on which to install the event filters.
      */
-    void installEventFilterOnView(QAbstractItemView* view);
+    // void installEventFilterOnView(QAbstractItemView* view);
 
     /**
      * @brief Overrides the event filter to handle events for the delegate.
@@ -101,7 +101,7 @@ public:
      * @param event The event to be filtered.
      * @return True if the event was handled, otherwise false.
      */
-    bool eventFilter(QObject* object, QEvent* event) override;
+    // bool eventFilter(QObject* object, QEvent* event) override;
 
     /**
      * @brief Sets the selection model for the delegate.
@@ -194,10 +194,10 @@ private:
 
 private slots:
     // Slot to handle drag enter events
-    void onDragEnterEvent(QDragEnterEvent* event);
+    // void onDragEnterEvent(QDragEnterEvent* event);
 
     // Slot to handle drop events
-    void onDropEvent(QDropEvent* event);
+    // void onDropEvent(QDropEvent* event);
 };
 
 #endif // CUSTOMITEMDELEGATE_H

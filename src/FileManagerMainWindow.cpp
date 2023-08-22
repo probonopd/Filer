@@ -36,8 +36,6 @@
 #include <QAction>
 #include <QMessageBox>
 #include <QDebug>
-#include <QDragEnterEvent>
-#include <QDragMoveEvent>
 #include <QProcess>
 #include <QInputDialog>
 #include <QApplication>

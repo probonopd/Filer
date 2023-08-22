@@ -411,6 +411,7 @@ bool CustomItemDelegate::editorEvent(QEvent *event, QAbstractItemModel *model,
     return false;
 }
 
+/*
 void CustomItemDelegate::installEventFilterOnView(QAbstractItemView* view) {
     if (view) {
         view->viewport()->installEventFilter(this);
@@ -452,13 +453,13 @@ void CustomItemDelegate::onDropEvent(QDropEvent* event) {
         }
     }
 }
+*/
 
 void CustomItemDelegate::animationValueChanged(double value)
 {
     currentAnimationValue = value;
     qDebug() << "Animation value changed:" << value;
 
-/*
     // Trigger a redraw of the view
     if (QAbstractItemView* view = qobject_cast<QAbstractItemView*>(parent()))
     {
@@ -470,8 +471,6 @@ void CustomItemDelegate::animationValueChanged(double value)
     } else {
         qDebug() << "Parent widget is not a view";
     }
-*/
-
 }
 
 void CustomItemDelegate::animationFinished()

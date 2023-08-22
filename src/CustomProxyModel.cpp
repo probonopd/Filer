@@ -30,6 +30,9 @@
 #include <QStorageInfo>
 #include <QDir>
 #include "ApplicationBundle.h"
+#include <QMimeData>
+#include <QUrl>
+#include <QFileSystemModel>
 
 CustomProxyModel::CustomProxyModel(QObject *parent)
         : QSortFilterProxyModel(parent)
@@ -116,4 +119,47 @@ bool CustomProxyModel::lessThan(const QModelIndex &left, const QModelIndex &righ
 
     // Fallback to default sorting
     return QSortFilterProxyModel::lessThan(left, right);
+}
+
+
+// https://doc.qt.io/qt-5/model-view-programming.html#inserting-dropped-data-into-a-model
+// Dropped data is handled by a model's reimplementation of QAbstractItemModel::dropMimeData()
+bool CustomProxyModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent)
+{
+    // Map to source model and call its method
+    QModelIndex sourceParent = mapToSource(parent);
+    return sourceModel()->dropMimeData(data, action, row, column, sourceParent);
+}
+
+
+//  These functions are used to specify the supported drag and drop actions.
+
+Qt::DropActions CustomProxyModel::supportedDropActions() const
+{
+    // Map to source model and call its method
+    return sourceModel()->supportedDropActions();
+}
+
+Qt::DropActions CustomProxyModel::supportedDragActions() const
+{
+    // Map to source model and call its method
+    return sourceModel()->supportedDragActions();
+}
+
+// https://doc.qt.io/qt-5/model-view-programming.html#enabling-drag-and-drop-for-items
+Qt::ItemFlags CustomProxyModel::flags(const QModelIndex &index) const
+{
+    // Map to source model and call its method
+    QModelIndex sourceIndex = mapToSource(index);
+    return sourceModel()->flags(sourceIndex);
+}
+
+// https://doc.qt.io/qt-5/model-view-programming.html#inserting-dropped-data-into-a-model
+// Models can forbid dropping on certain items,
+// or depending on the dropped data, by reimplementing QAbstractItemModel::canDropMimeData().
+bool CustomProxyModel::canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const
+{
+    // Map to source model and call its method
+    QModelIndex sourceParent = mapToSource(parent);
+    return sourceModel()->canDropMimeData(data, action, row, column, sourceParent);
 }

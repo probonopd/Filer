@@ -61,6 +61,16 @@ public:
      *         non-mount points on the desktop.
      */
     bool lessThan(const QModelIndex &left, const QModelIndex &right) const override;
+
+    // This gets called when a file is dropped onto the view
+    bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) override;
+
+    //  These functions are used to set the supported drag and drop actions for the model.
+    Qt::DropActions supportedDropActions() const override;
+    Qt::DropActions supportedDragActions() const override;
+    Qt::ItemFlags flags(const QModelIndex &index) const override;
+    bool canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const override;
+
 };
 
 #endif // CUSTOMPROXYMODEL_H
