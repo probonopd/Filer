@@ -44,6 +44,7 @@
 #include <QClipboard>
 #include <QMouseEvent>
 #include <QSortFilterProxyModel>
+#include "Mountpoints.h"
 
 QMap<QString, InfoDialog*> InfoDialog::instances; // All instances of InfoDialog share this map
 
@@ -243,6 +244,22 @@ void InfoDialog::setupInformation()
     } else {
         ui->changeOpenWithButton->setEnabled(true);
     }
+
+    // If it is a mountpoint, show the filesystem type
+    if (Mountpoints::isMountpoint(filePath)) {
+        QStorageInfo info(filePath);
+        ui->typeInfo->setText(info.fileSystemType());
+        ui->openWithInfo->setText("open");
+        ui->changeOpenWithButton->setEnabled(false);
+    }
+
+    // If it is a symlink, say "Symbolic link to <target>"
+    if (fileInfo.isSymLink()) {
+        ui->typeInfo->setText(tr("Symbolic link to ") + fileInfo.symLinkTarget());
+        ui->openWithInfo->setText("open");
+        ui->changeOpenWithButton->setEnabled(false);
+    }
+
 }
 
 void InfoDialog::changeOpenWith()
