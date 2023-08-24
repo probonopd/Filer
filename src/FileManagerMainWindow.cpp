@@ -1769,6 +1769,7 @@ void FileManagerMainWindow::selectItems(const QStringList &paths)
 void FileManagerMainWindow::bringToFront()
 {
         raise(); // Bring the window to the front
+        activateWindow(); // Activate the window
         // If it is minimized, restore it
         if (isMinimized()) {
             showNormal(); // Show the window normally (unminimize)

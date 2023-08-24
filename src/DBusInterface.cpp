@@ -87,7 +87,7 @@ void DBusInterface::ShowFolders(const QStringList &uriList, const QString &start
 
         mainWindow = mainWindow->getInstanceForDirectory(filePath);
         
-        mainWindow->raise();
+        mainWindow->bringToFront();
     }
 }
 

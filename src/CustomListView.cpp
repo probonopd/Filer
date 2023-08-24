@@ -209,7 +209,7 @@ void CustomListView::expandTarget() {
             } else {
                 qDebug() << "Window already open for" << path;
                 // Raise the window
-                fileManagerMainWindow->getInstanceForDirectory(path)->raise();
+                fileManagerMainWindow->getInstanceForDirectory(path)->bringToFront();
             }
             if (!parentIsDesktop) {
                 // Check if a window is open for the parent dir of path and if it is, close it
