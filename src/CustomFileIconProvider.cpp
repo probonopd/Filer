@@ -94,8 +94,13 @@ QIcon CustomFileIconProvider::icon(const QFileInfo &info) const
     // Is the current file in a subdirectory of AppGlobals::mediaPath but not in a sub-subdirectory?
     bool isMediaPath = (absoluteFilePathWithSymLinksResolved.startsWith(AppGlobals::mediaPath) && (fileDepth == mediaPathDepth + 1));
 
+    // Is the current file (symlinks unresolved) in ~/Desktop or a subdirectory of /media?
+    // Only then we want to show the drive icons. Otherwise, we get hard disk icons inside the hard disk
+    // which is counterintuitive
+    bool isOnDesktopOrInMedia = (info.absoluteFilePath().startsWith(QDir::homePath() + "/Desktop") || info.absoluteFilePath().startsWith("/media"));
+
     // If it is a directory and the symlink target is a mount point, then we want to show the drive icon
-    if (info.isDir() && isMediaPath || info.isDir() && Mountpoints::isMountpoint(absoluteFilePathWithSymLinksResolved)) {
+    if (isOnDesktopOrInMedia && info.isDir() && isMediaPath || isOnDesktopOrInMedia && info.isDir() && Mountpoints::isMountpoint(absoluteFilePathWithSymLinksResolved)) {
         // Using Qt, get the device node of the mount point
         // and then use the device node to get the icon
         // qDebug() << "Mount point: " << info.absoluteFilePath();
