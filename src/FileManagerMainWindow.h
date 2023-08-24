@@ -110,6 +110,7 @@ private:
     QAction *m_treeViewAction;
     QAction *m_iconViewAction;
 
+    QAction *m_newAction;
     QAction *m_openAction;
     QAction *m_openWithAction;
     QAction *m_showContentsAction;

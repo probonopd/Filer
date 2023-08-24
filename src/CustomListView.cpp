@@ -29,6 +29,9 @@
 #include <QFileSystemModel>
 #include <QAbstractProxyModel>
 #include "CustomFileSystemModel.h"
+#include "FileManagerMainWindow.h"
+#include "ApplicationBundle.h"
+#include <QApplication>
 
 CustomListView::CustomListView(QWidget* parent) : QListView(parent) {
     should_paint_desktop_picture = false;
@@ -48,6 +51,8 @@ CustomListView::CustomListView(QWidget* parent) : QListView(parent) {
     // Models indicate to views which items can be dragged, and which will accept drops,
     // by reimplementing the QAbstractItemModel::flags() function to provide suitable flags.
 
+    // Spring-loaded folders
+    connect(&m_springTimer, &QTimer::timeout, this, &CustomListView::expandTarget);
 }
 
 CustomListView::~CustomListView() {
@@ -142,7 +147,89 @@ void CustomListView::dragMoveEvent(QDragMoveEvent* event)
         qDebug() << "CustomListView::dragMoveEvent rejected";
         event->ignore();
     }
+
+    // Spring-loaded folders
+    QModelIndex index = indexAt(event->pos());
+
+    if (index.isValid()) {
+        if (!m_springTimer.isActive()) {
+            m_potentialTargetIndex = index;
+            qDebug() << "CustomListView::dragMoveEvent m_potentialTargetIndex.isValid()";
+            m_springTimer.start(1000); // Start the timer with a 1-second delay
+        }
+    } else {
+        m_springTimer.stop();
+        m_potentialTargetIndex = QModelIndex();
+        qDebug() << "CustomListView::dragMoveEvent !m_potentialTargetIndex.isValid()";
+    }
+
+    // Call super class dragMoveEvent
     QListView::dragMoveEvent(event);
+}
+
+void CustomListView::dragLeaveEvent(QDragLeaveEvent *event) {
+    qDebug() << "CustomListView::dragLeaveEvent";
+
+    // Spring-loaded folders
+    m_springTimer.stop();
+    m_potentialTargetIndex = QModelIndex();
+
+    QAbstractItemView::dragLeaveEvent(event);
+}
+
+void CustomListView::expandTarget() {
+    qDebug() << "CustomListView::expandTarget";
+
+    // Spring-loaded folders
+    if (m_potentialTargetIndex.isValid()) {
+        qDebug() << "CustomListView::expandTarget m_potentialTargetIndex.isValid()";
+        QString path = m_potentialTargetIndex.data(QFileSystemModel::FilePathRole).toString();
+        // Get the widget in which this view is
+        qDebug() << "CustomListView::expandTarget path" << path;
+        // Check if it is an application bundle
+        ApplicationBundle* app = new ApplicationBundle(path);
+        if (app->isValid()) {
+            qDebug() << "CustomListView::expandTarget app->isValid()";
+            // Launch the app
+            // TODO: Maybe we should not do this here after the delay, but immediately?
+            qDebug() << "TODO: Launch the app";
+        } else if (QFileInfo(path).isDir()) {
+            qDebug() << "CustomListView::expandTarget !app->isValid()";
+            // Open the folder
+            qDebug() << "Open the spring-loaded folder";
+
+
+            FileManagerMainWindow *fileManagerMainWindow = qobject_cast<FileManagerMainWindow *>(QApplication::activeWindow());
+
+            // If the parent dir of path is ~/Desktop
+            bool parentIsDesktop = false;
+            if (QFileInfo(path).dir().path() == QDir::homePath() + "/Desktop") {
+                parentIsDesktop = true;
+            }
+            if (!fileManagerMainWindow->instanceExists(path)) {
+                fileManagerMainWindow->openFolderInNewWindow(path);
+            } else {
+                qDebug() << "Window already open for" << path;
+                // Raise the window
+                fileManagerMainWindow->getInstanceForDirectory(path)->raise();
+            }
+            if (!parentIsDesktop) {
+                // Check if a window is open for the parent dir of path and if it is, close it
+                QString parentPath = QFileInfo(path).dir().path();
+                qDebug() << "parentPath" << parentPath;
+                if (fileManagerMainWindow->instanceExists(parentPath)) {
+                    qDebug() << "Closing window for" << parentPath;
+                    fileManagerMainWindow->getInstanceForDirectory(parentPath)->close();
+                }
+            }
+
+        } else {
+            qDebug() << "Ignoring this item";
+        }
+
+        delete app;
+    }
+    m_springTimer.stop();
 }
 
 void CustomListView::dropEvent(QDropEvent* event)
@@ -196,4 +283,10 @@ void CustomListView::dropEvent(QDropEvent* event)
     int row = index.row();
     int column = index.column();
     model()->dropMimeData(event->mimeData(), event->dropAction(), row, column, index);
+}
+
+void CustomListView::startDrag(Qt::DropActions supportedActions)
+{
+    qDebug() << "CustomListView::startDrag";
+    QListView::startDrag(supportedActions);
 }

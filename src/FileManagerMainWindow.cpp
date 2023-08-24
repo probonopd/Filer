@@ -70,6 +70,7 @@
 #include "AppGlobals.h"
 #include "CustomProxyModel.h"
 #include <QStorageInfo>
+#include "Mountpoints.h"
 
 /*
  * This creates a FileManagerMainWindow object with a QTreeView and QListView widget.
@@ -548,9 +549,31 @@ void FileManagerMainWindow::createMenus()
     QMenu *fileMenu = new QMenu(tr("File"), this);
 
     // Add the usual menu items to the File menu
-    fileMenu->addAction(tr("New..."));
-    fileMenu->actions().last()->setShortcut(QKeySequence("Ctrl+N"));
-    fileMenu->actions().last()->setEnabled(false);
+    fileMenu->addAction(tr("New Folder..."));
+    m_newAction = fileMenu->actions().last();
+    m_newAction->setShortcut(QKeySequence("Ctrl+N"));
+    m_newAction->setEnabled(false);
+    connect(m_newAction, &QAction::triggered, this, [this]() {
+        bool ok;
+        // Default name = "New Folder" (translatable); if it already exists, a number is appended after a space
+        QString defaultName = tr("New Folder");
+        if (QFileInfo(m_currentDir + "/" + defaultName).exists()) {
+            int i = 1;
+            while (QFileInfo(m_currentDir + "/" + defaultName + " " + QString::number(i)).exists()) {
+                i++;
+            }
+            defaultName += " " + QString::number(i);
+        }
+        QString name = QInputDialog::getText(this, tr("New Folder"), tr("Folder name:"), QLineEdit::Normal, defaultName, &ok);
+        if (ok && !name.isEmpty()) {
+            qDebug() << "Creating new folder " << name;
+            // Get the absolute path of the current directory
+            QString currentDir = m_fileSystemModel->filePath(m_fileSystemModel->index(m_fileSystemModel->rootPath()));
+            // Create the new folder
+            QDir dir(currentDir);
+            dir.mkdir(name);
+        }
+    });
 
     fileMenu->addSeparator();
 
@@ -580,7 +603,7 @@ void FileManagerMainWindow::createMenus()
         for (QModelIndex index : selectedIndexes) {
             // Get the absolute path of the item represented by the index, using the model
             QString filePath = m_fileSystemModel->data(m_proxyModel->mapToSource(index), QFileSystemModel::FilePathRole).toString();
-           openWith(filePath);
+            openWith(filePath);
         }
     });
 
@@ -1333,6 +1356,13 @@ void FileManagerMainWindow::open(const QString &filePath)
         process.setProgram("launch");
         process.setArguments({ filePath });
         process.startDetached();
+
+        // Show the busy cursor
+        QApplication::setOverrideCursor(Qt::BusyCursor);
+        QTimer::singleShot(2000, this, []() {
+            QApplication::restoreOverrideCursor();
+        });
+
     } else {
 
         // Check if the filePath is a directory or a file
@@ -1362,8 +1392,16 @@ void FileManagerMainWindow::open(const QString &filePath)
             process.setProgram("open");
             process.setArguments({ filePath });
             process.startDetached();
+
+            // Show the busy cursor
+            QApplication::setOverrideCursor(Qt::BusyCursor);
+            QTimer::singleShot(2000, this, []() {
+                QApplication::restoreOverrideCursor();
+            });
         }
     }
+
+
 }
 
 QString FileManagerMainWindow::getPath() const {
@@ -1398,6 +1436,12 @@ void FileManagerMainWindow::openWith(const QString &filePath)
     process.setProgram("open");
     process.setArguments({ "--chooser", filePath });
     process.startDetached();
+
+    // Show the busy cursor
+    QApplication::setOverrideCursor(Qt::BusyCursor);
+    QTimer::singleShot(2000, this, []() {
+        QApplication::restoreOverrideCursor();
+    });
 }
 
 /* This function will update the name of the selected item in the file system,
@@ -1456,12 +1500,7 @@ void FileManagerMainWindow::renameSelectedItem()
     qDebug() << "currentName:" << currentName;
 
     // Check if the item to be renamed is a mountpoint
-    // Check if the path is a mount point using QStorageInfo
-    QStringList mountPoints;
-    for (const QStorageInfo &storage : QStorageInfo::mountedVolumes()) {
-        mountPoints << storage.rootPath();
-    }
-    qDebug() << "mountPoints:" << mountPoints;
+
     const QString currentPath = m_proxyModel->mapToSource(selectedIndex).data(QFileSystemModel::FilePathRole).toString();
     QString absoluteFilePath = QFileInfo(currentPath).absoluteFilePath();
     // if absoluteFilePath is a symlink, resolve it
@@ -1469,9 +1508,8 @@ void FileManagerMainWindow::renameSelectedItem()
         absoluteFilePath = QFileInfo(absoluteFilePath).symLinkTarget();
     }
     qDebug() << "absoluteFilePath:" << absoluteFilePath;
-    qDebug() << "mountPoints:" << mountPoints;
 
-    if (mountPoints.contains(absoluteFilePath)) {
+    if (Mountpoints::isMountpoint(absoluteFilePath)) {
 
         // TODO: Possibly move everything in this if statement to a separate class,
         // similar to the FileOperationManager class
@@ -1543,6 +1581,10 @@ void FileManagerMainWindow::renameSelectedItem()
 void FileManagerMainWindow::updateMenus() {
     // Print the name of the called function
     qDebug() << Q_FUNC_INFO;
+
+    // Check if the current directory is writable and enable/disable the 'New' action accordingly
+    bool hasWritePermissions = QFileInfo(m_currentDir).isWritable();
+    m_newAction->setEnabled(hasWritePermissions);
 
     // Get the list of selected items
     const QModelIndexList selectedIndexes = m_selectionModel->selectedIndexes();

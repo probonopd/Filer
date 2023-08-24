@@ -31,6 +31,7 @@
 #include <QPainter>
 #include <QPaintEvent>
 #include <QDebug>
+#include <QTimer>
 
 class CustomListView : public QListView {
 public:
@@ -59,10 +60,27 @@ public:
     void dragEnterEvent(QDragEnterEvent* event) override;
     void dragMoveEvent(QDragMoveEvent* event) override;
     void dropEvent(QDropEvent* event) override;
+    void dragLeaveEvent(QDragLeaveEvent *event) override;
 
+protected:
+    void startDrag(Qt::DropActions supportedActions) override;
+
+private slots:
+    /**
+     * @brief springLoad
+     * @param index
+     * @param delay
+     * This slot is called when the mouse hovers over an item for a while.
+     * It expands the item if it is a folder.
+     */
+    void expandTarget();
 
 private:
     bool should_paint_desktop_picture = false;
+
+    // For spring-loaded folders
+    QTimer m_springTimer;
+    QModelIndex m_potentialTargetIndex;
 };
 
 #endif // CUSTOMLISTVIEW_H

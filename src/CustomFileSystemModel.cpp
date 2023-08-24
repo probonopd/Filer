@@ -208,7 +208,7 @@ bool CustomFileSystemModel::canDropMimeData(const QMimeData *data, Qt::DropActio
         QList<QUrl> urls = data->urls();
         for (int i = 0; i < urls.size(); ++i) {
             QString filePath = urls.at(i).toLocalFile();
-            qDebug() << "CustomFileSystemModel::canDropMimeData Dropped file" << filePath;
+            qDebug() << "CustomFileSystemModel::canDropMimeData Dragged file" << filePath;
         }
 
         // Emit signals to update the view if needed

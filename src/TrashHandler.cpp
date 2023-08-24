@@ -38,6 +38,7 @@
 #include <QThread>
 #include "AppGlobals.h"
 #include <QFileSystemWatcher>
+#include "Mountpoints.h"
 
 QString TrashHandler::m_trashPath = QDir::homePath() + "/.local/share/Trash/files";
 
@@ -68,26 +69,14 @@ void TrashHandler::moveToTrash(const QStringList& paths) {
 
     foreach (const QString &path, paths) {
 
-        // Be conservative and assume that the path is a mount point
-        // until we have proven otherwise
-        bool isMountpoint = true;
-
         QFileInfo fileInfo(path);
-
-        // Check if the path is a mount point using QStorageInfo
-        QStringList mountPoints;
-        for (const QStorageInfo &storage : QStorageInfo::mountedVolumes()) {
-            mountPoints << storage.rootPath();
-        }
 
         QString absoluteFilePathWithSymlinksResolved = fileInfo.absoluteFilePath();
         if (fileInfo.isSymLink()) {
             absoluteFilePathWithSymlinksResolved = fileInfo.symLinkTarget();
         }
 
-        if (! mountPoints.contains(absoluteFilePathWithSymlinksResolved)) {
-            isMountpoint = false;
-        }
+        bool isMountpoint = Mountpoints::isMountpoint(absoluteFilePathWithSymlinksResolved);
 
         if (isMountpoint) {
             qDebug() << "Path" << absoluteFilePathWithSymlinksResolved << "is a mount point";
@@ -233,12 +222,20 @@ void TrashHandler::moveToTrash(const QStringList& paths) {
         if (! m_dialogShown) {
             // Show a confirmation dialog (once)
             m_dialogShown = true;
+            // Construct the file/directory name from the path
+            QFileInfo path(fileInfo.absoluteFilePath());
+            QString fileName = path.fileName();
+            int numFiles = paths.size();
+            QString question = tr("Do you want to move %1 items to the Trash?").arg(numFiles);
+            if(numFiles == 1) {
+                question = tr("Do you want to move '%1' to the Trash?").arg(fileName);
+            }
             int result = QMessageBox::warning(m_parent, tr("Confirm"),
-                                              tr("Do you want to move the selected items to the Trash?"),
+                                              question,
                                               QMessageBox::Yes | QMessageBox::No,
                                               QMessageBox::No);
             if (result != QMessageBox::Yes) {
-                return;
+                break;
             }
         }
 

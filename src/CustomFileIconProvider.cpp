@@ -37,11 +37,11 @@
 #include <QIcon>
 #include <QPainter>
 #include <QApplication>
-#include <QStorageInfo>
 #include <QThread>
 #include <QImageReader>
 #include "AppGlobals.h"
 #include "TrashHandler.h"
+#include "Mountpoints.h"
 
 CustomFileIconProvider::CustomFileIconProvider()
         : iconCreator(new CombinedIconCreator) // "Initialize the pointer in the constructor"
@@ -79,18 +79,14 @@ QIcon CustomFileIconProvider::icon(const QFileInfo &info) const
         return (bundle->icon());
     }
 
-    // Check if the path is a mount point using QStorageInfo
-    QStringList mountPoints;
-    for (const QStorageInfo &storage : QStorageInfo::mountedVolumes()) {
-        mountPoints << storage.rootPath();
-    }
+    // How many directories deep is AppGlobals::mediaPath?
+    int mediaPathDepth = AppGlobals::mediaPath.count("/");
+
+    // Resolve symlinks
     QString absoluteFilePathWithSymLinksResolved = info.absoluteFilePath();
     if (info.isSymLink()) {
         absoluteFilePathWithSymLinksResolved = info.symLinkTarget();
     }
-
-    // How many directories deep is AppGlobals::mediaPath?
-    int mediaPathDepth = AppGlobals::mediaPath.count("/");
 
     // How many directories deep is the current file?
     int fileDepth = absoluteFilePathWithSymLinksResolved.count("/");
@@ -99,7 +95,7 @@ QIcon CustomFileIconProvider::icon(const QFileInfo &info) const
     bool isMediaPath = (absoluteFilePathWithSymLinksResolved.startsWith(AppGlobals::mediaPath) && (fileDepth == mediaPathDepth + 1));
 
     // If it is a directory and the symlink target is a mount point, then we want to show the drive icon
-    if (info.isDir() && isMediaPath || info.isDir() && mountPoints.contains(absoluteFilePathWithSymLinksResolved)) {
+    if (info.isDir() && isMediaPath || info.isDir() && Mountpoints::isMountpoint(absoluteFilePathWithSymLinksResolved)) {
         // Using Qt, get the device node of the mount point
         // and then use the device node to get the icon
         // qDebug() << "Mount point: " << info.absoluteFilePath();

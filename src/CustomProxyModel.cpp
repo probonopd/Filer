@@ -33,6 +33,7 @@
 #include <QMimeData>
 #include <QUrl>
 #include <QFileSystemModel>
+#include "Mountpoints.h"
 
 CustomProxyModel::CustomProxyModel(QObject *parent)
         : QSortFilterProxyModel(parent)
@@ -69,13 +70,8 @@ bool CustomProxyModel::lessThan(const QModelIndex &left, const QModelIndex &righ
     if (leftIsDir && rightIsDir) {
         // qDebug() << "leftFullPath:" << leftFullPath << "rightFullPath:" << rightFullPath;
 
-        QStringList mountPoints;
-        for (const QStorageInfo &storage : QStorageInfo::mountedVolumes()) {
-            mountPoints << storage.rootPath();
-        }
-
-        bool leftIsMountPoint = mountPoints.contains(leftFullPath);
-        bool rightIsMountPoint = mountPoints.contains(rightFullPath);
+        bool leftIsMountPoint = Mountpoints::isMountpoint(leftFullPath);
+        bool rightIsMountPoint = Mountpoints::isMountpoint(rightFullPath);
         // qDebug() << "leftIsMountPoint:" << leftIsMountPoint << "rightIsMountPoint:" << rightIsMountPoint;
 
         ApplicationBundle *leftApplicationBundle = new ApplicationBundle(leftFullPath);
