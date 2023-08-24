@@ -191,17 +191,15 @@ void CustomListView::expandTarget() {
         if (app->isValid()) {
             qDebug() << "CustomListView::expandTarget app->isValid()";
             // Launch the app
-            // TODO: Maybe we should not do this here after the delay, but immediately?
+            // TODO: We should not do this here after the delay, but immediately?
             qDebug() << "TODO: Launch the app";
         } else if (QFileInfo(path).isDir()) {
             qDebug() << "CustomListView::expandTarget !app->isValid()";
             // Open the folder
             qDebug() << "Open the spring-loaded folder";
-
-
             FileManagerMainWindow *fileManagerMainWindow = qobject_cast<FileManagerMainWindow *>(QApplication::activeWindow());
 
-            // If the parent dir of path is ~/Desktop
+            // Close the spring-loaded folder once it is no longer needed; except for the Desktop
             bool parentIsDesktop = false;
             if (QFileInfo(path).dir().path() == QDir::homePath() + "/Desktop") {
                 parentIsDesktop = true;
@@ -218,7 +216,7 @@ void CustomListView::expandTarget() {
                 QString parentPath = QFileInfo(path).dir().path();
                 qDebug() << "parentPath" << parentPath;
                 if (fileManagerMainWindow->instanceExists(parentPath)) {
-                    qDebug() << "Closing window for" << parentPath;
+                    qDebug() << "Closing spring-loaded folder for" << parentPath;
                     fileManagerMainWindow->getInstanceForDirectory(parentPath)->close();
                 }
             }
