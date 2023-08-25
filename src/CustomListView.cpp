@@ -273,6 +273,8 @@ void CustomListView::dropEvent(QDropEvent* event)
 
         // Get the coordinates of the mouse
         QPoint mousePos = event->pos();
+        // Map to global coordinates
+        mousePos = viewport()->mapToGlobal(mousePos);
 
         // Show a context menu asking what to do with the files
         // Copy, Move, Link, Cancel
@@ -282,6 +284,7 @@ void CustomListView::dropEvent(QDropEvent* event)
         QAction *linkAction = menu.addAction("Link");
         menu.addSeparator();
         QAction *cancelAction = menu.addAction("Cancel");
+        // Show the menu at the global mouse coordinates
         QAction *selectedAction = menu.exec(mousePos);
         if (selectedAction == copyAction) {
             qDebug() << "CustomListView::dropEvent copyAction";
