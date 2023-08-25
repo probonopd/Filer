@@ -127,10 +127,8 @@ QPoint CustomFileSystemModel::getIconCoordinates(const QFileInfo& fileInfo) cons
 // Dropped data is handled by a model's reimplementation of QAbstractItemModel::dropMimeData()
 bool CustomFileSystemModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent)
 {
-
-    qDebug() << "CustomFileSystemModel::dropMimeData";
-
-    qDebug() << "CustomFileSystemModel::dropMimeData action, CURRENTLY IS WRONG:" << action;
+    qDebug() << "CustomFileSystemModel::dropMimeData action" << action;
+    qDebug() << "TODO: Implement the actual filesystem operations in dropMimeData()";
 
     // https://doc.qt.io/qt-5/model-view-programming.html#inserting-dropped-data-into-a-model
     // When a drop occurs, the model index corresponding to the parent item will either be valid,

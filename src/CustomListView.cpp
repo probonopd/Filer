@@ -298,9 +298,11 @@ void CustomListView::dropEvent(QDropEvent* event)
             // TODO: How to do this? How to get the original position of the items?
             event->setDropAction(Qt::IgnoreAction);
         }
+        qDebug() << "event->dropAction() set to:" << event->dropAction();
 
+        // Accept the event
+        event->accept(); // Not sure whether this should be done here or in the model
     }
-    QListView::dropEvent(event);
 
     // Let the model handle the drop event
     // QUESTION: Is this the correct way to do it? Is this documented anywhere?
