@@ -78,16 +78,17 @@ ApplicationBundle::ApplicationBundle(const QString& path)
                     m_icon = resourcesDir.filePath(icons.at(0));
                 }
             }
+            m_executable = dir.filePath(fileInfo.completeBaseName());
         } else if (QFileInfo(dir.filePath("AppRun")).isExecutable()) {
             m_type = Type::AppDir;
             // qDebug() << path << "is an AppDir";
             m_name = QFileInfo(dir.path()).completeBaseName();
             // qDebug() << "Name:" << m_name;
-
             // Check if the AppDir contains a .DirIcon file
             if (dir.exists(".DirIcon")) {
                 m_icon = dir.filePath(".DirIcon");
             }
+            m_executable = dir.filePath("AppRun");
         }
     }
 
@@ -95,6 +96,7 @@ ApplicationBundle::ApplicationBundle(const QString& path)
     if (fileInfo.fileName().endsWith(".AppImage")) {
         m_type = Type::AppImage;
         m_name = fileInfo.completeBaseName();
+        m_executable = fileInfo.fileName();
     }
 
     // Check if the path is a desktop file
@@ -103,8 +105,9 @@ ApplicationBundle::ApplicationBundle(const QString& path)
         // qDebug() << path << "is a desktop file";
         m_name = fileInfo.completeBaseName();
         // qDebug() << "Name:" << m_name;
-
         m_icon = DesktopFile::getIcon(fileInfo.filePath());
+        // The next line is overly simplistic, but works for most cases
+        m_executable = DesktopFile::getValue(fileInfo.filePath(), "Exec").split("%").at(0);
     }
 
     if (m_type != Type::Unknown) {
@@ -256,4 +259,18 @@ QString ApplicationBundle::typeName() const {
         return tr("Application") + " (.desktop file)";
     }
     return "Unknown";
+}
+
+bool ApplicationBundle::launch(QStringList arguments) const
+{
+    qDebug() << "Launching" << m_path << "with arguments" << arguments;
+    QProcess *process = new QProcess();
+    process->setProgram("launch");
+    process->setArguments(QStringList() << m_executable << arguments);
+    process->start();
+    if(!process->waitForStarted()) {
+        qDebug() << "Error starting process";
+        return false;
+    }
+    return true;
 }

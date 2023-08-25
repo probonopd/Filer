@@ -131,6 +131,13 @@ public:
      */
     QString typeName() const;
 
+    /**
+     * @brief Launches the application.
+     * @param arguments The list of arguments to pass to the application.
+     * @return True if the application was launched successfully, false otherwise.
+     */
+    bool launch(QStringList arguments) const;
+
 QString m_path;         /**< The path of the application bundle. */
     bool m_isValid;         /**< Indicates if the bundle is valid. */
     Type m_type;            /**< The type of the application bundle. */

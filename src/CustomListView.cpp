@@ -37,7 +37,7 @@ CustomListView::CustomListView(QWidget* parent) : QListView(parent) {
     should_paint_desktop_picture = false;
 
     // https://doc.qt.io/qt-5/model-view-programming.html#using-convenience-views
-    setSelectionMode(QAbstractItemView::SingleSelection);
+    setSelectionMode(QAbstractItemView::ContiguousSelection);
     setDragEnabled(true);
     setAcceptDrops(true);
     viewport()->setAcceptDrops(true);
@@ -189,10 +189,8 @@ void CustomListView::expandTarget() {
         // Check if it is an application bundle
         ApplicationBundle* app = new ApplicationBundle(path);
         if (app->isValid()) {
-            qDebug() << "CustomListView::expandTarget app->isValid()";
-            // Launch the app
-            // TODO: We should not do this here after the delay, but immediately?
-            qDebug() << "TODO: Launch the app";
+            qDebug() << "Ignoring because it is an application bundle";
+            qDebug() << "This needs to be handled if the file is actually dropped onto the target";
         } else if (QFileInfo(path).isDir()) {
             qDebug() << "CustomListView::expandTarget !app->isValid()";
             // Open the folder
@@ -272,6 +270,35 @@ void CustomListView::dropEvent(QDropEvent* event)
 
     if (all_urls_are_file) {
         qDebug() << "CustomListView::dropEvent all_urls_are_file";
+
+        // Get the coordinates of the mouse
+        QPoint mousePos = event->pos();
+
+        // Show a context menu asking what to do with the files
+        // Copy, Move, Link, Cancel
+        QMenu menu(this);
+        QAction *copyAction = menu.addAction("Copy");
+        QAction *moveAction = menu.addAction("Move");
+        QAction *linkAction = menu.addAction("Link");
+        menu.addSeparator();
+        QAction *cancelAction = menu.addAction("Cancel");
+        QAction *selectedAction = menu.exec(mousePos);
+        if (selectedAction == copyAction) {
+            qDebug() << "CustomListView::dropEvent copyAction";
+            event->setDropAction(Qt::CopyAction);
+        } else if (selectedAction == moveAction) {
+            qDebug() << "CustomListView::dropEvent moveAction";
+            event->setDropAction(Qt::MoveAction);
+        } else if (selectedAction == linkAction) {
+            qDebug() << "CustomListView::dropEvent linkAction";
+            event->setDropAction(Qt::LinkAction);
+        } else if (selectedAction == cancelAction) {
+            qDebug() << "CustomListView::dropEvent cancelAction";
+            // TODO: Move the items back to where they came from
+            // TODO: How to do this? How to get the original position of the items?
+            event->setDropAction(Qt::IgnoreAction);
+        }
+
     }
     QListView::dropEvent(event);
 

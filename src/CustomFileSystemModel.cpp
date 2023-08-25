@@ -130,6 +130,8 @@ bool CustomFileSystemModel::dropMimeData(const QMimeData *data, Qt::DropAction a
 
     qDebug() << "CustomFileSystemModel::dropMimeData";
 
+    qDebug() << "CustomFileSystemModel::dropMimeData action, CURRENTLY IS WRONG:" << action;
+
     // https://doc.qt.io/qt-5/model-view-programming.html#inserting-dropped-data-into-a-model
     // When a drop occurs, the model index corresponding to the parent item will either be valid,
     // indicating that the drop occurred on an item, or it will be invalid,
@@ -176,13 +178,13 @@ bool CustomFileSystemModel::dropMimeData(const QMimeData *data, Qt::DropAction a
 Qt::DropActions CustomFileSystemModel::supportedDropActions() const
 {
     qDebug() << "CustomFileSystemModel::supportedDropActions";
-    return Qt::CopyAction | Qt::MoveAction;
+    return Qt::CopyAction | Qt::MoveAction | Qt::LinkAction;
 }
 
 Qt::DropActions CustomFileSystemModel::supportedDragActions() const
 {
     qDebug() << "CustomFileSystemModel::supportedDragActions";
-    return Qt::CopyAction | Qt::MoveAction;
+    return Qt::CopyAction | Qt::MoveAction | Qt::LinkAction;
 }
 
 // https://doc.qt.io/qt-5/model-view-programming.html#enabling-drag-and-drop-for-items

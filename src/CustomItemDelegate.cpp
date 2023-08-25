@@ -44,6 +44,7 @@
 #include "TrashHandler.h"
 #include "InfoDialog.h"
 #include "AppGlobals.h"
+#include "DBusInterface.h"
 
 // Constructor that takes a QObject pointer and a QFileSystemModel pointer as arguments
 CustomItemDelegate::CustomItemDelegate(QObject* parent, QAbstractProxyModel* fileSystemModel)
@@ -318,6 +319,8 @@ bool CustomItemDelegate::editorEvent(QEvent *event, QAbstractItemModel *model,
             // Get all selected items
             QModelIndexList selectedIndexes = mainWindow->getCurrentView()->selectionModel()->selectedIndexes();
             for (QModelIndex index : selectedIndexes) {
+                // Get the absolute path of the item represented by the index, using the model
+                QString filePath = model->data(index, QFileSystemModel::FilePathRole).toString();
                 mainWindow->openFolderInNewWindow(filePath);
             }
         });
@@ -328,6 +331,35 @@ bool CustomItemDelegate::editorEvent(QEvent *event, QAbstractItemModel *model,
             showContentsAction->setEnabled(false);
         }
         delete bundle;
+
+        QAction *showOriginalAction = new QAction(tr("Show Original"), this);
+        showOriginalAction->setEnabled(false);
+        menu.addAction(showOriginalAction);
+        connect(showOriginalAction, &QAction::triggered, [=]() {
+            QStringList uriList;
+            // Get all selected items
+            QModelIndexList selectedIndexes = mainWindow->getCurrentView()->selectionModel()->selectedIndexes();
+            for (QModelIndex index : selectedIndexes) {
+                // Get the absolute path of the item represented by the index, using the model
+                QString filePath = model->data(index, QFileSystemModel::FilePathRole).toString();
+                if (QFileInfo(filePath).isSymLink()) {
+                    filePath = QFileInfo(filePath).symLinkTarget();
+                }
+                QUrl url = QUrl::fromLocalFile(filePath);
+                uriList.append(url.toString());
+            }
+            // Show the original by re-using the DBusInterface class which can do this,
+            // but without doing an actual DBus call
+            DBusInterface *dbi = new DBusInterface();
+            dbi->ShowItems(uriList, QString("startUpId"));
+            delete dbi;
+
+        });
+        if (QFileInfo(filePath).isSymLink()) {
+            showOriginalAction->setEnabled(true);
+        } else {
+            showOriginalAction->setEnabled(false);
+        }
 
         menu.addSeparator();
 
