@@ -28,7 +28,7 @@ A clean rewrite of the Filer for [helloSystem](https://hellosystem.github.io/) (
 |Cannot use copy and pasted icons for documents and folders|Can use copy and pasted icons for documents and folders|TODO|
 |Open files with whatever application if there is more than one that can handle a file|Asks the user which application to use if there is more than one that can handle a file|DONE by `launch`|
 |Do not know which application created a file|Knows which application created a file and by default opens it with that application|TODO; how? Using DTrace or similar?|
-|Do not allow drag-and-drop of files onto applications|Allows drag-and-drop of files onto applications|TODO|
+|Do not allow drag-and-drop of files onto applications|Allows drag-and-drop of files onto applications|DONE|
 |No animation when applications, documents, or folders are opened|Animation when applications, documents, or folders are opened|DONE (using QTimeLine Property Animation)|
 |Opened applications, documents, and folders are not shown as open|Opened applications, documents, and folders are shown as open|DONE for folders, TODO for the other types|
 |Use technical jargon like "executables", "files", "directories", "properties", "wallpaper"|Uses familiar desktop terminology like "applications", "documents", "folders", "info", "desktop picture"|DONE|
@@ -39,6 +39,7 @@ A clean rewrite of the Filer for [helloSystem](https://hellosystem.github.io/) (
 |Are not optimized for managing and launching applications|Is optimized for managing and launching applications|DONE|
 |Cannot rename disks|Can rename disks|DONE via `renamedisk` helper command line tool|
 |Do not have spring-loaded folders|Has spring-loaded folders|DONE|
+|Use Gtk-centric dependencies like Glib, Gdk, Gio, polkit|Does not use Gtk-centric dependencies|DONE|
 
 My conclusion is that most "desktop environments" are made by people who don't actually love the desktop. Or else, those basic things would work.
 
