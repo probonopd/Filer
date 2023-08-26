@@ -36,6 +36,7 @@
 #include <QProcess>
 #include "AppGlobals.h"
 #include "TrashHandler.h"
+#include <QDateTime>
 
 VolumeWatcher::VolumeWatcher(QObject *parent) : QObject(parent)
 {
@@ -44,9 +45,17 @@ VolumeWatcher::VolumeWatcher(QObject *parent) : QObject(parent)
 
     m_watcher.addPath(m_mediaPath);
 
-    // Handle "/", which is the "Hard Disk"
+    // Handle "/", which is the startup volume, for which we need to find a name
     if (! QFile::exists(QDir::homePath() + "/Desktop/" + AppGlobals::hardDiskName)) {
-        QFile::link("/", QDir::homePath() + "/Desktop/" + AppGlobals::hardDiskName);
+        // Get the disk label
+        QStorageInfo storageInfo("/");
+        QString diskLabel = storageInfo.displayName();
+        // Qt documentation says: "Returns the volume's name, if available, or the root path if not."
+        // It is unclear where this is coming from...
+        if (diskLabel.isEmpty()) {
+            diskLabel = AppGlobals::hardDiskName;
+        }
+        QFile::link("/", QDir::homePath() + "/Desktop/" + diskLabel);
     }
 
     // Handle the Trash
@@ -91,6 +100,17 @@ void VolumeWatcher::handleDirectoryChange(const QString &path)
     for (const QString &dirName : mediaDirectories) {
         QString fullPath = mediaDir.absoluteFilePath(dirName);
         QString symlinkPath = QDir::homePath() + "/Desktop/" + dirName;
+
+        // Skip /media/LIVE if it is the same as /
+        if (fullPath == "/media/LIVE") {
+            // Using the file COPYRIGHT, compare the creation date
+            QFileInfo fileInfo1("/COPYRIGHT");
+            QFileInfo fileInfo2("/media/LIVE/COPYRIGHT");
+            if (fileInfo1.created() == fileInfo2.created()) {
+                qDebug() << "Skipping" << fullPath << "because it is the same as /";
+                continue;
+            }
+        }
 
         if (QFile::exists(fullPath)) {
             if (!QFile::exists(symlinkPath)) {
