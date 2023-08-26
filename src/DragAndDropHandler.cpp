@@ -40,6 +40,7 @@
 #include <QFileInfo>
 #include <QMenu>
 #include <QDrag>
+#include "FileOperationManager.h"
 
 DragAndDropHandler::DragAndDropHandler(QAbstractItemView *view, QObject *parent)
         : QObject(parent), m_view(view) {
@@ -283,9 +284,7 @@ void DragAndDropHandler::handleDropEvent(QDropEvent* event)
         // Copy, Move, Link, Cancel
         QMenu menu(m_view);
         QAction *copyAction = menu.addAction("Copy");
-        copyAction->setEnabled(false); // TODO: Implement
         QAction *moveAction = menu.addAction("Move");
-        moveAction->setEnabled(false); // TODO: Implement
         QAction *linkAction = menu.addAction("Link");
         menu.addSeparator();
         QAction *cancelAction = menu.addAction("Cancel");
@@ -294,9 +293,21 @@ void DragAndDropHandler::handleDropEvent(QDropEvent* event)
         if (selectedAction == copyAction) {
             qDebug() << "CustomListView::dropEvent copyAction";
             event->setDropAction(Qt::CopyAction);
+            QStringList sourceFilePaths;
+            for (const QUrl &url : urls) {
+                sourceFilePaths.append(url.toLocalFile());
+                qDebug() << "Shall copy " << url.toLocalFile() << " to " << targetPath;
+            }
+            FileOperationManager::copyWithProgress(sourceFilePaths, targetPath);
         } else if (selectedAction == moveAction) {
             qDebug() << "CustomListView::dropEvent moveAction";
             event->setDropAction(Qt::MoveAction);
+            QStringList sourceFilePaths;
+            for (const QUrl &url : urls) {
+                sourceFilePaths.append(url.toLocalFile());
+                qDebug() << "Shall move " << url.toLocalFile() << " to " << targetPath;
+            }
+            FileOperationManager::moveWithProgress(sourceFilePaths, targetPath);
         } else if (selectedAction == linkAction) {
             qDebug() << "CustomListView::dropEvent linkAction";
             event->setDropAction(Qt::LinkAction);
