@@ -1059,7 +1059,7 @@ void FileManagerMainWindow::createMenus()
     QMenu *helpMenu = new QMenu(tr("Help"), this);
 
     // Add an action to the Help menu
-    QAction *a = helpMenu->addAction(tr("About the Filer"));
+    QAction *a = helpMenu->addAction(tr("About The Filer"));
 
     // Add the Help menu to the menu bar
     m_menuBar->addMenu(helpMenu);
@@ -1124,7 +1124,7 @@ void FileManagerMainWindow::showAboutBox()
     QMessageBox aboutBox;
 
     // Set the title and text of the About box
-    aboutBox.setWindowTitle("About the Filer");
+    aboutBox.setWindowTitle("About The Filer");
     aboutBox.setText("The helloSystem desktop experience.");
     aboutBox.setIcon(QMessageBox::Information);
 

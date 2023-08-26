@@ -345,8 +345,14 @@ bool TrashHandler::emptyTrash() {
     QStringList trashItems = trashDir.entryList(QDir::NoDotAndDotDot | QDir::AllEntries);
     for (const QString& trashItem : trashItems) {
         QString trashPath = m_trashPath + QDir::separator() + trashItem;
-
-        if (QFileInfo(trashPath).isDir()) {
+        if (QFileInfo(trashPath).isSymLink()) {
+            // Remove the symlink
+            if (!QFile::remove(trashPath)) {
+                QMessageBox::critical(nullptr, tr("Error"),
+                                      tr("Failed to remove symlink from Trash: %1").arg(trashItem));
+                return false;
+            }
+        } else if (QFileInfo(trashPath).isDir()) {
             // Recursively remove subdirectories and files
             QDir subDir(trashPath);
             if (!subDir.removeRecursively()) {
