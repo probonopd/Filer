@@ -1,10 +1,11 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" title=" " alt="" coords="5,157,80,184"/>
-<area shape="rect" id="node2" href="$classApplicationBundle.html" title="Represents an application bundle or executable in various formats." alt="" coords="132,5,272,32"/>
-<area shape="rect" id="node3" href="$classDBusInterface.html" title=" " alt="" coords="145,56,259,83"/>
-<area shape="rect" id="node4" href="$classMountpoints.html" title=" " alt="" coords="151,107,253,133"/>
-<area shape="rect" id="node5" href="$classSoundPlayer.html" title="The SoundPlayer class provides functionality to play sound effects." alt="" coords="151,157,253,184"/>
-<area shape="rect" id="node6" href="$classSqshArchiveReader.html" title="The SqshArchiveReader class provides functionality to read files from a SquashFS archive." alt="" coords="128,208,276,235"/>
-<area shape="rect" id="node7" href="$classTrashHandler.html" title="The TrashHandler class provides functionality to manage a &quot;Trash&quot; (virtual trash) for files and direc..." alt="" coords="149,259,255,285"/>
-<area shape="rect" id="node8" href="$classVolumeWatcher.html" title="The VolumeWatcher class monitors changes in a directory and manages symlinks to new directories." alt="" coords="140,309,264,336"/>
+<area shape="rect" id="node1" title=" " alt="" coords="5,183,80,209"/>
+<area shape="rect" id="node2" href="$classApplicationBundle.html" title="Represents an application bundle or executable in various formats." alt="" coords="138,5,278,32"/>
+<area shape="rect" id="node3" href="$classDBusInterface.html" title=" " alt="" coords="151,56,265,83"/>
+<area shape="rect" id="node4" href="$classDragAndDropHandler.html" title="The DragAndDropHandler class This class handles drag and drop events for a QAbstractItemView so that ..." alt="" coords="128,107,288,133"/>
+<area shape="rect" id="node5" href="$classMountpoints.html" title=" " alt="" coords="157,157,259,184"/>
+<area shape="rect" id="node6" href="$classSoundPlayer.html" title="The SoundPlayer class provides functionality to play sound effects." alt="" coords="157,208,259,235"/>
+<area shape="rect" id="node7" href="$classSqshArchiveReader.html" title="The SqshArchiveReader class provides functionality to read files from a SquashFS archive." alt="" coords="134,259,282,285"/>
+<area shape="rect" id="node8" href="$classTrashHandler.html" title="The TrashHandler class provides functionality to manage a &quot;Trash&quot; (virtual trash) for files and direc..." alt="" coords="155,309,261,336"/>
+<area shape="rect" id="node9" href="$classVolumeWatcher.html" title="The VolumeWatcher class monitors changes in a directory and manages symlinks to new directories." alt="" coords="146,360,270,387"/>
 </map>

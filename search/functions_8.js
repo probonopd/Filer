@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['movetotrash_159',['moveToTrash',['../classTrashHandler.html#afc29eb8a2534d085b73eb45fe603f2ef',1,'TrashHandler']]],
-  ['movewithprogress_160',['moveWithProgress',['../classFileOperationManager.html#a00b4ad1e188cfd6cb9c30846f849441e',1,'FileOperationManager']]]
+  ['launch_174',['launch',['../classApplicationBundle.html#a952f1c310c1ef81e1d03d315784c437c',1,'ApplicationBundle']]],
+  ['lessthan_175',['lessThan',['../classCustomProxyModel.html#aa2876b59f5d211ef776339766009f201',1,'CustomProxyModel']]]
 ];

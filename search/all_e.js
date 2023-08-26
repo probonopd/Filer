@@ -1,5 +1,7 @@
 var searchData=
 [
-  ['ui_5finfodialog_88',['Ui_InfoDialog',['../classUi__InfoDialog.html',1,'']]],
-  ['unknown_89',['Unknown',['../classApplicationBundle.html#ad3f6ead97dd4f556572804fba8ff290aa88183b946cc5f0e8c96b2e66e1c74a7e',1,'ApplicationBundle']]]
+  ['trashhandler_92',['TrashHandler',['../classTrashHandler.html',1,'TrashHandler'],['../classTrashHandler.html#a893bc441acaf7d135e4d6aac07fcae07',1,'TrashHandler::TrashHandler()']]],
+  ['type_93',['Type',['../classApplicationBundle.html#ad3f6ead97dd4f556572804fba8ff290a',1,'ApplicationBundle']]],
+  ['type_94',['type',['../classApplicationBundle.html#a3fc6017dc262a90075dc0f63863957f4',1,'ApplicationBundle']]],
+  ['typename_95',['typeName',['../classApplicationBundle.html#aa63533713787422b51008cd1a38ed60e',1,'ApplicationBundle']]]
 ];

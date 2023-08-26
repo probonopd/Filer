@@ -1,11 +1,8 @@
 var searchData=
 [
-  ['icon_149',['icon',['../classApplicationBundle.html#a64dc31f8e7f19f453358fa3cafe5422e',1,'ApplicationBundle::icon()'],['../classCustomFileIconProvider.html#a2e44d2e48b65690d1d3ae2d0b8d8b6fc',1,'CustomFileIconProvider::icon()']]],
-  ['iconname_150',['iconName',['../classApplicationBundle.html#a4fde802c083514c145de45a93af4aa8e',1,'ApplicationBundle']]],
-  ['infodialog_151',['InfoDialog',['../classInfoDialog.html#ae103d6834fb2808adeaa6a046676e1b4',1,'InfoDialog']]],
-  ['isanimationrunning_152',['isAnimationRunning',['../classCustomItemDelegate.html#a0c1764db0b5af7e379146cef59c76a9b',1,'CustomItemDelegate']]],
-  ['iscommandlinetool_153',['isCommandLineTool',['../classApplicationBundle.html#a87933516c1bddbe580ff66a069540cf8',1,'ApplicationBundle::isCommandLineTool()'],['../classDesktopFile.html#a95063032ec1823e73cb0e49a6e00b911',1,'DesktopFile::isCommandLineTool()']]],
-  ['isempty_154',['isEmpty',['../classTrashHandler.html#aad14b3804ddc3b8df4b1484ea8dceff2',1,'TrashHandler']]],
-  ['ismountpoint_155',['isMountpoint',['../classMountpoints.html#a9eef5dd4e544295bb8654e5a4b157902',1,'Mountpoints']]],
-  ['isvalid_156',['isValid',['../classApplicationBundle.html#a377dc1f5576f2d7746f265d91e2466cd',1,'ApplicationBundle']]]
+  ['handledragenterevent_161',['handleDragEnterEvent',['../classDragAndDropHandler.html#a274ddb01d749d1e212626dffc2778fb7',1,'DragAndDropHandler']]],
+  ['handledragleaveevent_162',['handleDragLeaveEvent',['../classDragAndDropHandler.html#a6e1eef11fd5ba688779813cd34d02f11',1,'DragAndDropHandler']]],
+  ['handledragmoveevent_163',['handleDragMoveEvent',['../classDragAndDropHandler.html#aa9cd39ceed0c2248ea7942c30cc1ffb9',1,'DragAndDropHandler']]],
+  ['handledropevent_164',['handleDropEvent',['../classDragAndDropHandler.html#a91781a6bc8f9aeebb8ebc04e59f65d64',1,'DragAndDropHandler']]],
+  ['handlestartdrag_165',['handleStartDrag',['../classDragAndDropHandler.html#a74df26d7fe7b005a69b3f9ef7fa2a8ae',1,'DragAndDropHandler']]]
 ];
