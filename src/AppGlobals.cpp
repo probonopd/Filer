@@ -17,3 +17,5 @@ const QString AppGlobals::mediaPath = VolumeWatcher::getMediaPath();
 
 // TODO: Actually read the name of the start volume from the volume label
 const QString AppGlobals::hardDiskName = "Hard Disk";
+
+const QString AppGlobals::desktopPicturePath = "/usr/local/share/slim/themes/default/background.jpg";

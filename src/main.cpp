@@ -38,7 +38,8 @@
 #include <QThread>
 #include <QString>
 #include <QUrl>
-
+#include <QLabel>
+#include <QVBoxLayout>
 #include "FileManagerMainWindow.h"
 #include "DBusInterface.h"
 #include "ElfSizeCalculator.h"
@@ -49,6 +50,38 @@
 #include <QDBusInterface>
 #include <QDeadlineTimer>
 #include "TrashHandler.h"
+#include "AppGlobals.h"
+#include <QScreen>
+#include <QPainter>
+
+void displayPicturesOnAllScreens(QApplication &app) {
+
+    if (!QFileInfo(AppGlobals::desktopPicturePath).exists()) {
+        return;
+    }
+
+    QList<QScreen*> screens = app.screens();
+
+    for (QScreen *screen : screens) {
+        QRect screenGeometry = screen->geometry();
+        QPixmap desktopPixmap = QPixmap(AppGlobals::desktopPicturePath);
+        // Create a QLabel to display the picture
+        QLabel *label = new QLabel;
+        label->setPixmap(desktopPixmap.scaled(screenGeometry.size(), Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation));
+        // Create a top-level window for each screen
+        QWidget *window = new QWidget;
+        QVBoxLayout *layout = new QVBoxLayout;
+        layout->addWidget(label);
+        layout->setContentsMargins(0, 0, 0, 0);
+        layout->setSpacing(0);
+        window->setContentsMargins(0, 0, 0, 0);
+        window->setLayout(layout);
+        window->setGeometry(screenGeometry);
+        window->show();
+        window->setFixedSize(screenGeometry.size());
+        window->setAttribute(Qt::WA_X11NetWmWindowTypeDesktop, true);
+    }
+}
 
 int main(int argc, char *argv[])
 {
@@ -114,6 +147,10 @@ int main(int argc, char *argv[])
 
     } else {
         // No arguments were passed to the application
+
+        // On all screens, draw the desktop picture
+        displayPicturesOnAllScreens(app);
+
         // Check whether another instance of a file manager is already running
         // by checking whether the D-Bus ""org.freedesktop.FileManager1" service is available
         if (! connection.interface()->isServiceRegistered("org.freedesktop.FileManager1")) {

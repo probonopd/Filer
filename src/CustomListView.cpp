@@ -36,6 +36,7 @@
 #include "DBusInterface.h"
 #include "FileOperationManager.h"
 #include "DragAndDropHandler.h"
+#include "AppGlobals.h"
 
 CustomListView::CustomListView(QWidget* parent) : QListView(parent) {
     should_paint_desktop_picture = false;
@@ -70,7 +71,7 @@ void CustomListView::paintEvent(QPaintEvent* event)
     // Save the painter state
     painter.save();
 
-    QString desktopPicture = "/usr/local/share/slim/themes/default/background.jpg";
+    QString desktopPicture = AppGlobals::desktopPicturePath;
 
     // If exists, use the user's desktop picture
     if (QFile::exists(desktopPicture)) {
