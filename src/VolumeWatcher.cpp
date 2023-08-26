@@ -45,16 +45,9 @@ VolumeWatcher::VolumeWatcher(QObject *parent) : QObject(parent)
 
     m_watcher.addPath(m_mediaPath);
 
-    // Handle "/", which is the startup volume, for which we need to find a name
-    if (! QFile::exists(QDir::homePath() + "/Desktop/" + AppGlobals::hardDiskName)) {
-        // Get the disk label
-        QStorageInfo storageInfo("/");
-        QString diskLabel = storageInfo.displayName();
-        // Qt documentation says: "Returns the volume's name, if available, or the root path if not."
-        // It is unclear where this is coming from...
-        if (diskLabel.isEmpty()) {
-            diskLabel = AppGlobals::hardDiskName;
-        }
+    QString diskLabel = getRootDiskName();
+
+    if (! QFile::exists(QDir::homePath() + "/Desktop/" + diskLabel)) {
         QFile::link("/", QDir::homePath() + "/Desktop/" + diskLabel);
     }
 
@@ -180,4 +173,33 @@ QString VolumeWatcher::getMediaPath() {
         mediaPath = "/media";
     }
     return mediaPath;
+}
+
+QString VolumeWatcher::getRootDiskName() {
+
+    // TODO: Make this generic and not only use it for the root disk; also use it for other disks
+
+    // Get the disk label
+    QStorageInfo storageInfo("/");
+    QString diskLabel = storageInfo.displayName();
+    // Qt documentation says: "Returns the volume's name, if available, or the root path if not."
+    // It is unclear where this is coming from...
+    if (diskLabel.isEmpty()) {
+        diskLabel = AppGlobals::hardDiskName;
+    }
+
+    // Check if "zfs list -o name -H /" returns a name; if yes, use it
+    QProcess process;
+    process.start("zfs", QStringList() << "list" << "-o" << "name" << "-H" << "/");
+    process.waitForFinished();
+    QString zfsName = process.readAllStandardOutput();
+    if (! zfsName.isEmpty()) {
+        // Use the part between the first and the second /
+        diskLabel = zfsName.split("/").at(1);
+        // Remove all special characters but allow spaces and umlauts and similar
+        diskLabel = diskLabel.replace(QRegExp("[^a-zA-Z0-9_\\-\\s\\u00C0-\\u00FF]"), "");
+    }
+
+    return diskLabel;
+
 }

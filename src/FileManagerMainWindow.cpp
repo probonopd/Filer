@@ -72,6 +72,7 @@
 #include <QStorageInfo>
 #include "Mountpoints.h"
 #include <QScreen>
+#include "VolumeWatcher.h"
 
 /*
  * This creates a FileManagerMainWindow object with a QTreeView subclass and QListView subclass widget.
@@ -248,9 +249,9 @@ FileManagerMainWindow::FileManagerMainWindow(QWidget *parent, const QString &ini
     // Set the window title to the root path of the QFileSystemModel
     setWindowTitle(QFileInfo(m_fileSystemModel->rootPath()).fileName());
 
-    // If we are at /, set the window title to "/"
+    // If we are at /
     if (m_fileSystemModel->rootPath() == "/") {
-        setWindowTitle(AppGlobals::hardDiskName);
+        setWindowTitle(VolumeWatcher::getRootDiskName());
         // Resize the window since we cannot store the position and geometry
         // of the root window in extended attributes appropriately
         // TODO: Find a way to store the position and geometry of the root window

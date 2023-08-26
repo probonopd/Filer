@@ -55,6 +55,8 @@ public:
 
     static QString getMediaPath();
 
+    static QString getRootDiskName();
+
 private slots:
     /**
      * @brief Handles changes in the monitored directory.
