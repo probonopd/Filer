@@ -24,40 +24,22 @@
  * SUCH DAMAGE.
  */
 
-#ifndef CUSTOMLISTVIEW_H
-#define CUSTOMLISTVIEW_H
+#ifndef CUSTOMTREEVIEW_H
+#define CUSTOMTREEVIEW_H
 
-#include <QObject>
-#include <QListView>
-#include <QPainter>
-#include <QPaintEvent>
-#include <QDebug>
-#include <QTimer>
+#include <QTreeView>
+#include <QDragEnterEvent>
+#include <QDragMoveEvent>
+#include <QDragLeaveEvent>
+#include <QDropEvent>
 
-class CustomListView : public QListView {
-    Q_OBJECT
+#include "DragAndDropHandler.h"
+
+class CustomTreeView : public QTreeView {
+Q_OBJECT
+
 public:
-    
-    CustomListView(QWidget* parent = nullptr);
-    ~CustomListView();
-
-    // We are subclassing QListView to access the protected function setPositionForIndex
-    // which is used to set the icon coordinates for the icon view.
-    // Also we paint the desktop picture behind the icons if requested.
-
-    // Access the protected function setPositionForIndex directly
-    inline void setPositionForIndex(const QPoint& position, const QModelIndex& index) {
-        QListView::setPositionForIndex(position, index);
-    }
-
-    // Public function to get the item delegate for a given index
-    QAbstractItemDelegate* getItemDelegateForIndex(const QModelIndex& index) const {
-        return itemDelegate(index);
-    }
-
-    void requestDesktopPictureToBePainted(bool request);
-
-    void paintEvent(QPaintEvent* event) override;
+    explicit CustomTreeView(QWidget* parent = nullptr);
 
 protected:
     void dragEnterEvent(QDragEnterEvent *event) override;
@@ -73,10 +55,6 @@ signals:
     void dropEventSignal(QDropEvent *event);
     void startDragSignal(Qt::DropActions supportedActions);
 
-private:
-    bool should_paint_desktop_picture = false;
-
-
 };
 
-#endif // CUSTOMLISTVIEW_H
+#endif // CUSTOMTREEVIEW_H

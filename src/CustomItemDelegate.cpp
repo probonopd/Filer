@@ -443,50 +443,6 @@ bool CustomItemDelegate::editorEvent(QEvent *event, QAbstractItemModel *model,
     return false;
 }
 
-/*
-void CustomItemDelegate::installEventFilterOnView(QAbstractItemView* view) {
-    if (view) {
-        view->viewport()->installEventFilter(this);
-    }
-}
-
-bool CustomItemDelegate::eventFilter(QObject* object, QEvent* event) {
-    if (event->type() == QEvent::DragEnter) {
-        onDragEnterEvent(static_cast<QDragEnterEvent*>(event));
-    } else if (event->type() == QEvent::Drop) {
-        onDropEvent(static_cast<QDropEvent*>(event));
-    }
-
-    // Continue with default event processing
-    return QObject::eventFilter(object, event);
-}
-
-void CustomItemDelegate::onDragEnterEvent(QDragEnterEvent* event) {
-    if (event->mimeData()->hasUrls()) {
-        event->acceptProposedAction();
-    }
-}
-
-void CustomItemDelegate::onDropEvent(QDropEvent* event) {
-    if (event->mimeData()->hasUrls()) {
-        QList<QUrl> urls = event->mimeData()->urls();
-        if (!urls.isEmpty()) {
-            // Assuming you handle only one file drop, take the first URL
-            QString filePath = urls.first().toLocalFile();
-
-            qDebug() << "Dropped file:" << filePath << "at position:" << event->pos();
-            // Store the position in extended attribute
-            QString coordinates = QString::number(event->pos().x()) + "," + QString::number(event->pos().y());
-            qDebug() << "Coordinates:" << coordinates;
-            // Set the extended attribute using ExtendedAttributes class
-            ExtendedAttributes ea(filePath);
-            ea.write("coordinates", coordinates.toUtf8());
-            emit fileDropped(filePath, event->pos());
-        }
-    }
-}
-*/
-
 void CustomItemDelegate::animationValueChanged(double value)
 {
     currentAnimationValue = value;

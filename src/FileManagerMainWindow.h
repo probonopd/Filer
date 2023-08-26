@@ -30,7 +30,7 @@
 #include <QMainWindow>
 #include <QMenuBar>
 #include <QTreeView>
-#include <QListView>
+#include "CustomTreeView.h"
 #include <QStatusBar>
 #include <QList>
 #include <QStackedWidget>
@@ -101,7 +101,7 @@ private:
 
     QString m_currentDir;
 
-    QTreeView *m_treeView;
+    CustomTreeView *m_treeView;
     CustomListView *m_iconView;
 
     QMenuBar *m_menuBar;

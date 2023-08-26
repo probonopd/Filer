@@ -32,7 +32,7 @@
 #include <QMenuBar>
 #include <QMenu>
 #include <QMainWindow>
-#include <QTreeView>
+#include "CustomTreeView.h"
 #include <QAction>
 #include <QMessageBox>
 #include <QDebug>
@@ -73,7 +73,7 @@
 #include "Mountpoints.h"
 
 /*
- * This creates a FileManagerMainWindow object with a QTreeView and QListView widget.
+ * This creates a FileManagerMainWindow object with a QTreeView subclass and QListView subclass widget.
  * The QTreeView widget displays the file system hierarchy, and the QListView widget displays
  * the files and directories in the selected directory. The QFileSystemModel class is used
  * to provide data for the views. The QItemSelectionModel class is used to manage the selection
@@ -183,7 +183,7 @@ FileManagerMainWindow::FileManagerMainWindow(QWidget *parent, const QString &ini
     m_stackedWidget = new QStackedWidget(this);
 
     // Create the tree view and list view
-    m_treeView = new QTreeView(this);
+    m_treeView = new CustomTreeView(this);
     m_iconView = new CustomListView(this);
 
     // Add the tree view and list view to the stacked widget

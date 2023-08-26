@@ -32,27 +32,20 @@
 #include "FileManagerMainWindow.h"
 #include "ApplicationBundle.h"
 #include <QApplication>
+#include "CustomProxyModel.h"
+#include "DBusInterface.h"
+#include "FileOperationManager.h"
+#include "DragAndDropHandler.h"
 
 CustomListView::CustomListView(QWidget* parent) : QListView(parent) {
     should_paint_desktop_picture = false;
 
-    // https://doc.qt.io/qt-5/model-view-programming.html#using-convenience-views
-    setSelectionMode(QAbstractItemView::ContiguousSelection);
-    setDragEnabled(true);
-    setAcceptDrops(true);
-    viewport()->setAcceptDrops(true);
-    setDropIndicatorShown(true);
-    // Enable the user to move the items around within the view
-    setDragDropMode(QAbstractItemView::InternalMove);
-    // NOTE: the model used also has to provide support for drag and drop operations.
-    // The actions supported by a model can be specified by reimplementing the
-    // QAbstractItemModel::supportedDropActions() function.
-    // NOTE: Enabling drag and drop for items
-    // Models indicate to views which items can be dragged, and which will accept drops,
-    // by reimplementing the QAbstractItemModel::flags() function to provide suitable flags.
-
-    // Spring-loaded folders
-    connect(&m_springTimer, &QTimer::timeout, this, &CustomListView::expandTarget);
+    DragAndDropHandler *handler = new DragAndDropHandler(this);
+    connect(this, &CustomListView::dragEnterEventSignal, handler, &DragAndDropHandler::handleDragEnterEvent);
+    connect(this, &CustomListView::dragMoveEventSignal, handler, &DragAndDropHandler::handleDragMoveEvent);
+    connect(this, &CustomListView::dropEventSignal, handler, &DragAndDropHandler::handleDropEvent);
+    connect(this, &CustomListView::dragLeaveEventSignal, handler, &DragAndDropHandler::handleDragLeaveEvent);
+    connect(this, &CustomListView::startDragSignal, handler, &DragAndDropHandler::handleStartDrag);
 }
 
 CustomListView::~CustomListView() {
@@ -113,210 +106,32 @@ void CustomListView::paintEvent(QPaintEvent* event)
     QListView::paintEvent(event);
 }
 
-void CustomListView::dragEnterEvent(QDragEnterEvent* event)
-{
-    qDebug() << "CustomListView::dragEnterEvent";
-    qDebug() << "CustomListView::dragEnterEvent event->proposedAction()" << event->proposedAction();
-
-    if (event->mimeData()->hasFormat("text/uri-list")) {
-        event->acceptProposedAction();
-        qDebug() << "CustomListView::dragEnterEvent accepted";
-        QList<QUrl> urls = event->mimeData()->urls();
-        for (int i = 0; i < urls.size(); ++i) {
-            qDebug() << "CustomListView::dragEnterEvent url" << urls.at(i).toString();
-        }
-    } else {
-        qDebug() << "CustomListView::dragEnterEvent rejected";
-        event->ignore();
-    }
-    QListView::dragEnterEvent(event);
+void CustomListView::dragEnterEvent(QDragEnterEvent *event) {
+    // We handle this in the DragAndDropHandler, so we emit a signal here
+    // which is connected to the DragAndDropHandler
+    emit dragEnterEventSignal(event);
 }
 
-void CustomListView::dragMoveEvent(QDragMoveEvent* event)
-{
-    qDebug() << "CustomListView::dragMoveEvent";
-
-    if (event->mimeData()->hasFormat("text/uri-list")) {
-        event->acceptProposedAction();
-        qDebug() << "CustomListView::dragMoveEvent accepted";
-        QList<QUrl> urls = event->mimeData()->urls();
-        for (int i = 0; i < urls.size(); ++i) {
-            qDebug() << "CustomListView::dragMoveEvent url" << urls.at(i).toString();
-        }
-    } else {
-        qDebug() << "CustomListView::dragMoveEvent rejected";
-        event->ignore();
-    }
-
-    // Spring-loaded folders
-    QModelIndex index = indexAt(event->pos());
-
-    if (index.isValid()) {
-        if (!m_springTimer.isActive()) {
-            m_potentialTargetIndex = index;
-            qDebug() << "CustomListView::dragMoveEvent m_potentialTargetIndex.isValid()";
-            m_springTimer.start(1000); // Start the timer with a 1-second delay
-        }
-    } else {
-        m_springTimer.stop();
-        m_potentialTargetIndex = QModelIndex();
-        qDebug() << "CustomListView::dragMoveEvent !m_potentialTargetIndex.isValid()";
-    }
-
-    // Call super class dragMoveEvent
-    QListView::dragMoveEvent(event);
+void CustomListView::dragMoveEvent(QDragMoveEvent *event) {
+    // We handle this in the DragAndDropHandler, so we emit a signal here
+    // which is connected to the DragAndDropHandler
+    emit dragMoveEventSignal(event);
 }
 
 void CustomListView::dragLeaveEvent(QDragLeaveEvent *event) {
-    qDebug() << "CustomListView::dragLeaveEvent";
-
-    // Spring-loaded folders
-    m_springTimer.stop();
-    m_potentialTargetIndex = QModelIndex();
-
-    QAbstractItemView::dragLeaveEvent(event);
+    // We handle this in the DragAndDropHandler, so we emit a signal here
+    // which is connected to the DragAndDropHandler
+    emit dragLeaveEventSignal(event);
 }
 
-void CustomListView::expandTarget() {
-    qDebug() << "CustomListView::expandTarget";
-
-    // Spring-loaded folders
-    if (m_potentialTargetIndex.isValid()) {
-        qDebug() << "CustomListView::expandTarget m_potentialTargetIndex.isValid()";
-        QString path = m_potentialTargetIndex.data(QFileSystemModel::FilePathRole).toString();
-        // Get the widget in which this view is
-        qDebug() << "CustomListView::expandTarget path" << path;
-        // Check if it is an application bundle
-        ApplicationBundle* app = new ApplicationBundle(path);
-        if (app->isValid()) {
-            qDebug() << "Ignoring because it is an application bundle";
-            qDebug() << "This needs to be handled if the file is actually dropped onto the target";
-        } else if (QFileInfo(path).isDir()) {
-            qDebug() << "CustomListView::expandTarget !app->isValid()";
-            // Open the folder
-            qDebug() << "Open the spring-loaded folder";
-            FileManagerMainWindow *fileManagerMainWindow = qobject_cast<FileManagerMainWindow *>(QApplication::activeWindow());
-
-            // Close the spring-loaded folder once it is no longer needed; except for the Desktop
-            bool parentIsDesktop = false;
-            if (QFileInfo(path).dir().path() == QDir::homePath() + "/Desktop") {
-                parentIsDesktop = true;
-            }
-            if (!fileManagerMainWindow->instanceExists(path)) {
-                fileManagerMainWindow->openFolderInNewWindow(path);
-            } else {
-                qDebug() << "Window already open for" << path;
-                // Raise the window
-                fileManagerMainWindow->getInstanceForDirectory(path)->bringToFront();
-            }
-            if (!parentIsDesktop) {
-                // Check if a window is open for the parent dir of path and if it is, close it
-                QString parentPath = QFileInfo(path).dir().path();
-                qDebug() << "parentPath" << parentPath;
-                if (fileManagerMainWindow->instanceExists(parentPath)) {
-                    qDebug() << "Closing spring-loaded folder for" << parentPath;
-                    fileManagerMainWindow->getInstanceForDirectory(parentPath)->close();
-                }
-            }
-
-        } else {
-            qDebug() << "Ignoring this item";
-        }
-
-        delete app;
-    }
-    m_springTimer.stop();
+void CustomListView::dropEvent(QDropEvent *event) {
+    // We handle this in the DragAndDropHandler, so we emit a signal here
+    // which is connected to the DragAndDropHandler
+    emit dropEventSignal(event);
 }
 
-void CustomListView::dropEvent(QDropEvent* event)
-{
-    qDebug() << "CustomListView::dropEvent";
-
-    // NOTE: For this to work, the QListView must have viewport()->setAcceptDrops(true) set
-    // and the model must have supportedDragActions and supportedDropActions methods
-
-    // Print the MIME types
-    QStringList formats = event->mimeData()->formats();
-    for (int i = 0; i < formats.size(); ++i) {
-        qDebug() << "CustomListView::dropEvent format" << formats.at(i);
-    }
-
-    QList<QUrl> urls = event->mimeData()->urls();
-
-    // Get data
-    const QMimeData* data = event->mimeData();
-
-    // Check if all dropped urls start with http:// or https://
-    bool all_urls_are_http = true;
-    for (int i = 0; i < urls.size(); ++i) {
-        if (!urls.at(i).toString().startsWith("http://") && !urls.at(i).toString().startsWith("https://")) {
-            all_urls_are_http = false;
-        }
-    }
-
-    // Create a desktop file for URLs dropped from the web browser
-    // TODO: Move this into the model? So that all views can use it?
-    if (all_urls_are_http) {
-        qDebug() << "CustomListView::dropEvent all_urls_are_http";
-    }
-
-    // Check if all dropped urls start with file://
-    bool all_urls_are_file = true;
-    for (int i = 0; i < urls.size(); ++i) {
-        if (!urls.at(i).toString().startsWith("file://")) {
-            all_urls_are_file = false;
-        }
-    }
-
-    if (all_urls_are_file) {
-        qDebug() << "CustomListView::dropEvent all_urls_are_file";
-
-        // Get the coordinates of the mouse
-        QPoint mousePos = event->pos();
-        // Map to global coordinates
-        mousePos = viewport()->mapToGlobal(mousePos);
-
-        // Show a context menu asking what to do with the files
-        // Copy, Move, Link, Cancel
-        QMenu menu(this);
-        QAction *copyAction = menu.addAction("Copy");
-        QAction *moveAction = menu.addAction("Move");
-        QAction *linkAction = menu.addAction("Link");
-        menu.addSeparator();
-        QAction *cancelAction = menu.addAction("Cancel");
-        // Show the menu at the global mouse coordinates
-        QAction *selectedAction = menu.exec(mousePos);
-        if (selectedAction == copyAction) {
-            qDebug() << "CustomListView::dropEvent copyAction";
-            event->setDropAction(Qt::CopyAction);
-        } else if (selectedAction == moveAction) {
-            qDebug() << "CustomListView::dropEvent moveAction";
-            event->setDropAction(Qt::MoveAction);
-        } else if (selectedAction == linkAction) {
-            qDebug() << "CustomListView::dropEvent linkAction";
-            event->setDropAction(Qt::LinkAction);
-        } else if (selectedAction == cancelAction) {
-            qDebug() << "CustomListView::dropEvent cancelAction";
-            // TODO: Move the items back to where they came from
-            // TODO: How to do this? How to get the original position of the items?
-            event->setDropAction(Qt::IgnoreAction);
-        }
-        qDebug() << "event->dropAction() set to:" << event->dropAction();
-
-        // Accept the event
-        event->accept(); // Not sure whether this should be done here or in the model
-    }
-
-    // Let the model handle the drop event
-    // QUESTION: Is this the correct way to do it? Is this documented anywhere?
-    QModelIndex index = indexAt(event->pos());
-    int row = index.row();
-    int column = index.column();
-    model()->dropMimeData(event->mimeData(), event->dropAction(), row, column, index);
-}
-
-void CustomListView::startDrag(Qt::DropActions supportedActions)
-{
-    qDebug() << "CustomListView::startDrag";
-    QListView::startDrag(supportedActions);
+void CustomListView::startDrag(Qt::DropActions supportedActions) {
+    // We handle this in the DragAndDropHandler, so we emit a signal here
+    // which is connected to the DragAndDropHandler
+   emit startDragSignal(supportedActions);
 }

@@ -252,9 +252,6 @@ void TrashHandler::moveToTrash(const QStringList& paths) {
                 qDebug() << "The file/directory is on the same mount point as the Trash directory";
                 if (!QFile::rename(path, newFilePath)) {
                     // Failed to move the file/directory to Trash
-                    // Restore the original file back to its original location
-                    QFile::rename(newFilePath, path);
-
                     QMessageBox::critical(nullptr, tr("Error"),
                                           tr("Failed to move to Trash. Please check file permissions."));
                     continue;
@@ -272,8 +269,22 @@ void TrashHandler::moveToTrash(const QStringList& paths) {
                                                   QMessageBox::Yes | QMessageBox::No,
                                                   QMessageBox::No);
                 if (result == QMessageBox::Yes) {
-                    // Delete the file/directory permanently
-                    if (fileInfo.isDir()) {
+                    // Delete the symlink/file/directory permanently
+                    if (fileInfo.isSymLink()) {
+                        // CAUTION: Handle symlinks before directories, otherwise not only the symlink but also the
+                        // contents of the directory it points to will be deleted
+                        if (!QFile::remove(path)) {
+                            // Use sudo -A -E rm -f <path> to delete the symlink
+                            QProcess p;
+                            p.start("sudo", QStringList() << "-A" << "-E" << "rm" << "-f" << path);
+                            p.waitForFinished(-1);
+                            if (p.exitCode() != 0) {
+                                QMessageBox::critical(nullptr, tr("Error"),
+                                                      tr("Failed to delete the symlink. Please check its permissions."));
+                            }
+                            continue;
+                        }
+                    } else if (fileInfo.isDir()) {
                         if (!QDir(path).removeRecursively()) {
                             // Use sudo -A -E rm -rf <path> to delete the directory
                             QProcess p;
@@ -281,7 +292,7 @@ void TrashHandler::moveToTrash(const QStringList& paths) {
                             p.waitForFinished(-1);
                             if (p.exitCode() != 0) {
                                 QMessageBox::critical(nullptr, tr("Error"),
-                                                      tr("Failed to delete the directory permanently. Please check file permissions."));
+                                                      tr("Failed to delete the directory. Please check its permissions."));
                             }
                             continue;
                         }
@@ -293,7 +304,7 @@ void TrashHandler::moveToTrash(const QStringList& paths) {
                             p.waitForFinished(-1);
                             if (p.exitCode() != 0) {
                                 QMessageBox::critical(nullptr, tr("Error"),
-                                                      tr("Failed to delete the file permanently. Please check file permissions."));
+                                                      tr("Failed to delete the file. Please check its permissions."));
                             }
                             continue;
                         }
