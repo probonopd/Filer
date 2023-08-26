@@ -134,7 +134,7 @@ private:
     void saveWindowGeometry();
 
     void setFilterRegExpForHiddenFiles(QSortFilterProxyModel *proxyModel, const QString &hiddenFilePath);
-
+    void closeAllWindowsOnScreen(int targetScreenIndex);
 
     ExtendedAttributes *m_extendedAttributes;
 };

@@ -71,6 +71,7 @@
 #include "CustomProxyModel.h"
 #include <QStorageInfo>
 #include "Mountpoints.h"
+#include <QScreen>
 
 /*
  * This creates a FileManagerMainWindow object with a QTreeView subclass and QListView subclass widget.
@@ -203,6 +204,10 @@ FileManagerMainWindow::FileManagerMainWindow(QWidget *parent, const QString &ini
     // Draw the desktop picture for the first instance
     if (m_isFirstInstance) {
         m_iconView->requestDesktopPictureToBePainted(true);
+
+        // closeAllWindowsOnScreen(0); // TODO: Instead, prevent the "desktop picture only" windows created in main.cpp
+        // from being available in the window menu by setting some property on them;
+        // the same as we do with Installer
     }
 
     // Create an instance of our custom QFileIconProvider
@@ -1827,5 +1832,20 @@ void FileManagerMainWindow::setFilterRegExpForHiddenFiles(QSortFilterProxyModel 
         proxyModel->setFilterRegExp(QRegExp()); // Reset filter
         // Hide all files starting with a dot
         proxyModel->setFilterRegExp(QRegExp("^[^.].*"));
+    }
+}
+
+void FileManagerMainWindow::closeAllWindowsOnScreen(int targetScreenIndex) {
+    QList<QScreen*> screens = QGuiApplication::screens();
+    if (targetScreenIndex >= 0 && targetScreenIndex < screens.size()) {
+        QScreen *targetScreen = screens[targetScreenIndex];
+        QRect targetScreenGeometry = targetScreen->geometry();
+
+        for (QWidget *topLevelWidget : QApplication::topLevelWidgets()) {
+            QPoint widgetTopLeft = topLevelWidget->mapToGlobal(QPoint(0, 0));
+            if (targetScreenGeometry.contains(widgetTopLeft)) {
+                topLevelWidget->close();
+            }
+        }
     }
 }

@@ -80,6 +80,12 @@ void displayPicturesOnAllScreens(QApplication &app) {
         window->show();
         window->setFixedSize(screenGeometry.size());
         window->setAttribute(Qt::WA_X11NetWmWindowTypeDesktop, true);
+        // Make invisible to the taskbar = Menu
+        window->setAttribute(Qt::WA_X11DoNotAcceptFocus, true);
+        // No window decorations = will not show up in Menu as a window
+        window->setWindowFlags(Qt::FramelessWindowHint);
+        // Make it an auxiliary window, not a top-level window
+        window->setWindowFlags(Qt::Tool);
     }
 }
 
