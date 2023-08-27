@@ -29,6 +29,10 @@
 #include "DragAndDropHandler.h"
 
 CustomTreeView::CustomTreeView(QWidget* parent) : QTreeView(parent) {
+
+    // Allow sorting by clicking on the column headers
+    setSortingEnabled(true);
+
     DragAndDropHandler *handler = new DragAndDropHandler(this);
     connect(this, &CustomTreeView::dragEnterEventSignal, handler, &DragAndDropHandler::handleDragEnterEvent);
     connect(this, &CustomTreeView::dragMoveEventSignal, handler, &DragAndDropHandler::handleDragMoveEvent);

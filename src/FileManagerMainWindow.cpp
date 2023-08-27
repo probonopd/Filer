@@ -195,9 +195,6 @@ FileManagerMainWindow::FileManagerMainWindow(QWidget *parent, const QString &ini
     // Set the stacked widget as the central widget
     setCentralWidget(m_stackedWidget);
 
-    // Make the tree view sortable
-    m_treeView->setSortingEnabled(true);
-
     // No frame around the views
     m_treeView->setFrameStyle(QFrame::NoFrame);
     m_iconView->setFrameStyle(QFrame::NoFrame);
@@ -321,24 +318,20 @@ FileManagerMainWindow::FileManagerMainWindow(QWidget *parent, const QString &ini
     m_treeView->setColumnWidth(0, 400);
 
     // Set the selection mode to ExtendedSelection
-    m_treeView->setSelectionMode(QAbstractItemView::ExtendedSelection);
+    m_treeView->setSelectionMode(QAbstractItemView::ContiguousSelection);
+    m_treeView->setSelectionBehavior(QAbstractItemView::SelectRows);
     m_iconView->setSelectionMode(QAbstractItemView::ExtendedSelection);
 
     // Set the elision mode to elide ("...") the text in the middle
     m_treeView->setTextElideMode(Qt::ElideMiddle);
     m_iconView->setTextElideMode(Qt::ElideMiddle);
 
-    // To call the updateStatusBar() function whenever the selected items change,
-    // Connect the selectionChanged() signal of the selection model to the updateStatusBar() slot
+    // Connect the selectionChanged() signal of the selection model to a single slot
     connect(m_selectionModel, &QItemSelectionModel::selectionChanged, this,
-            &FileManagerMainWindow::updateStatusBar);
-    updateStatusBar();
+            &FileManagerMainWindow::handleSelectionChange);
 
-    // To call the updateMenus() function whenever the selected items change,
-    // connect the QItemSelectionModel's selectionChanged() signal to the updateMenus() slot
-    connect(m_selectionModel, &QItemSelectionModel::selectionChanged, this,
-            &FileManagerMainWindow::updateMenus);
-    updateMenus();
+    // Call the slot immediately to initialize the UI based on the initial selection
+    handleSelectionChange();
 
     // Connect the doubleClicked() signal to the open() slot
     connect(
@@ -638,7 +631,7 @@ void FileManagerMainWindow::createMenus()
     fileMenu->addAction(m_showContentsAction);
     m_showContentsAction->setEnabled(false);
     connect(m_showContentsAction, &QAction::triggered, this, [this]() {
-        QModelIndexList selectedIndexes = m_treeView->selectionModel()->selectedIndexes();
+        QModelIndexList selectedIndexes = m_iconView->selectionModel()->selectedIndexes();
         for (QModelIndex index : selectedIndexes) {
             QString filePath = m_fileSystemModel->filePath(m_proxyModel->mapToSource(index));
             openFolderInNewWindow(filePath);
@@ -681,7 +674,7 @@ void FileManagerMainWindow::createMenus()
     // Put the paths of the selected files on the clipboard so that we can use them when pasting
     connect(editMenu->actions().last(), &QAction::triggered, this, [this]() {
         // Get all selected indexes
-        QModelIndexList selectedIndexes = m_treeView->selectionModel()->selectedIndexes();
+        QModelIndexList selectedIndexes = m_iconView->selectionModel()->selectedIndexes();
         // Get the file paths of the selected indexes
         QStringList filePaths;
         for (const QModelIndex &index : selectedIndexes) {
@@ -711,7 +704,7 @@ void FileManagerMainWindow::createMenus()
     // Put the paths of the selected files on the clipboard so that we can use them when pasting
     connect(editMenu->actions().last(), &QAction::triggered, this, [this]() {
         // Get all selected indexes
-        QModelIndexList selectedIndexes = m_treeView->selectionModel()->selectedIndexes();
+        QModelIndexList selectedIndexes = m_iconView->selectionModel()->selectedIndexes();
         // Get the file paths of the selected indexes
         QStringList filePaths;
         for (const QModelIndex &index : selectedIndexes) {
@@ -803,7 +796,14 @@ void FileManagerMainWindow::createMenus()
     editMenu->actions().last()->setShortcut(QKeySequence("Ctrl-Backspace"));
     connect(editMenu->actions().last(), &QAction::triggered, this, [this]() {
         // Get all selected indexes
-        QModelIndexList selectedIndexes = m_treeView->selectionModel()->selectedIndexes();
+        QModelIndexList selectedIndexes = m_iconView->selectionModel()->selectedIndexes();
+        // Disregard all indexes that are not for the first column
+        for (int i = 0; i < selectedIndexes.size(); i++) {
+            if (selectedIndexes.at(i).column() != 0) {
+                selectedIndexes.removeAt(i);
+                i--;
+            }
+        }
         // Get the file paths of the selected indexes
         QStringList filePaths;
                 for (const QModelIndex &index : selectedIndexes) {
@@ -1197,7 +1197,16 @@ void FileManagerMainWindow::updateStatusBar()
     qDebug() << Q_FUNC_INFO;
 
     // Get the selected indexes
-    QModelIndexList selectedIndexes = m_treeView->selectionModel()->selectedIndexes();
+    QModelIndexList selectedIndexes = m_iconView->selectionModel()->selectedIndexes();
+
+    // Disregard all indexes that are not for the first column
+    for (int i = 0; i < selectedIndexes.size(); i++) {
+        if (selectedIndexes.at(i).column() != 0) {
+            selectedIndexes.removeAt(i);
+            i--;
+        }
+    }
+
     qDebug() << "Selected indexes:" << selectedIndexes;
 
     // Calculate the size of the selected items on disk
@@ -1849,4 +1858,10 @@ void FileManagerMainWindow::closeAllWindowsOnScreen(int targetScreenIndex) {
             }
         }
     }
+}
+
+void FileManagerMainWindow::handleSelectionChange()
+{
+    updateStatusBar();
+    updateMenus();
 }

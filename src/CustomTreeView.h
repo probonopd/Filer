@@ -33,6 +33,11 @@
 #include <QDragLeaveEvent>
 #include <QDropEvent>
 
+#include <QItemSelectionModel>
+#include <QModelIndex>
+#include <QEvent>
+#include <QDebug>
+
 #include "DragAndDropHandler.h"
 
 class CustomTreeView : public QTreeView {

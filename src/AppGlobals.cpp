@@ -15,7 +15,7 @@ const int AppGlobals::MaxItems = 100;
 // Global application-wide variable that holds /media or /media/$USER
 const QString AppGlobals::mediaPath = VolumeWatcher::getMediaPath();
 
-// TODO: Actually read the name of the start volume from the volume label
+// NOTE: VolumeWatcher can read the name of the start volume from the volume label
 const QString AppGlobals::hardDiskName = "Hard Disk";
 
 const QString AppGlobals::desktopPicturePath = "/usr/local/share/slim/themes/default/background.jpg";

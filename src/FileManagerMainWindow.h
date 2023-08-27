@@ -137,6 +137,8 @@ private:
     void closeAllWindowsOnScreen(int targetScreenIndex);
 
     ExtendedAttributes *m_extendedAttributes;
+
+    void handleSelectionChange();
 };
 
 #endif // FILEMANAGERMAINWINDOW_H

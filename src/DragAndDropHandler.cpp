@@ -57,7 +57,7 @@ DragAndDropHandler::DragAndDropHandler(QAbstractItemView *view, QObject *parent)
     m_view->setDragEnabled(true);
     m_view->setDropIndicatorShown(true);
     m_view->setDefaultDropAction(Qt::MoveAction);
-    m_view->setSelectionMode(QAbstractItemView::ContiguousSelection);
+
     // https://doc.qt.io/qt-5/model-view-programming.html#using-convenience-views
     // Enable the user to move the items around within the view
     m_view->setDragDropMode(QAbstractItemView::InternalMove); // Adjust as needed
