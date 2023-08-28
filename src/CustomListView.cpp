@@ -37,6 +37,7 @@
 #include "FileOperationManager.h"
 #include "DragAndDropHandler.h"
 #include "AppGlobals.h"
+#include <QSettings>
 
 CustomListView::CustomListView(QWidget* parent) : QListView(parent) {
     should_paint_desktop_picture = false;
@@ -71,12 +72,12 @@ void CustomListView::paintEvent(QPaintEvent* event)
     // Save the painter state
     painter.save();
 
-    QString desktopPicture = AppGlobals::desktopPicturePath;
-
+    // From QSettings, get the value for desktopPicture; if not set, use the default
+    QString desktopPicturePath = QSettings().value("desktopPicture", "/usr/local/share/slim/themes/default/background.jpg").toString();
     // If exists, use the user's desktop picture
-    if (QFile::exists(desktopPicture)) {
+    if (QFile::exists(desktopPicturePath)) {
         // Draw the desktop picture
-        QPixmap background(desktopPicture);
+        QPixmap background(desktopPicturePath);
         background = background.scaled(this->size(), Qt::KeepAspectRatioByExpanding);
         painter.drawPixmap(0, 0, background);
 

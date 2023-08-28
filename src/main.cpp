@@ -53,10 +53,13 @@
 #include "AppGlobals.h"
 #include <QScreen>
 #include <QPainter>
+#include <QSettings>
 
 void displayPicturesOnAllScreens(QApplication &app) {
 
-    if (!QFileInfo(AppGlobals::desktopPicturePath).exists()) {
+    QString desktopPicturePath = QSettings().value("desktopPicture", "/usr/local/share/slim/themes/default/background.jpg").toString();
+
+    if (!QFileInfo(desktopPicturePath).exists()) {
         return;
     }
 
@@ -64,7 +67,9 @@ void displayPicturesOnAllScreens(QApplication &app) {
 
     for (QScreen *screen : screens) {
         QRect screenGeometry = screen->geometry();
-        QPixmap desktopPixmap = QPixmap(AppGlobals::desktopPicturePath);
+        // From QSettings, get the value for the desktopPicture= key which is the path to the picture
+
+        QPixmap desktopPixmap = QPixmap(desktopPicturePath);
         // Create a QLabel to display the picture
         QLabel *label = new QLabel;
         label->setPixmap(desktopPixmap.scaled(screenGeometry.size(), Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation));
@@ -95,10 +100,17 @@ int main(int argc, char *argv[])
 
     QDBusConnection connection = QDBusConnection::sessionBus();
 
-    // Set the application name
+    // Set the application name and organization name; this is used for QSettings
     QCoreApplication::setApplicationName("Filer");
-    // Set the application version
-    QCoreApplication::setApplicationVersion("1.0");
+    QCoreApplication::setOrganizationName("helloDesktop");
+
+    // Initialize the global QSettings instance
+    QSettings settings;
+    // Set the QSettings instance as a property of the qApp object
+    qApp->setProperty("settings", QVariant::fromValue(&settings));
+    // Load the settings from the settings file
+    settings.sync();
+
 
     // Add --version and -v
     QCommandLineParser parser;

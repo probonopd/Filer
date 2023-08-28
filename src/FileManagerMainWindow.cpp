@@ -73,6 +73,8 @@
 #include "Mountpoints.h"
 #include <QScreen>
 #include "VolumeWatcher.h"
+#include <QSettings>
+#include "PreferencesDialog.h"
 
 /*
  * This creates a FileManagerMainWindow object with a QTreeView subclass and QListView subclass widget.
@@ -372,10 +374,7 @@ FileManagerMainWindow::FileManagerMainWindow(QWidget *parent, const QString &ini
     // Set the view mode to IconMode with the text under the icons and make the icons freely movable
     m_iconView->setViewMode(QListView::IconMode);
     m_iconView->setMovement(QListView::Free);
-
-    // Put the icons on a grid
-    QSize iconSize = m_iconView->iconSize();
-    m_iconView->setGridSize(QSize(200, 64));
+    setGridSize();
 
     // Connect the doubleClicked() signal to the open() slot
     connect(
@@ -419,6 +418,15 @@ FileManagerMainWindow::FileManagerMainWindow(QWidget *parent, const QString &ini
     // Only this way the window will be destroyed immediately and not when the event loop is
     // finished and we can remove the window from the list of child windows of the parent window
     setAttribute(Qt::WA_DeleteOnClose);
+}
+
+void FileManagerMainWindow::setGridSize() {// Put the icons on a grid
+    QSize iconSize = m_iconView->iconSize();
+    // Get the gridSize from QSettings, default is 120
+    QSettings settings;
+    int gridSize = settings.value("gridSize", 120).toInt();
+    qDebug() << "gridSize:" << gridSize;
+    m_iconView->setGridSize(QSize(gridSize, 60));
 }
 
 // Saves the window geometry
@@ -495,6 +503,7 @@ void FileManagerMainWindow::resizeEvent(QResizeEvent *event)
 
 void FileManagerMainWindow::refresh() {
     qDebug() << "Calling update() on the views";
+    setGridSize();
     m_treeView->update();
     m_iconView->update();
 }
@@ -835,6 +844,11 @@ void FileManagerMainWindow::createMenus()
 
     m_renameAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_R));
     editMenu->addAction(m_renameAction);
+
+    editMenu->addSeparator();
+
+
+    editMenu->addAction(tr("Preferences..."), this, &FileManagerMainWindow::showPreferencesDialog);
 
     editMenu->addSeparator();
 
@@ -1864,4 +1878,12 @@ void FileManagerMainWindow::handleSelectionChange()
 {
     updateStatusBar();
     updateMenus();
+}
+
+void FileManagerMainWindow::showPreferencesDialog()
+{
+    PreferencesDialog *preferencesDialog = PreferencesDialog::getInstance();
+    preferencesDialog->show();
+    // Connect the dialog's prefsChanged signal to the slot that updates the view
+    connect(preferencesDialog, &PreferencesDialog::prefsChanged, this, &FileManagerMainWindow::refresh);
 }

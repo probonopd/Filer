@@ -245,17 +245,67 @@ void InfoDialog::setupInformation()
         ui->changeOpenWithButton->setEnabled(true);
     }
 
-    // If it is a mountpoint, show the filesystem type
-    if (Mountpoints::isMountpoint(filePath)) {
-        QStorageInfo info(filePath);
-        ui->typeInfo->setText(info.fileSystemType());
+    // If it is a symlink, say "Symbolic link to <target>"
+    if (fileInfo.isSymLink()) {
+        ui->typeInfo->setText(tr("Symbolic link to ") + fileInfo.symLinkTarget());
         ui->openWithInfo->setText("open");
         ui->changeOpenWithButton->setEnabled(false);
     }
 
-    // If it is a symlink, say "Symbolic link to <target>"
-    if (fileInfo.isSymLink()) {
-        ui->typeInfo->setText(tr("Symbolic link to ") + fileInfo.symLinkTarget());
+    // If it is a mountpoint, show the filesystem type
+    if (Mountpoints::isMountpoint(filePath)) {
+        QStorageInfo info(filePath);
+
+        QString fileSystemType = info.fileSystemType();
+        QString device = info.device();
+        QString mountpoint = info.rootPath();
+
+        // If it is "fuse", show the actual filesystem type
+        if (fileSystemType == "fusefs") {
+            QString mountpointToBeFound = fileInfo.absoluteFilePath();
+            if (fileInfo.isSymLink()) {
+                mountpointToBeFound = fileInfo.symLinkTarget();
+            }
+            qDebug() << "It is a fuse filesystem, so we need to find out the actual filesystem type";
+            if (QSysInfo::kernelType() == "freebsd" && QFile::exists("/var/log/automount.log")) {
+                qDebug() << "It is FreeBSD and /var/log/automount.log exists, so we use it";
+                // FIXME: Is there a better way to do this?
+                QString output = "";
+                QFile file("/var/log/automount.log");
+                if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+                    QTextStream in(&file);
+                    while (!in.atEnd()) {
+                        QString line = in.readLine();
+                        if (line.contains(mountpointToBeFound) && line.contains("mount OK")) {
+                            output = line;
+                        }
+                    }
+                    file.close();
+                }
+                qDebug() << "output:" << output;
+                if (!output.isEmpty()) {
+                    // Line format is like this:
+                    // 2023-28-28 22:14:34 /dev/da0s1: mount OK: 'mount.exfat -o uid=0 -o gid=0 -o umask=002 -o noatime /dev/da0s1 /media/Ventoy'
+                    // Parse the line, get the filesystem type, the device and the mountpoint
+                    QString partEnclosedInSingleQuotes = output.split("'")[1];
+                    // qDebug() << "partEnclosedInSingleQuotes:" << partEnclosedInSingleQuotes;
+                    fileSystemType = partEnclosedInSingleQuotes.split(" ")[0];
+                    // Remove "mount."
+                    fileSystemType = fileSystemType.replace("mount.", "");
+                    qDebug() << "fileSystemType:" << fileSystemType;
+                    // Device is the second last word
+                    device = partEnclosedInSingleQuotes.split(" ")[
+                            partEnclosedInSingleQuotes.split(" ").length() - 2];
+                    qDebug() << "device:" << device;
+                    // Mountpoint is the last word
+                    mountpoint = partEnclosedInSingleQuotes.split(" ")[
+                            partEnclosedInSingleQuotes.split(" ").length() - 1];
+                    qDebug() << "mountpoint:" << mountpoint;
+                }
+            }
+        }
+
+        ui->typeInfo->setText(tr("%1 on %2 mounted at %3").arg(fileSystemType, device).arg(mountpoint));
         ui->openWithInfo->setText("open");
         ui->changeOpenWithButton->setEnabled(false);
     }

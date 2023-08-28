@@ -37,6 +37,7 @@
 #include "AppGlobals.h"
 #include "TrashHandler.h"
 #include <QDateTime>
+#include "MountWatcherThread.h"
 
 VolumeWatcher::VolumeWatcher(QObject *parent) : QObject(parent)
 {
@@ -105,38 +106,7 @@ void VolumeWatcher::handleDirectoryChange(const QString &path)
             }
         }
 
-        if (QFile::exists(fullPath)) {
-            if (!QFile::exists(symlinkPath)) {
-                // Wait until a mount point appears at the target or 5 seconds have passed
-                int counter = 0;
-                QStringList mountPoints;
-                while (true) {
-                    for (const QStorageInfo &storage : QStorageInfo::mountedVolumes()) {
-                        mountPoints << storage.rootPath();
-                    }
-                    if (mountPoints.contains(fullPath)) {
-                        break;
-                    }
-                    QThread::msleep(100);
-                    qApp->processEvents();
-                    qDebug() << "Waiting for mount point to appear at" << fullPath;
-                    // TODO: Replace this by an asynchronous approach
-                    counter++;
-                    if (counter > 20) {
-                        // Give up after 2 seconds
-                        break;
-                    }
-                }
-                if (mountPoints.contains(fullPath)) {
-                    QFile::link(fullPath, symlinkPath);
-                    qDebug() << "Symlink created for" << fullPath;
-                } else {
-                    qDebug() << "Giving up on" << fullPath;
-                }
-            } else {
-                qDebug() << "Symlink already exists for" << fullPath;
-            }
-        }
+        startWaitingForMounted(fullPath, symlinkPath);
     }
 
     // Clean up symlinks for targets that no longer exist in /media/
@@ -147,6 +117,13 @@ void VolumeWatcher::handleDirectoryChange(const QString &path)
             qDebug() << "Symlink removed for" << fullPath;
         }
     }
+}
+
+void VolumeWatcher::startWaitingForMounted(const QString &fullPath, const QString &symlinkPath) const {
+    // Wait until mounted, then create symlink; non-blocking (in its own thread)
+    MountWatcherThread *thread = new MountWatcherThread(fullPath, symlinkPath);
+    connect(thread, &QThread::finished, thread, &QThread::deleteLater);
+    thread->start();
 }
 
 QString VolumeWatcher::getMediaPath() {

@@ -57,7 +57,7 @@ set(PROJECT_SOURCES
         TrashHandler.cpp TrashHandler.h
         FileOperationManager.cpp FileOperationManager.h
         VolumeWatcher.cpp VolumeWatcher.h
-        Mountpoints.cpp Mountpoints.h DragAndDropHandler.cpp DragAndDropHandler.h CustomTreeView.cpp CustomTreeView.h)
+        Mountpoints.cpp Mountpoints.h DragAndDropHandler.cpp DragAndDropHandler.h CustomTreeView.cpp CustomTreeView.h MountWatcherThread.cpp MountWatcherThread.h PreferencesDialog.cpp PreferencesDialog.h)
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(Filer

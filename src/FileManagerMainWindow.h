@@ -139,6 +139,10 @@ private:
     ExtendedAttributes *m_extendedAttributes;
 
     void handleSelectionChange();
+
+    void showPreferencesDialog();
+
+    void setGridSize();
 };
 
 #endif // FILEMANAGERMAINWINDOW_H

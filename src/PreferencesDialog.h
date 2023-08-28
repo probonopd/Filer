@@ -1,22 +1,36 @@
-#ifndef SETTINGSDIALOG_H
-#define SETTINGSDIALOG_H
+#ifndef PREFERENCESDIALOG_H
+#define PREFERENCESDIALOG_H
 
 #include <QDialog>
 #include <QComboBox>
-#include <QVBoxLayout>
+#include <QGridLayout>
+#include <QLabel>
 #include <QSettings>
 
-class SettingsDialog : public QDialog
+class PreferencesDialog : public QDialog
 {
 Q_OBJECT
 
 public:
-    explicit SettingsDialog(QWidget *parent = nullptr);
-    ~SettingsDialog();
+    static PreferencesDialog *getInstance(QWidget *parent = nullptr);
+    ~PreferencesDialog();
+
+signals:
+    void prefsChanged();
+
+private slots:
+    void updateSetting(int index);
 
 private:
+    PreferencesDialog(QWidget *parent = nullptr);
+
     QComboBox *gridSizeComboBox;
-    QSettings settings; // QSettings instance to manage settings
+    QPushButton *selectPictureButton;
+    QGridLayout *layout;
+
+    void loadSetting();
+
+    void onSelectPictureButtonClicked();
 };
 
-#endif // SETTINGSDIALOG_H
+#endif // PREFERENCESDIALOG_H
