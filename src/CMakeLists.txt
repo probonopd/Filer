@@ -29,8 +29,7 @@ pkg_check_modules(LIBSQSH REQUIRED IMPORTED_TARGET libsqsh)
 # Find libsqsh.a; could be in /usr/local/lib or /usr/lib or /usr/local/lib/*/
 find_library(LIBSQSH_STATIC_PATH libsqsh.a)
 
-# Fix: fatal error: 'sqsh.h' file not found
-include_directories(/usr/local/include/sqsh)
+include_directories(Filer PRIVATE ${LIBSQSH_INCLUDE_DIRS})
 
 # Add the path to the libqxdg library
 # include_directories(/usr/include/qt5xdg /usr/local/include/qt5xdg)
