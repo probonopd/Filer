@@ -2,7 +2,7 @@
 <area shape="rect" id="node1" title=" " alt="" coords="5,183,80,209"/>
 <area shape="rect" id="node2" href="$classApplicationBundle.html" title="Represents an application bundle or executable in various formats." alt="" coords="138,5,278,32"/>
 <area shape="rect" id="node3" href="$classDBusInterface.html" title=" " alt="" coords="151,56,265,83"/>
-<area shape="rect" id="node4" href="$classDragAndDropHandler.html" title="The DragAndDropHandler class This class handles drag and drop events for a QAbstractItemView so that ..." alt="" coords="128,107,288,133"/>
+<area shape="rect" id="node4" href="$classDragAndDropHandler.html" title="Handles drag and drop events for a QAbstractItemView so that we don&#39;t have to implement the same code..." alt="" coords="128,107,288,133"/>
 <area shape="rect" id="node5" href="$classMountpoints.html" title=" " alt="" coords="157,157,259,184"/>
 <area shape="rect" id="node6" href="$classSoundPlayer.html" title="The SoundPlayer class provides functionality to play sound effects." alt="" coords="157,208,259,235"/>
 <area shape="rect" id="node7" href="$classSqshArchiveReader.html" title="The SqshArchiveReader class provides functionality to read files from a SquashFS archive." alt="" coords="134,259,282,285"/>

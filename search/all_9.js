@@ -9,7 +9,7 @@ var searchData=
   ['m_5ftype_69',['m_type',['../classApplicationBundle.html#a638205ce53b6e01a97948a606fab4408',1,'ApplicationBundle']]],
   ['mountpoints_70',['Mountpoints',['../classMountpoints.html',1,'']]],
   ['mountpoints_2eh_71',['Mountpoints.h',['../Mountpoints_8h.html',1,'']]],
-  ['mountwatcherthread_72',['MountWatcherThread',['../classMountWatcherThread.html',1,'']]],
+  ['mountwatcherthread_72',['MountWatcherThread',['../classMountWatcherThread.html',1,'MountWatcherThread'],['../classMountWatcherThread.html#a36f30fbe9f40af85765394c7093e933a',1,'MountWatcherThread::MountWatcherThread()']]],
   ['movetotrash_73',['moveToTrash',['../classTrashHandler.html#afc29eb8a2534d085b73eb45fe603f2ef',1,'TrashHandler']]],
   ['movewithprogress_74',['moveWithProgress',['../classFileOperationManager.html#a00b4ad1e188cfd6cb9c30846f849441e',1,'FileOperationManager']]]
 ];

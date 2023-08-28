@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['volumewatcher_130',['VolumeWatcher',['../classVolumeWatcher.html',1,'']]]
+  ['ui_5finfodialog_130',['Ui_InfoDialog',['../classUi__InfoDialog.html',1,'']]]
 ];

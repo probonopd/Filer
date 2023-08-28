@@ -61,12 +61,94 @@ $(function() {
 
 </div><!-- top -->
 <div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pro-methods">Protected Member Functions</a> &#124;
+<a href="classMountWatcherThread-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">MountWatcherThread Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-<hr/>The documentation for this class was generated from the following file:<ul>
+
+<p>The <a class="el" href="classMountWatcherThread.html" title="The MountWatcherThread class provides a threaded mechanism for watching and creating symlinks for mou...">MountWatcherThread</a> class provides a threaded mechanism for watching and creating symlinks for mounted volumes. This class exists to make waiting for the mounting to happen asynchronous, not blocking everything else. QStorageInfo doesn't provide a built-in mechanism to notify when mounted volumes change; if it did, we would not need this.  
+ <a href="classMountWatcherThread.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="MountWatcherThread_8h_source.html">MountWatcherThread.h</a>&gt;</code></p>
+<div class="dynheader">
+Inheritance diagram for MountWatcherThread:</div>
+<div class="dyncontent">
+<div class="center"><img src="classMountWatcherThread__inherit__graph.png" border="0" usemap="#aMountWatcherThread_inherit__map" alt="Inheritance graph"/></div>
+<map name="aMountWatcherThread_inherit__map" id="aMountWatcherThread_inherit__map">
+<area shape="rect" title="The MountWatcherThread class provides a threaded mechanism for watching and creating symlinks for mou..." alt="" coords="5,80,167,107"/>
+<area shape="rect" title=" " alt="" coords="47,5,125,32"/>
+</map>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<div class="dynheader">
+Collaboration diagram for MountWatcherThread:</div>
+<div class="dyncontent">
+<div class="center"><img src="classMountWatcherThread__coll__graph.png" border="0" usemap="#aMountWatcherThread_coll__map" alt="Collaboration graph"/></div>
+<map name="aMountWatcherThread_coll__map" id="aMountWatcherThread_coll__map">
+<area shape="rect" title="The MountWatcherThread class provides a threaded mechanism for watching and creating symlinks for mou..." alt="" coords="5,80,167,107"/>
+<area shape="rect" title=" " alt="" coords="47,5,125,32"/>
+</map>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr class="memitem:a36f30fbe9f40af85765394c7093e933a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMountWatcherThread.html#a36f30fbe9f40af85765394c7093e933a">MountWatcherThread</a> (const QString &amp;fullPath, const QString &amp;symlinkPath)</td></tr>
+<tr class="memdesc:a36f30fbe9f40af85765394c7093e933a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs a <a class="el" href="classMountWatcherThread.html" title="The MountWatcherThread class provides a threaded mechanism for watching and creating symlinks for mou...">MountWatcherThread</a> object.  <a href="classMountWatcherThread.html#a36f30fbe9f40af85765394c7093e933a">More...</a><br /></td></tr>
+<tr class="separator:a36f30fbe9f40af85765394c7093e933a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
+Protected Member Functions</h2></td></tr>
+<tr class="memitem:af5e2b6108edcd082a3e623c717f349d6"><td class="memItemLeft" align="right" valign="top"><a id="af5e2b6108edcd082a3e623c717f349d6"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMountWatcherThread.html#af5e2b6108edcd082a3e623c717f349d6">run</a> () override</td></tr>
+<tr class="memdesc:af5e2b6108edcd082a3e623c717f349d6"><td class="mdescLeft">&#160;</td><td class="mdescRight">The overridden run method that performs the async logic for watching and creating symlinks. <br /></td></tr>
+<tr class="separator:af5e2b6108edcd082a3e623c717f349d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>The <a class="el" href="classMountWatcherThread.html" title="The MountWatcherThread class provides a threaded mechanism for watching and creating symlinks for mou...">MountWatcherThread</a> class provides a threaded mechanism for watching and creating symlinks for mounted volumes. This class exists to make waiting for the mounting to happen asynchronous, not blocking everything else. QStorageInfo doesn't provide a built-in mechanism to notify when mounted volumes change; if it did, we would not need this. </p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a36f30fbe9f40af85765394c7093e933a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a36f30fbe9f40af85765394c7093e933a">&#9670;&nbsp;</a></span>MountWatcherThread()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">MountWatcherThread::MountWatcherThread </td>
+          <td>(</td>
+          <td class="paramtype">const QString &amp;&#160;</td>
+          <td class="paramname"><em>fullPath</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const QString &amp;&#160;</td>
+          <td class="paramname"><em>symlinkPath</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Constructs a <a class="el" href="classMountWatcherThread.html" title="The MountWatcherThread class provides a threaded mechanism for watching and creating symlinks for mou...">MountWatcherThread</a> object. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">fullPath</td><td>The full path of the mount point. </td></tr>
+    <tr><td class="paramname">symlinkPath</td><td>The path where the symlink should be created. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
 <li><a class="el" href="MountWatcherThread_8h_source.html">MountWatcherThread.h</a></li>
+<li>MountWatcherThread.cpp</li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
