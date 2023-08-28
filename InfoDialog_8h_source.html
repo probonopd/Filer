@@ -107,22 +107,22 @@ $(function() {
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;Q_OBJECT</div>
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160; </div>
 <div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    <span class="keyword">explicit</span> <a class="code" href="classInfoDialog.html#ae103d6834fb2808adeaa6a046676e1b4">InfoDialog</a>(<span class="keyword">const</span> QString &amp;filePath, QWidget *parent = <span class="keyword">nullptr</span>);</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160; </div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    <a class="code" href="classInfoDialog.html#a691489763ca5ecf37b51bed3c9786d06">~InfoDialog</a>();</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160; </div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    <span class="keyword">static</span> <a class="code" href="classInfoDialog.html">InfoDialog</a>* <a class="code" href="classInfoDialog.html#a9d65468ae3a358eb17ddfc9517111ab7">getInstance</a>(<span class="keyword">const</span> QString &amp;filePath, QWidget *parent = <span class="keyword">nullptr</span>);</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160; </div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    <a class="code" href="classUi_1_1InfoDialog.html">Ui::InfoDialog</a> *ui; </div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    QString filePath; </div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    QFileInfo fileInfo; </div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    QString openWith; </div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;    QFileSystemWatcher fileWatcher; </div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    <span class="keyword">static</span> QMap&lt;QString, InfoDialog*&gt; instances; </div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    <span class="keywordtype">bool</span> labelActive = <span class="keyword">false</span>; </div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    <span class="keywordtype">bool</span> iconClickedHandled = <span class="keyword">false</span>; </div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;    <span class="keywordtype">bool</span> isEditable = <span class="keyword">false</span>; </div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    <a class="code" href="classInfoDialog.html#a691489763ca5ecf37b51bed3c9786d06">~InfoDialog</a>();</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160; </div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    <span class="keyword">static</span> <a class="code" href="classInfoDialog.html">InfoDialog</a>* <a class="code" href="classInfoDialog.html#a9d65468ae3a358eb17ddfc9517111ab7">getInstance</a>(<span class="keyword">const</span> QString &amp;filePath, QWidget *parent = <span class="keyword">nullptr</span>);</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160; </div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    <a class="code" href="classUi_1_1InfoDialog.html">Ui::InfoDialog</a> *ui; </div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    QString filePath; </div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    QFileInfo fileInfo; </div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    QString openWith; </div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    QFileSystemWatcher fileWatcher; </div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    <span class="keyword">static</span> QMap&lt;QString, InfoDialog*&gt; instances; </div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    <span class="keywordtype">bool</span> labelActive = <span class="keyword">false</span>; </div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    <span class="keywordtype">bool</span> iconClickedHandled = <span class="keyword">false</span>; </div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    <span class="keywordtype">bool</span> isEditable = <span class="keyword">false</span>; </div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;    <span class="keyword">explicit</span> <a class="code" href="classInfoDialog.html">InfoDialog</a>(<span class="keyword">const</span> QString &amp;filePath, QWidget *parent = <span class="keyword">nullptr</span>);</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160; </div>
 <div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;    <span class="keywordtype">bool</span> eventFilter(QObject *obj, QEvent *event);</div>
 <div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160; </div>
 <div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;    QString getPermissionsString(QFile::Permissions permissions);</div>
@@ -151,7 +151,6 @@ $(function() {
 <div class="ttc" id="aclassInfoDialog_html"><div class="ttname"><a href="classInfoDialog.html">InfoDialog</a></div><div class="ttdoc">The InfoDialog class represents a dialog to display information about a file or directory.</div><div class="ttdef"><b>Definition:</b> InfoDialog.h:42</div></div>
 <div class="ttc" id="aclassInfoDialog_html_a691489763ca5ecf37b51bed3c9786d06"><div class="ttname"><a href="classInfoDialog.html#a691489763ca5ecf37b51bed3c9786d06">InfoDialog::~InfoDialog</a></div><div class="ttdeci">~InfoDialog()</div><div class="ttdoc">Destructor.</div><div class="ttdef"><b>Definition:</b> InfoDialog.cpp:146</div></div>
 <div class="ttc" id="aclassInfoDialog_html_a9d65468ae3a358eb17ddfc9517111ab7"><div class="ttname"><a href="classInfoDialog.html#a9d65468ae3a358eb17ddfc9517111ab7">InfoDialog::getInstance</a></div><div class="ttdeci">static InfoDialog * getInstance(const QString &amp;filePath, QWidget *parent=nullptr)</div><div class="ttdoc">Gets the instance of the InfoDialog for the given file path if it exists, otherwise creates it.</div><div class="ttdef"><b>Definition:</b> InfoDialog.cpp:52</div></div>
-<div class="ttc" id="aclassInfoDialog_html_ae103d6834fb2808adeaa6a046676e1b4"><div class="ttname"><a href="classInfoDialog.html#ae103d6834fb2808adeaa6a046676e1b4">InfoDialog::InfoDialog</a></div><div class="ttdeci">InfoDialog(const QString &amp;filePath, QWidget *parent=nullptr)</div><div class="ttdoc">Constructs an InfoDialog with the given file path.</div><div class="ttdef"><b>Definition:</b> InfoDialog.cpp:66</div></div>
 <div class="ttc" id="aclassUi_1_1InfoDialog_html"><div class="ttname"><a href="classUi_1_1InfoDialog.html">Ui::InfoDialog</a></div><div class="ttdef"><b>Definition:</b> ui_InfoDialog.h:213</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
