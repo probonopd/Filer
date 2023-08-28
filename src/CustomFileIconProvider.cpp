@@ -203,7 +203,8 @@ QIcon CustomFileIconProvider::icon(const QFileInfo &info) const
         {
             // Create a QIcon from the QImage
             QIcon extractedIcon;
-            extractedIcon.addPixmap(QPixmap::fromImage(iconImage));
+            // Scale to 32x32; FIXME: Extract the best fitting size from the .exe file to begin with
+            extractedIcon.addPixmap(QPixmap::fromImage(iconImage.scaled(32, 32, Qt::KeepAspectRatio, Qt::SmoothTransformation)));
             return extractedIcon;
         }
         else
