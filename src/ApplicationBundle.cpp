@@ -39,6 +39,7 @@
 #include "SqshArchiveReader.h"
 
 #include <DesktopFile.h>
+#include <QPainter>
 
 ApplicationBundle::ApplicationBundle(const QString& path)
         : m_path(path),
@@ -164,7 +165,7 @@ QIcon ApplicationBundle::icon() const
             return QIcon::fromTheme("application-x-executable");
             qDebug() << "Icon image is null for file" << m_path;
         } else {
-            return QIcon(QPixmap::fromImage(image));
+            return quadraticIcon(QIcon(QPixmap::fromImage(image)));
         }
     } else {
         // Get the icon from the icon file if it exists
@@ -174,11 +175,27 @@ QIcon ApplicationBundle::icon() const
         }
         QFile file(m_icon);
         if (file.exists()) {
-            return QIcon(m_icon);
+            // If the icon is not quadratic, extend it to a quadratic shape and align it in the center bottom
+            return quadraticIcon(QIcon(m_icon));
         } else {
             // Get the default icon if the icon file does not exist
             return QIcon::fromTheme("application-x-executable");
         }
+    }
+}
+
+QIcon ApplicationBundle::quadraticIcon(QIcon icon) const {
+    if (QPixmap(m_icon).width() != QPixmap(m_icon).height()) {
+        QPixmap pixmap(m_icon);
+        QPixmap squaredPixmap = QPixmap(pixmap.width(), pixmap.width());
+        squaredPixmap.fill(Qt::transparent);
+        QPainter painter(&squaredPixmap);
+        painter.setRenderHint(QPainter::Antialiasing);
+        painter.setRenderHint(QPainter::SmoothPixmapTransform);
+        painter.drawPixmap((pixmap.width() - pixmap.height()) / 2, 0, pixmap);
+        return QIcon(squaredPixmap);
+    } else {
+        return QIcon(m_icon);
     }
 }
 

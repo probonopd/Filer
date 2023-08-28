@@ -145,6 +145,7 @@ QString m_path;         /**< The path of the application bundle. */
     QString m_icon;         /**< The path of the application's icon. */
     QString m_executable;   /**< The path to the executable. */
     QStringList m_arguments;/**< The list of arguments. */
+    QIcon quadraticIcon(QIcon icon) const;
 };
 
 #endif // APPLICATIONBUNDLE_H
