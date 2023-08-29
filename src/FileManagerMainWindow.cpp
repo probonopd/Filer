@@ -1048,6 +1048,14 @@ void FileManagerMainWindow::createMenus()
         QFileSystemModel *fsModel = new QFileSystemModel(completer);
         fsModel->setFilter(QDir::Dirs|QDir::Drives|QDir::NoDotAndDotDot|QDir::AllDirs); // Only directories, no files
         completer->setModel(fsModel);
+        // When the user enters "~" in the line edit, complete it to the home directory
+        QObject::connect(lineEdit, &QLineEdit::textChanged, [=](const QString &text) {
+            if (text.startsWith("~")) {
+                QString completedText = QDir::homePath() + text.mid(1) + "/";
+                lineEdit->setText(completedText);
+                lineEdit->setCursorPosition(completedText.length()); // Place cursor at the end
+            }
+        });
         fsModel->setRootPath(QString());
         lineEdit->setCompleter(completer);
         lineEdit->setPlaceholderText(tr("Enter a folder path..."));
