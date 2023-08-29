@@ -218,10 +218,6 @@ FileManagerMainWindow::FileManagerMainWindow(QWidget *parent, const QString &ini
     m_proxyModel = new CustomProxyModel(this);
     m_proxyModel->setSourceModel(m_fileSystemModel);
 
-    // For testing, filter out anything that starts with "z"
-    // m_proxyModel->setFilterRegExp(QRegExp("^[^z].*"));
-    // Works!
-
     // Call the function to set the filter based on the .hidden file
     setFilterRegExpForHiddenFiles(m_proxyModel, m_currentDir + "/.hidden");
 
@@ -1846,10 +1842,6 @@ void FileManagerMainWindow::setFilterRegExpForHiddenFiles(QSortFilterProxyModel 
             }
             hiddenFile.close();
         }
-    } else {
-        qDebug() << "Hidden file does not exist: " << hiddenFilePath;
-        // Clear the filter
-        proxyModel->setFilterRegExp(QRegExp());
     }
 
     if (!hiddenFiles.isEmpty())
@@ -1871,8 +1863,9 @@ void FileManagerMainWindow::setFilterRegExpForHiddenFiles(QSortFilterProxyModel 
     else
     {
         proxyModel->setFilterRegExp(QRegExp()); // Reset filter
-        // Hide all files starting with a dot
-        proxyModel->setFilterRegExp(QRegExp("^[^.].*"));
+        QString dirName = QFileInfo(hiddenFilePath).dir().absolutePath();
+        // Hide all files starting with a dot, but not the directory being shown itself (dirName)
+        proxyModel->setFilterRegExp(QRegExp("^(?:(?!\\." + dirName + ").)*$"));
     }
 }
 
