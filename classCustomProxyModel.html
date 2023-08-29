@@ -63,6 +63,7 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pro-methods">Protected Member Functions</a> &#124;
 <a href="classCustomProxyModel-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">CustomProxyModel Class Reference</div>  </div>
@@ -115,6 +116,15 @@ Qt::ItemFlags&#160;</td><td class="memItemRight" valign="bottom"><b>flags</b> (c
 <tr class="memitem:ae48cd69a1b02fce7b7809ff284d6e9fd"><td class="memItemLeft" align="right" valign="top"><a id="ae48cd69a1b02fce7b7809ff284d6e9fd"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>canDropMimeData</b> (const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &amp;parent) const override</td></tr>
 <tr class="separator:ae48cd69a1b02fce7b7809ff284d6e9fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
+Protected Member Functions</h2></td></tr>
+<tr class="memitem:a1f641eea7928c25842cce4801dade216"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCustomProxyModel.html#a1f641eea7928c25842cce4801dade216">setSourceModel</a> (QAbstractItemModel *sourceModel) override</td></tr>
+<tr class="memdesc:a1f641eea7928c25842cce4801dade216"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the source model for the proxy model to sourceModel. We override this because we read the hidden file names from the .hidden file when the source model is set.  <a href="classCustomProxyModel.html#a1f641eea7928c25842cce4801dade216">More...</a><br /></td></tr>
+<tr class="separator:a1f641eea7928c25842cce4801dade216"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3628773c3a1898ebdd7f2552a7509bd9"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCustomProxyModel.html#a3628773c3a1898ebdd7f2552a7509bd9">filterAcceptsRow</a> (int sourceRow, const QModelIndex &amp;sourceParent) const override</td></tr>
+<tr class="memdesc:a3628773c3a1898ebdd7f2552a7509bd9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns whether the item in the row indicated by the given source row and source parent should be included in the model or whether it should be filtered out.  <a href="classCustomProxyModel.html#a3628773c3a1898ebdd7f2552a7509bd9">More...</a><br /></td></tr>
+<tr class="separator:a3628773c3a1898ebdd7f2552a7509bd9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A custom proxy model for sorting items in views. </p>
@@ -147,6 +157,52 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>canDropMimeData</b> (
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="a3628773c3a1898ebdd7f2552a7509bd9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3628773c3a1898ebdd7f2552a7509bd9">&#9670;&nbsp;</a></span>filterAcceptsRow()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool CustomProxyModel::filterAcceptsRow </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>sourceRow</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const QModelIndex &amp;&#160;</td>
+          <td class="paramname"><em>sourceParent</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns whether the item in the row indicated by the given source row and source parent should be included in the model or whether it should be filtered out. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">sourceRow</td><td>The source row. </td></tr>
+    <tr><td class="paramname">sourceParent</td><td>The source parent. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>True if the item should be included; otherwise returns false. </dd></dl>
+
+</div>
+</div>
 <a id="aa2876b59f5d211ef776339766009f201"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aa2876b59f5d211ef776339766009f201">&#9670;&nbsp;</a></span>lessThan()</h2>
 
@@ -190,6 +246,40 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>canDropMimeData</b> (
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>True if the item referred to by the left index is less than the item referred to by the right index; otherwise returns false. Mount points come before non-mount points on the desktop. </dd></dl>
+
+</div>
+</div>
+<a id="a1f641eea7928c25842cce4801dade216"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1f641eea7928c25842cce4801dade216">&#9670;&nbsp;</a></span>setSourceModel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void CustomProxyModel::setSourceModel </td>
+          <td>(</td>
+          <td class="paramtype">QAbstractItemModel *&#160;</td>
+          <td class="paramname"><em>sourceModel</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Sets the source model for the proxy model to sourceModel. We override this because we read the hidden file names from the .hidden file when the source model is set. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">sourceModel</td><td>The source model. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>

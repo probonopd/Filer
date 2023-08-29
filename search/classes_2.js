@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['dbusinterface_118',['DBusInterface',['../classDBusInterface.html',1,'']]],
-  ['desktopfile_119',['DesktopFile',['../classDesktopFile.html',1,'']]],
-  ['draganddrophandler_120',['DragAndDropHandler',['../classDragAndDropHandler.html',1,'']]]
+  ['dbusinterface_120',['DBusInterface',['../classDBusInterface.html',1,'']]],
+  ['desktopfile_121',['DesktopFile',['../classDesktopFile.html',1,'']]],
+  ['draganddrophandler_122',['DragAndDropHandler',['../classDragAndDropHandler.html',1,'']]]
 ];
