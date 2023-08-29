@@ -30,6 +30,7 @@
 #include <QSortFilterProxyModel>
 #include <QModelIndex>
 #include <QSet>
+#include <QFileSystemWatcher>
 
 /**
  * @file CustomProxyModel.h
@@ -91,11 +92,22 @@ protected:
      */
     bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const override;
 
+private slots:
+    void handleHiddenFileChanged(const QString &path);
+
 private:
+    void loadHiddenFileNames(const QString &hiddenFilePath);
+    void updateFiltering();
+
     /**
      * @brief Contains the hidden file names from the .hidden file.
      */
     QSet<QString> hiddenFileNames;
+
+    /**
+     * @brief Used for watching the .hidden file for changes.
+     */
+    QFileSystemWatcher fileWatcher;
 
 };
 
