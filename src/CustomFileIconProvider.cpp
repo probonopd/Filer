@@ -66,7 +66,7 @@ CustomFileIconProvider::~CustomFileIconProvider()
  */
 QIcon CustomFileIconProvider::icon(const QFileInfo &info) const
 {
-    qDebug() << "CustomFileIconProvider::icon: " << info.absoluteFilePath();
+    // qDebug() << "CustomFileIconProvider::icon: " << info.absoluteFilePath();
 
     // Check if the item is an application bundle and return the icon
     ApplicationBundle *bundle = new ApplicationBundle(info.absoluteFilePath());

@@ -74,7 +74,7 @@ ApplicationBundle::ApplicationBundle(const QString& path)
             resourcesDir.setNameFilters(filters);
             if (resourcesDir.exists()) {
                 QStringList icons = resourcesDir.entryList();
-                qDebug() << icons;
+                // qDebug() << icons;
                 if (icons.size() > 0) {
                     m_icon = resourcesDir.filePath(icons.at(0));
                 }
@@ -147,12 +147,12 @@ QIcon ApplicationBundle::icon() const
     } else if (m_type == Type::AppImage) {
         // Determine the ELF offset
         qint64 offset = ElfSizeCalculator::calculateElfSize(m_path);
-        qDebug() << "offset:" << offset << "for file" << m_path;
+        // qDebug() << "offset:" << offset << "for file" << m_path;
         // Get the data of the .DirIcon file from the squashfs
         SqshArchiveReader *reader = new SqshArchiveReader(offset);
         qDebug() << "Extracting AppImage icon for file" << m_path;
         QByteArray fileData = reader->readFileFromArchive(m_path, ".DirIcon");
-        qDebug() << "Finished extracting AppImage icon data for file" << m_path;
+        // qDebug() << "Finished extracting AppImage icon data for file" << m_path;
         delete reader;
         // If fileData is empty, return default icon
         if (fileData.isEmpty()) {

@@ -1824,16 +1824,24 @@ void FileManagerMainWindow::setFilterRegExpForHiddenFiles(QSortFilterProxyModel 
     QStringList hiddenFiles;
     QFile hiddenFile(hiddenFilePath);
 
-    if (hiddenFile.open(QIODevice::ReadOnly | QIODevice::Text))
-    {
-        QTextStream in(&hiddenFile);
-        while (!in.atEnd())
+    // Check if the hidden file exists and open it for reading
+    if (hiddenFile.exists()) {
+        qDebug() << "Hidden file exists: " << hiddenFilePath;
+        if (hiddenFile.open(QIODevice::ReadOnly | QIODevice::Text))
         {
-            QString line = in.readLine().trimmed();
-            if (!line.isEmpty())
-                hiddenFiles.append(QRegExp::escape(line));
+            QTextStream in(&hiddenFile);
+            while (!in.atEnd())
+            {
+                QString line = in.readLine().trimmed();
+                if (!line.isEmpty())
+                    hiddenFiles.append(QRegExp::escape(line));
+            }
+            hiddenFile.close();
         }
-        hiddenFile.close();
+    } else {
+        qDebug() << "Hidden file does not exist: " << hiddenFilePath;
+        // Clear the filter
+        proxyModel->setFilterRegExp(QRegExp());
     }
 
     if (!hiddenFiles.isEmpty())
