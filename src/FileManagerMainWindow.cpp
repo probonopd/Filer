@@ -1515,7 +1515,8 @@ void FileManagerMainWindow::renameSelectedItem()
     dialog->adjustSize();
     dialog->setFixedWidth(400);
     lineEdit->setText(currentName);
-    lineEdit->selectAll();
+    // Select all but the extension
+    lineEdit->setSelection(0, currentName.lastIndexOf('.'));
     lineEdit->setFocus();
     int result = dialog->exec();
 
@@ -1535,6 +1536,19 @@ void FileManagerMainWindow::renameSelectedItem()
 
     qDebug() << "newName:" << newName;
     qDebug() << "currentName:" << currentName;
+
+    // If there was an extension, compare the old and the new extension
+    // and if they are different, ask the user if they want to continue
+    if (currentName.lastIndexOf('.') != -1) {
+        if (currentName.right(currentName.length() - currentName.lastIndexOf('.') - 1) != newName.right(newName.length() - newName.lastIndexOf('.') - 1)) {
+            // The extensions are different
+            QMessageBox::StandardButton reply;
+            reply = QMessageBox::question(this, 0, tr("Do you really want to change the file extension?"), QMessageBox::Yes|QMessageBox::No);
+            if (reply == QMessageBox::No) {
+                return;
+            }
+        }
+    }
 
     // Check if the item to be renamed is a mountpoint
 
