@@ -29,6 +29,7 @@
 
 #include <QSortFilterProxyModel>
 #include <QModelIndex>
+#include <QSet>
 
 /**
  * @file CustomProxyModel.h
@@ -70,6 +71,31 @@ public:
     Qt::DropActions supportedDragActions() const override;
     Qt::ItemFlags flags(const QModelIndex &index) const override;
     bool canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const override;
+
+protected:
+    /**
+     * @brief Sets the source model for the proxy model to sourceModel.
+     *        We override this because we read the hidden file names from the
+     *        .hidden file when the source model is set.
+     * @param sourceModel The source model.
+     */
+    void setSourceModel(QAbstractItemModel *sourceModel) override;
+
+    /**
+     * @brief Returns whether the item in the row indicated by the given source row and
+     *        source parent should be included in the model or whether it should be
+     *        filtered out.
+     * @param sourceRow The source row.
+     * @param sourceParent The source parent.
+     * @return True if the item should be included; otherwise returns false.
+     */
+    bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const override;
+
+private:
+    /**
+     * @brief Contains the hidden file names from the .hidden file.
+     */
+    QSet<QString> hiddenFileNames;
 
 };
 

@@ -55,45 +55,6 @@
 #include <QPainter>
 #include <QSettings>
 
-void displayPicturesOnAllScreens(QApplication &app) {
-
-    QString desktopPicturePath = QSettings().value("desktopPicture", "/usr/local/share/slim/themes/default/background.jpg").toString();
-
-    if (!QFileInfo(desktopPicturePath).exists()) {
-        return;
-    }
-
-    QList<QScreen*> screens = app.screens();
-
-    for (QScreen *screen : screens) {
-        QRect screenGeometry = screen->geometry();
-        // From QSettings, get the value for the desktopPicture= key which is the path to the picture
-
-        QPixmap desktopPixmap = QPixmap(desktopPicturePath);
-        // Create a QLabel to display the picture
-        QLabel *label = new QLabel;
-        label->setPixmap(desktopPixmap.scaled(screenGeometry.size(), Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation));
-        // Create a top-level window for each screen
-        QWidget *window = new QWidget;
-        QVBoxLayout *layout = new QVBoxLayout;
-        layout->addWidget(label);
-        layout->setContentsMargins(0, 0, 0, 0);
-        layout->setSpacing(0);
-        window->setContentsMargins(0, 0, 0, 0);
-        window->setLayout(layout);
-        window->setGeometry(screenGeometry);
-        window->show();
-        window->setFixedSize(screenGeometry.size());
-        window->setAttribute(Qt::WA_X11NetWmWindowTypeDesktop, true);
-        // Make invisible to the taskbar = Menu
-        window->setAttribute(Qt::WA_X11DoNotAcceptFocus, true);
-        // No window decorations = will not show up in Menu as a window
-        window->setWindowFlags(Qt::FramelessWindowHint);
-        // Make it an auxiliary window, not a top-level window
-        window->setWindowFlags(Qt::Tool);
-    }
-}
-
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
@@ -167,7 +128,7 @@ int main(int argc, char *argv[])
         // No arguments were passed to the application
 
         // On all screens, draw the desktop picture
-        displayPicturesOnAllScreens(app);
+        FileManagerMainWindow::displayPicturesOnAllScreens();
 
         // Check whether another instance of a file manager is already running
         // by checking whether the D-Bus ""org.freedesktop.FileManager1" service is available

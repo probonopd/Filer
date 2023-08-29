@@ -17,3 +17,6 @@ const QString AppGlobals::mediaPath = VolumeWatcher::getMediaPath();
 
 // NOTE: VolumeWatcher can read the name of the start volume from the volume label
 const QString AppGlobals::hardDiskName = "Hard Disk";
+
+// This is used to identify windows that show nothing but the desktop picture
+const QString AppGlobals::desktopPictureWindowObjectName = "desktopWindow";

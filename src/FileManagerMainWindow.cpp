@@ -208,6 +208,12 @@ FileManagerMainWindow::FileManagerMainWindow(QWidget *parent, const QString &ini
         // closeAllWindowsOnScreen(0); // TODO: Instead, prevent the "desktop picture only" windows created in main.cpp
         // from being available in the window menu by setting some property on them;
         // the same as we do with Installer
+
+    // The first instance also handles screen size changes
+        QList<QScreen *> screens = QGuiApplication::screens();
+        for (QScreen *screen : screens) {
+            connect(screen, &QScreen::geometryChanged, this, &FileManagerMainWindow::handleScreenChange);
+        }
     }
 
     // Create an instance of our custom QFileIconProvider
@@ -217,9 +223,6 @@ FileManagerMainWindow::FileManagerMainWindow(QWidget *parent, const QString &ini
     m_fileSystemModel->setRootPath(m_currentDir);
     m_proxyModel = new CustomProxyModel(this);
     m_proxyModel->setSourceModel(m_fileSystemModel);
-
-    // Call the function to set the filter based on the .hidden file
-    setFilterRegExpForHiddenFiles(m_proxyModel, m_currentDir + "/.hidden");
 
     m_proxyModel->setDynamicSortFilter(true);
     m_proxyModel->setSortCaseSensitivity(Qt::CaseInsensitive);
@@ -1823,6 +1826,7 @@ void FileManagerMainWindow::getInfo() {
     }
 }
 
+/*
 void FileManagerMainWindow::setFilterRegExpForHiddenFiles(QSortFilterProxyModel *proxyModel, const QString &hiddenFilePath)
 {
     QStringList hiddenFiles;
@@ -1830,7 +1834,7 @@ void FileManagerMainWindow::setFilterRegExpForHiddenFiles(QSortFilterProxyModel 
 
     // Check if the hidden file exists and open it for reading
     if (hiddenFile.exists()) {
-        qDebug() << "Hidden file exists: " << hiddenFilePath;
+        qDebug() << "xxxxxxxxxxx Hidden file exists: " << hiddenFilePath;
         if (hiddenFile.open(QIODevice::ReadOnly | QIODevice::Text))
         {
             QTextStream in(&hiddenFile);
@@ -1856,7 +1860,7 @@ void FileManagerMainWindow::setFilterRegExpForHiddenFiles(QSortFilterProxyModel 
         // The resulting pattern hides files matching hidden filenames or starting with a dot, while showing other files.
         QString pattern = "^(?:(?!" + hiddenFiles.join('|') + "|\\.).)*$";
         QRegExp regExp(pattern);
-        qDebug() << "Filtering out hidden files using pattern:" << pattern;
+        qDebug() << "xxxxxxxxxx Filtering out hidden files using pattern:" << pattern;
         proxyModel->setFilterRegExp(regExp);
 
     }
@@ -1868,21 +1872,7 @@ void FileManagerMainWindow::setFilterRegExpForHiddenFiles(QSortFilterProxyModel 
         proxyModel->setFilterRegExp(QRegExp("^(?:(?!\\." + dirName + ").)*$"));
     }
 }
-
-void FileManagerMainWindow::closeAllWindowsOnScreen(int targetScreenIndex) {
-    QList<QScreen*> screens = QGuiApplication::screens();
-    if (targetScreenIndex >= 0 && targetScreenIndex < screens.size()) {
-        QScreen *targetScreen = screens[targetScreenIndex];
-        QRect targetScreenGeometry = targetScreen->geometry();
-
-        for (QWidget *topLevelWidget : QApplication::topLevelWidgets()) {
-            QPoint widgetTopLeft = topLevelWidget->mapToGlobal(QPoint(0, 0));
-            if (targetScreenGeometry.contains(widgetTopLeft)) {
-                topLevelWidget->close();
-            }
-        }
-    }
-}
+*/
 
 void FileManagerMainWindow::handleSelectionChange()
 {
@@ -1896,4 +1886,76 @@ void FileManagerMainWindow::showPreferencesDialog()
     preferencesDialog->show();
     // Connect the dialog's prefsChanged signal to the slot that updates the view
     connect(preferencesDialog, &PreferencesDialog::prefsChanged, this, &FileManagerMainWindow::refresh);
+}
+
+void FileManagerMainWindow::handleScreenChange(const QRect &geometry) {
+    qDebug() << "Screen changed:"
+             << "Geometry:" << geometry;
+
+    // We are doing all the work only in the first instance (also for the other windows), so that it is done only once
+    if (m_isFirstInstance) {
+
+        // Move the first instance to the main screen and resize it to the screen size
+        // Move to QApplication::primaryScreen()
+        move(QApplication::desktop()->screenGeometry(0).topLeft());
+
+        setFixedSize(QApplication::desktop()->screenGeometry(0).size());
+        refresh();
+
+        // Close all desktop picture windows and create new ones
+        QList<QWidget*> topLevelWidgets = QApplication::topLevelWidgets();
+        qDebug() << "Top level widgets:" << topLevelWidgets;
+        for (QWidget *widget : topLevelWidgets) {
+            qDebug() << widget->objectName();
+            if (widget->objectName() == AppGlobals::desktopPictureWindowObjectName) {
+                qDebug() << widget->objectName() << "is a desktop picture window, closing it";
+                widget->close();
+            }
+        }
+        displayPicturesOnAllScreens();
+    }
+}
+
+// Opens windows that do nothing but show the desktop pictures on all screens but the main one
+void FileManagerMainWindow::displayPicturesOnAllScreens() {
+    QString desktopPicturePath = QSettings().value("desktopPicture", "/usr/local/share/slim/themes/default/background.jpg").toString();
+
+    if (!QFileInfo(desktopPicturePath).exists()) {
+        return;
+    }
+
+    QApplication &app = *static_cast<QApplication*>(QApplication::instance());
+    QList<QScreen*> screens = app.screens();
+
+    for (QScreen *screen : screens) {
+
+        // Skip the screen that the main window is on
+        if (screen == QApplication::primaryScreen()) {
+            continue;
+        }
+
+        QRect screenGeometry = screen->geometry();
+
+        QPixmap desktopPixmap = QPixmap(desktopPicturePath);
+        QLabel *label = new QLabel;
+        label->setPixmap(desktopPixmap.scaled(screenGeometry.size(), Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation));
+
+        QWidget *window = new QWidget;
+        QVBoxLayout *layout = new QVBoxLayout;
+        layout->addWidget(label);
+        layout->setContentsMargins(0, 0, 0, 0);
+        layout->setSpacing(0);
+
+        window->setContentsMargins(0, 0, 0, 0);
+        window->setLayout(layout);
+        window->setGeometry(screenGeometry);
+        window->setObjectName(AppGlobals::desktopPictureWindowObjectName);
+
+        window->setFixedSize(screenGeometry.size());
+        window->setAttribute(Qt::WA_X11NetWmWindowTypeDesktop, true);
+        window->setAttribute(Qt::WA_X11DoNotAcceptFocus, true);
+        window->setWindowFlags(Qt::FramelessWindowHint);
+        window->setWindowFlags(Qt::Tool);
+        window->show();
+    }
 }

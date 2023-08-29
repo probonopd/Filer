@@ -39,6 +39,7 @@
 #include "CustomListView.h"
 #include "ExtendedAttributes.h"
 #include <QSortFilterProxyModel>
+#include <QRect>
 
 class FileManagerMainWindow : public QMainWindow
 {
@@ -94,6 +95,8 @@ public slots:
     void updateMenus();
     void updateEmptyTrashMenu();
 
+    static void displayPicturesOnAllScreens();
+
 private:
     QStackedWidget *m_stackedWidget;
 
@@ -134,7 +137,6 @@ private:
     void saveWindowGeometry();
 
     void setFilterRegExpForHiddenFiles(QSortFilterProxyModel *proxyModel, const QString &hiddenFilePath);
-    void closeAllWindowsOnScreen(int targetScreenIndex);
 
     ExtendedAttributes *m_extendedAttributes;
 
@@ -143,6 +145,8 @@ private:
     void showPreferencesDialog();
 
     void setGridSize();
+
+    void handleScreenChange(const QRect &geometry);
 };
 
 #endif // FILEMANAGERMAINWINDOW_H
