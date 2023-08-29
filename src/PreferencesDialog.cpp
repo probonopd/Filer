@@ -30,8 +30,6 @@ PreferencesDialog::PreferencesDialog(QWidget *parent) :
         selectPictureButton(new QPushButton(tr("Select Picture")))
 {
 
-    setAttribute(Qt::WA_DeleteOnClose);
-
     setWindowTitle(tr("Preferences"));
 
     QLabel *gridSizeLabel = new QLabel(tr("Grid size:"));
