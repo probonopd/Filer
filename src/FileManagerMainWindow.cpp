@@ -255,6 +255,7 @@ FileManagerMainWindow::FileManagerMainWindow(QWidget *parent, const QString &ini
         // of the root window in extended attributes appropriately
         // TODO: Find a way to store the position and geometry of the root window
         resize(600, 400);
+        move(40, 44); // Like the default position of windows in KWin
     }
 
     // If we are at the Trash, set the window title to "Trash"
