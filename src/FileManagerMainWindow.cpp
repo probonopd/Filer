@@ -1657,12 +1657,10 @@ void FileManagerMainWindow::updateMenus() {
         m_openAction->setEnabled(false);
         m_openWithAction->setEnabled(false);
         m_moveToTrashAction->setEnabled(false);
-        m_getInfoAction->setEnabled(false);
     } else {
         m_openAction->setEnabled(true);
         m_openWithAction->setEnabled(true);
         m_moveToTrashAction->setEnabled(true);
-        m_getInfoAction->setEnabled(true);
         bool allSelectedItemsCanShowContents = true;
         for (const QModelIndex &index: selectedIndexes) {
             // Check if the selected item can show its contents
@@ -1834,13 +1832,27 @@ void FileManagerMainWindow::bringToFront()
 void FileManagerMainWindow::getInfo() {
     // Get all selected items
     QModelIndexList selectedIndexes = getCurrentView()->selectionModel()->selectedIndexes();
-    for (QModelIndex index : selectedIndexes) {
-        // Get the absolute path of the item represented by the index, using the model
-        QString filePath = m_fileSystemModel->data(m_proxyModel->mapToSource(index), QFileSystemModel::FilePathRole).toString();
+
+    // If no items are selected, show the info for the current directory
+    if (selectedIndexes.isEmpty()) {
+        // Get the absolute path of the current directory
+        QString filePath = m_currentDir;
         // Destroy the dialog when it is closed
         InfoDialog *infoDialog = InfoDialog::getInstance(filePath, this);
         infoDialog->setAttribute(Qt::WA_DeleteOnClose);
         infoDialog->show();
+    } else {
+        // Iterate over the selected items
+
+        for (QModelIndex index: selectedIndexes) {
+            // Get the absolute path of the item represented by the index, using the model
+            QString filePath = m_fileSystemModel->data(m_proxyModel->mapToSource(index),
+                                                       QFileSystemModel::FilePathRole).toString();
+            // Destroy the dialog when it is closed
+            InfoDialog *infoDialog = InfoDialog::getInstance(filePath, this);
+            infoDialog->setAttribute(Qt::WA_DeleteOnClose);
+            infoDialog->show();
+        }
     }
 }
 
