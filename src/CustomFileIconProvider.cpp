@@ -115,6 +115,8 @@ QIcon CustomFileIconProvider::icon(const QFileInfo &info) const
         return (QIcon::fromTheme("folder-pictures"));
     } else if (filePath == QDir::homePath() + "/Videos") {
         return (QIcon::fromTheme("folder-videos"));
+    } else if (filePath == QDir::homePath()) {
+        return (QIcon::fromTheme("user-home"));
     }
 
     // If it is a directory and the symlink target is a mount point, then we want to show the drive icon
