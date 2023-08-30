@@ -1499,6 +1499,27 @@ void FileManagerMainWindow::renameSelectedItem()
     QRegExpValidator validator(QRegExp("[^/]*"));
     bool ok;
 
+    // Check if the item to be renamed is a mountpoint
+
+    const QString currentPath = m_proxyModel->mapToSource(selectedIndex).data(QFileSystemModel::FilePathRole).toString();
+    QString absoluteFilePath = QFileInfo(currentPath).absoluteFilePath();
+    // if absoluteFilePath is a symlink, resolve it
+    if (QFileInfo(absoluteFilePath).isSymLink()) {
+        absoluteFilePath = QFileInfo(absoluteFilePath).symLinkTarget();
+    }
+    qDebug() << "absoluteFilePath:" << absoluteFilePath;
+
+    if (Mountpoints::isMountpoint(absoluteFilePath)) {
+        // Get the filesystem type using QStorageInfo
+        const QString filesystemType = QStorageInfo(absoluteFilePath).fileSystemType();
+        qDebug() << "Filesystem type:" << filesystemType;
+        QStringList renameableFilesystems = { "ext2", "ext3", "ext4", "reiserfs", "reiser4", "ufs", "vfat", "exfat", "ntfs" };
+        // If the filesystem is not in the list of renameable filesystems, disable renaming
+        if (!renameableFilesystems.contains(filesystemType)) {
+            QMessageBox::information(this, tr("Rename"), tr("Renaming is not supported yet for the %1 filesystem type.").arg(filesystemType));
+            return;
+        }
+    }
 
     // Construct a dialog using this QLineEdit
     // QDialog dialog(this); // Never do this
@@ -1549,16 +1570,6 @@ void FileManagerMainWindow::renameSelectedItem()
             }
         }
     }
-
-    // Check if the item to be renamed is a mountpoint
-
-    const QString currentPath = m_proxyModel->mapToSource(selectedIndex).data(QFileSystemModel::FilePathRole).toString();
-    QString absoluteFilePath = QFileInfo(currentPath).absoluteFilePath();
-    // if absoluteFilePath is a symlink, resolve it
-    if (QFileInfo(absoluteFilePath).isSymLink()) {
-        absoluteFilePath = QFileInfo(absoluteFilePath).symLinkTarget();
-    }
-    qDebug() << "absoluteFilePath:" << absoluteFilePath;
 
     if (Mountpoints::isMountpoint(absoluteFilePath)) {
 
