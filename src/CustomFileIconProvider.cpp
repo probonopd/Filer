@@ -100,14 +100,40 @@ QIcon CustomFileIconProvider::icon(const QFileInfo &info) const
     QString parentDirPath = info.absoluteFilePath().left(info.absoluteFilePath().lastIndexOf("/"));
     bool isOnDesktopOrInMedia = ((parentDirPath == QDir::homePath() + "/Desktop") || info.absoluteFilePath().startsWith("/media"));
 
+    // If ~/Desktop, ~/Documents, ~/Downloads, ~/Music, ~/Pictures, or ~/Videos, show the respective icon
+    // from the current icon theme
+    QString filePath = info.absoluteFilePath();
+    if (filePath == QDir::homePath() + "/Desktop") {
+        return (QIcon::fromTheme("user-desktop"));
+    } else if (filePath == QDir::homePath() + "/Documents") {
+        return (QIcon::fromTheme("folder-documents"));
+    } else if (filePath == QDir::homePath() + "/Downloads") {
+        return (QIcon::fromTheme("folder-download"));
+    } else if (filePath == QDir::homePath() + "/Music") {
+        return (QIcon::fromTheme("folder-music"));
+    } else if (filePath == QDir::homePath() + "/Pictures") {
+        return (QIcon::fromTheme("folder-pictures"));
+    } else if (filePath == QDir::homePath() + "/Videos") {
+        return (QIcon::fromTheme("folder-videos"));
+    }
+
     // If it is a directory and the symlink target is a mount point, then we want to show the drive icon
-    if (isOnDesktopOrInMedia && info.isDir() && isMediaPath || isOnDesktopOrInMedia && info.isDir() && Mountpoints::isMountpoint(absoluteFilePathWithSymLinksResolved)) {
+    if (absoluteFilePathWithSymLinksResolved == "/" || isOnDesktopOrInMedia && info.isDir() && isMediaPath || isOnDesktopOrInMedia && info.isDir() && Mountpoints::isMountpoint(absoluteFilePathWithSymLinksResolved)) {
         // Using Qt, get the device node of the mount point
         // and then use the device node to get the icon
         // qDebug() << "Mount point: " << info.absoluteFilePath();
         QStorageInfo storageInfo(info.absoluteFilePath());
         QString deviceNode = storageInfo.device();
         qDebug() << "Device node: " << deviceNode;
+
+        // If it is not mounted, then show the folder icon
+        QStringList mountPoints;
+        for (const QStorageInfo &storage : QStorageInfo::mountedVolumes()) {
+            mountPoints << storage.rootPath();
+        }
+        if (! mountPoints.contains(absoluteFilePathWithSymLinksResolved)) {
+            return (QIcon::fromTheme("folder"));
+        }
 
         // Set the icon depending on the file system type; unlike device nodes,
         // this also works for mounted disk images
@@ -242,8 +268,6 @@ QIcon CustomFileIconProvider::icon(const QFileInfo &info) const
 
     // Construct an icon from the default document icon plus the icon of the application that will
     // be used to open the file
-
-    QString filePath = info.absoluteFilePath();
 
     /*
      * It seems like we may be running into some timing issue, where the file is not yet in the model

@@ -54,6 +54,15 @@ void MountWatcherThread::run() {
                 // Give up after 1 minute
                 if (counter > 600) {
                     qDebug() << "Giving up on" << fullPath;
+                    // Delete the symlink if it exists
+                    if (QFile::exists(symlinkPath)) {
+                        QFile::remove(symlinkPath);
+                    }
+                    // Delete the source if it exists
+                    if (QFile::exists(fullPath)) {
+                        // The directory must be empty for rmdir() to succeed.
+                        QDir::root().rmdir(fullPath);
+                    }
                     break;
                 }
             }

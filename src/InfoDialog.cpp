@@ -184,6 +184,7 @@ void InfoDialog::setupInformation()
     if (!i.isNull()) {
         ui->iconInfo->setPixmap(i.pixmap(128, 128));
     }
+
     openWith = sourceModel->openWith(filePath); // Used below
     delete model;
     delete sourceModel;
