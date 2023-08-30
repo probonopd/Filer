@@ -3,6 +3,7 @@
 
 #include <QString>
 #include <QStringList>
+#include <QDir>
 
 /**
  * @file FileOperationManager.h
@@ -11,6 +12,22 @@
  */
 class FileOperationManager {
 public:
+    /**
+     * @brief The AccessType enum represents the type of access to check for.
+     */
+    enum AccessType {
+        Writeable,
+        Readable
+    };
+
+    /**
+     * @brief Check whether a list of paths is accessible (readable or writable).
+     * @param paths The list of paths to check.
+     * @param accessType The type of access to check for.
+     * @return True if the paths are accessible, false otherwise.
+     */
+    static bool areTreesAccessible(const QStringList &paths, AccessType accessType);
+
     /**
      * @brief Copies a list of files to a destination folder with progress.
      * @param fromPaths The list of source file paths.
@@ -40,6 +57,9 @@ private:
      * @param operation The operation to perform.
      */
     static void executeFileOperation(const QStringList& fromPaths, const QString& toPath, const QString& operation);
+
+    static bool isTreeWritable(const QDir &dir);
+    static bool isTreeReadable(const QDir &dir);
 
 };
 

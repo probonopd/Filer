@@ -40,6 +40,7 @@ A clean rewrite of the Filer for [helloSystem](https://hellosystem.github.io/) (
 |Cannot rename disks|Can rename disks|DONE via `renamedisk` helper command line tool|
 |Do not have spring-loaded folders|Has spring-loaded folders|DONE|
 |Use Gtk-centric dependencies like Glib, Gdk, Gio, polkit|Does not use Gtk-centric dependencies|DONE|
+|Refuse to copy/move/delete items which the user doesn't have access to|Asks user for root password to copy/move/delete items which the user doesn't have access to|DONE for copy/move, TODO for delete|
 
 My conclusion is that most "desktop environments" are made by people who don't actually love the desktop. Or else, those basic things would work.
 
