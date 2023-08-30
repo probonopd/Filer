@@ -483,7 +483,7 @@ void FileManagerMainWindow::moveEvent(QMoveEvent *event)
 // Callback function for when the user resizes the window
 void FileManagerMainWindow::resizeEvent(QResizeEvent *event)
 {
-    qDebug() << "resizeEvent";
+    // qDebug() << "resizeEvent";
 
     // Call the base class implementation
     QMainWindow::resizeEvent(event);
@@ -492,13 +492,6 @@ void FileManagerMainWindow::resizeEvent(QResizeEvent *event)
     if (!m_treeViewAction->isChecked()) {
         m_iconView->doItemsLayout();
     }
-
-    // TOOD: Wait until no resize events are coming in for 1 second
-    // This is necessary because the resizeEvent() is called multiple times when the user resizes
-    // the window and we only want to save the window geometry when the user has finished resizing
-    // the window. How to do this properly?
-
-    saveWindowGeometry();
 }
 
 void FileManagerMainWindow::refresh() {
