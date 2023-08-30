@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['customitemdelegaterole_226',['CustomItemDelegateRole',['../CustomItemDelegate_8h.html#ae02b4511f93f9ee2aed291ec1ad9b877',1,'CustomItemDelegate.h']]]
+  ['accesstype_229',['AccessType',['../classFileOperationManager.html#a4ca7781421e8fbc7ef54b93b3209841b',1,'FileOperationManager']]]
 ];

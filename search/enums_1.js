@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['type_227',['Type',['../classApplicationBundle.html#ad3f6ead97dd4f556572804fba8ff290a',1,'ApplicationBundle']]]
+  ['customitemdelegaterole_230',['CustomItemDelegateRole',['../CustomItemDelegate_8h.html#ae02b4511f93f9ee2aed291ec1ad9b877',1,'CustomItemDelegate.h']]]
 ];
