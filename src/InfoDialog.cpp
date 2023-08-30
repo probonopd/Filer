@@ -194,15 +194,7 @@ void InfoDialog::setupInformation()
 
     // Convert the size into a human-readable format
     QString sizeString;
-    if (fileInfo.size() < 1024) {
-        sizeString = QString::number(fileInfo.size()) + " B";
-    } else if (fileInfo.size() < 1024 * 1024) {
-        sizeString = QString::number(fileInfo.size() / 1024.0, 'f', 2) + " KB";
-    } else if (fileInfo.size() < 1024 * 1024 * 1024) {
-        sizeString = QString::number(fileInfo.size() / (1024.0 * 1024.0), 'f', 2) + " MB";
-    } else {
-        sizeString = QString::number(fileInfo.size() / (1024.0 * 1024.0 * 1024.0), 'f', 2) + " GB";
-    }
+    sizeString = convertToHumanReadableSize(fileInfo.size());
     ui->sizeInfo->setText(sizeString + " (" + QString::number(fileInfo.size()) + " bytes)");
 
     ui->createdInfo->setText(fileInfo.created().toString(Qt::DefaultLocaleLongDate));
@@ -259,6 +251,18 @@ void InfoDialog::setupInformation()
         QString fileSystemType = info.fileSystemType();
         QString device = info.device();
         QString mountpoint = info.rootPath();
+
+        // Disk usage
+        qint64 usedSpace = info.bytesTotal() - info.bytesFree();
+        qint64 freeSpace = info.bytesFree();
+        qint64 totalSpace = info.bytesTotal();
+        QString usedSpaceString = convertToHumanReadableSize(usedSpace);
+        QString freeSpaceString = convertToHumanReadableSize(freeSpace);
+        QString totalSpaceString = convertToHumanReadableSize(totalSpace);
+        QString percentageUsed = QString::number(usedSpace * 100 / totalSpace) + "%";
+        QString spaceString = percentageUsed + " " + tr("Full") + " (" + tr("Used: ") + usedSpaceString + ", " + tr("Free: ") + freeSpaceString + ", " + tr("Total: ") + totalSpaceString + ")";
+        ui->sizeInfo->setText(spaceString);
+        // TODO: Graphical representation of disk usage
 
         // If it is "fuse", show the actual filesystem type
         if (fileSystemType == "fusefs") {
@@ -477,4 +481,18 @@ bool InfoDialog::eventFilter(QObject *obj, QEvent *event) {
 
     // Call the base event filter to ensure proper event handling
     return QObject::eventFilter(obj, event);
+}
+
+QString InfoDialog::convertToHumanReadableSize(qint64 size) {
+    QString sizeString;
+    if (size < 1024) {
+        sizeString = QString::number(size) + " B";
+    } else if (size < 1024 * 1024) {
+        sizeString = QString::number(size / 1024.0, 'f', 2) + " KB";
+    } else if (size < 1024 * 1024 * 1024) {
+        sizeString = QString::number(size / (1024.0 * 1024.0), 'f', 2) + " MB";
+    } else {
+        sizeString = QString::number(size / (1024.0 * 1024.0 * 1024.0), 'f', 2) + " GB";
+    }
+    return sizeString;
 }

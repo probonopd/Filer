@@ -56,6 +56,8 @@ public:
      */
     static InfoDialog* getInstance(const QString &filePath, QWidget *parent = nullptr);
 
+    static QString convertToHumanReadableSize(qint64 size);
+
 private:
     Ui::InfoDialog *ui; /**< The user interface components. */
     QString filePath; /**< The path of the file or directory. */
