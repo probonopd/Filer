@@ -50,7 +50,7 @@ bool ExtendedAttributes::write(const QString &attributeName, const QByteArray &a
              << "to file" << m_file.fileName();
     QProcess extattr;
     extattr.start("setextattr",
-                  QStringList() << "-hq"
+                  QStringList() << "-q"
                                 << "user" << attributeName << attributeValue << m_file.fileName());
     if (!extattr.waitForFinished()) {
         // Error writing extended attribute to user namespace
@@ -60,6 +60,13 @@ bool ExtendedAttributes::write(const QString &attributeName, const QByteArray &a
     } else {
         // Extended attribute was written successfully
         // qDebug() << "Extended attribute was written successfully";
+        // Check the exit code
+        if (extattr.exitCode() != 0) {
+            // Error writing extended attribute to user namespace
+            qWarning() << "ExtendedAttributes::write(): Error writing extended attribute to user "
+                          "namespace";
+            return false;
+        }
     }
 #elif defined(__linux__)
     qDebug() << "Writing extended attribute" << attributeName << "with value" << attributeValue
@@ -99,7 +106,7 @@ QByteArray ExtendedAttributes::read(const QString &attributeName)
     // qDebug() << "Reading extended attribute" << attributeName << "from file" << m_file.fileName();
     QProcess extattr;
     extattr.start("getextattr",
-                  QStringList() << "-hq"
+                  QStringList() << "-q"
                                 << "user" << attributeName << m_file.fileName());
     if (!extattr.waitForFinished()) {
         // Error reading extended attribute from user namespace
@@ -134,4 +141,49 @@ QByteArray ExtendedAttributes::read(const QString &attributeName)
     qDebug() << "ExtendedAttributes::read():" << attributeName << " " << attributeValue;
     return attributeValue;
 #endif
+}
+
+bool ExtendedAttributes::clear(const QString &attributeName) {
+    // qDebug() << "Trying to delete extended attribute" << attributeName;
+
+    if (!m_file.exists()) {
+        // Error: File does not exist
+        qWarning() << "ExtendedAttributes::delete(): File does not exist";
+        return false;
+    }
+
+#if defined(__unix__) || defined(__APPLE__)
+    // Delete the extended attribute from the file in the "user" namespace
+    // qDebug() << "Deleting extended attribute" << attributeName << "from file" << m_file.fileName();
+    QProcess extattr;
+    extattr.start("rmextattr",
+                  QStringList() << "-q"
+                                << "user" << attributeName << m_file.fileName());
+    if (!extattr.waitForFinished()) {
+        // Error deleting extended attribute from user namespace
+        qWarning() << "ExtendedAttributes::delete(): Error deleting extended attribute from user "
+                      "namespace";
+        return false;
+    } else {
+        // Extended attribute was deleted successfully
+        // qDebug() << "Extended attribute was deleted successfully";
+    }
+#elif defined(__linux__)
+    // Delete the extended attribute from the file in the "user" namespace
+    qDebug() << "Deleting extended attribute" << attributeName << "from file" << m_file.fileName();
+    QProcess xattr;
+    xattr.start("setfattr",
+                QStringList() << "-x" << "user." + attributeName
+                            << m_file.fileName());
+    if (!xattr.waitForFinished()) {
+        // Error deleting extended attribute from user namespace
+        qWarning() << "ExtendedAttributes::delete(): Error deleting extended attribute from user "
+                      "namespace";
+        return false;
+    } else {
+        // Extended attribute was deleted successfully
+        qDebug() << "Extended attribute was deleted successfully";
+    }
+#endif
+    return true;
 }

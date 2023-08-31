@@ -107,6 +107,11 @@ private:
     void updatePermissions();
 
     /**
+     * @brief Cut the icon to the clipboard.
+     */
+    void cutIcon();
+
+    /**
      * @brief Copy the icon to the clipboard.
      */
     void copyIcon();

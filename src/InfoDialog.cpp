@@ -45,6 +45,10 @@
 #include <QMouseEvent>
 #include <QSortFilterProxyModel>
 #include "Mountpoints.h"
+#include "ExtendedAttributes.h"
+#include <QBuffer>
+#include <QIcon>
+#include <QTimer>
 
 QMap<QString, InfoDialog*> InfoDialog::instances; // All instances of InfoDialog share this map
 
@@ -117,6 +121,10 @@ InfoDialog::InfoDialog(const QString &filePath, QWidget *parent) :
 
     // Make it so that one can copy and paste the icon
     ui->iconInfo->setContextMenuPolicy(Qt::ActionsContextMenu);
+    QAction *cutAction = new QAction(tr("Cut"), this);
+    cutAction->setShortcut(Qt::CTRL + Qt::Key_X);
+    connect(cutAction, &QAction::triggered, this, &InfoDialog::cutIcon);
+    ui->iconInfo->addAction(cutAction);
     QAction *copyAction = new QAction(tr("Copy"), this);
     copyAction->setShortcut(Qt::CTRL + Qt::Key_C);
     connect(copyAction, &QAction::triggered, this, &InfoDialog::copyIcon);
@@ -175,9 +183,9 @@ void InfoDialog::setupInformation()
     CustomFileSystemModel *sourceModel = new CustomFileSystemModel();
     sourceModel->setRootPath(parentDir);
     QSortFilterProxyModel *model = new QSortFilterProxyModel();
-    qDebug() << "Still alive";
+
     model->setSourceModel(sourceModel);
-    qDebug() << "Alive no more";
+
     iconProvider->setModel(model);
 
     QIcon i = iconProvider->icon(fileInfo);
@@ -449,6 +457,34 @@ void InfoDialog::copyIcon()
     clipboard->setPixmap(*ui->iconInfo->pixmap());
 }
 
+void InfoDialog::cutIcon()
+{
+    QClipboard *clipboard = QApplication::clipboard();
+    clipboard->setPixmap(*ui->iconInfo->pixmap());
+
+    // Clear the user-icon extended attribute
+    ExtendedAttributes *ea = new ExtendedAttributes(filePath);
+    bool result = ea->clear("user-icon");
+    if (!result) {
+        QMessageBox::warning(this, tr("Error"), tr("Error writing icon data to extended attribute."));
+    }
+    delete ea;
+
+    setupInformation();
+
+    // Touch the file and its parent directory to trigger a refresh in a lambda
+    QTimer::singleShot(0, [this]() {
+        QProcess process;
+        qDebug() << "Touching file: " << filePath;
+        process.start("touch", QStringList() << filePath);
+        process.waitForFinished();
+        qDebug() << "Touching parent directory: " << fileInfo.dir().path();
+        process.start("touch", QStringList() << fileInfo.dir().path());
+        process.waitForFinished();
+    });
+     // QMessageBox::information(this, tr("Not implemented"), tr("Storing the icon in the file is not implemented yet."));
+}
+
 void InfoDialog::pasteIcon()
 {
     // Try to construct a QIcon from the clipboard
@@ -456,8 +492,44 @@ void InfoDialog::pasteIcon()
     QIcon icon = QIcon(clipboard->pixmap());
     if (!icon.isNull()) {
         ui->iconInfo->setPixmap(icon.pixmap(128, 128));
+        // Convert QIcon to QPixmap
+        QPixmap pixmap = icon.pixmap(128, 128); // Adjust the size as needed
+
+        // Convert QPixmap to QByteArray
+        QByteArray iconData;
+        QBuffer buffer(&iconData);
+        buffer.open(QIODevice::WriteOnly);
+
+        if (pixmap.save(&buffer, "PNG")) {
+            buffer.close();
+            qDebug() << "Icon data size: " << iconData.size();
+            // Encode the icon data to base64
+            QByteArray base64IconData = iconData.toBase64();
+            qDebug() << "Writing icon data to extended attribute...";
+            // Write the icon data to extended attribute
+            ExtendedAttributes *ea = new ExtendedAttributes(filePath);
+            bool result = ea->write("user-icon", base64IconData);
+            if (!result) {
+                QMessageBox::warning(this, tr("Error"), tr("Error writing icon data to extended attribute."));
+            }
+            delete ea;
+            // Touch the file and its parent directory to trigger a refresh in a lambda
+            QTimer::singleShot(0, [this]() {
+                QProcess process;
+                qDebug() << "Touching file: " << filePath;
+                process.start("touch", QStringList() << filePath);
+                process.waitForFinished();
+                qDebug() << "Touching parent directory: " << fileInfo.dir().path();
+                process.start("touch", QStringList() << fileInfo.dir().path());
+                process.waitForFinished();
+            });
+
+        } else {
+            buffer.close();
+            return;
+        }
         // Info dialog saying that storing the icon in the file is not implemented yet
-        QMessageBox::information(this, tr("Not implemented"), tr("Storing the icon in the file is not implemented yet."));
+        // QMessageBox::information(this, tr("Not implemented"), tr("Storing the icon in the file is not implemented yet."));
     } else {
         qDebug() << "Could not construct icon from clipboard.";
     }

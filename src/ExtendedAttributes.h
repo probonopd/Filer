@@ -62,6 +62,8 @@ public:
      */
     QByteArray read(const QString &attributeName);
 
+    bool clear(const QString &attributeName);
+
 private:
     QFile m_file; /**< The file associated with extended attributes. */
 };

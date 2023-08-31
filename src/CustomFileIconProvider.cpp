@@ -68,6 +68,19 @@ QIcon CustomFileIconProvider::icon(const QFileInfo &info) const
 {
     // qDebug() << "CustomFileIconProvider::icon: " << info.absoluteFilePath();
 
+    // Try to read the "user-icon" extended attribute
+    ExtendedAttributes *ea = new ExtendedAttributes(info.absoluteFilePath());
+    QString base64IconData = ea->read("user-icon");
+    delete ea;
+    if (!base64IconData.isEmpty()) {
+        qDebug() << "Found user-icon extended attribute";
+        qDebug() << "base64IconData: " << base64IconData;
+        QByteArray iconData = QByteArray::fromBase64(base64IconData.toUtf8());
+        QImage image;
+        image.loadFromData(iconData);
+        return (QIcon(QPixmap::fromImage(image)));
+    }
+
     // Check if the item is an application bundle and return the icon
     ApplicationBundle *bundle = new ApplicationBundle(info.absoluteFilePath());
     // Schedule bundle for deletion
