@@ -41,6 +41,7 @@ A clean rewrite of the Filer for [helloSystem](https://hellosystem.github.io/) (
 |Do not have spring-loaded folders|Has spring-loaded folders|DONE|
 |Use Gtk-centric dependencies like Glib, Gdk, Gio, polkit|Does not use Gtk-centric dependencies|DONE|
 |Refuse to copy/move/delete items which the user doesn't have access to|Asks user for root password to copy/move/delete items which the user doesn't have access to|DONE for copy/move, TODO for delete|
+|Don't let users set custom icons onto folders and documents|Let's users set custom icons onto folders and documents|DONE using `user-icon` extended attribute holding a base64 encoded PNG|
 
 My conclusion is that most "desktop environments" are made by people who don't actually love the desktop. Or else, those basic things would work.
 
