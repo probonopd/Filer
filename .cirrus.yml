@@ -31,7 +31,7 @@ task:
     - git submodule update --init --recursive
     - git clone https://github.com/Gottox/libsqsh
     - cd libsqsh
-    - git checkout v1.0.0
+    - git checkout 0310019
     - meson setup build -Dwerror=false -Dexamples=false -Dcurl=disabled -Dzlib=enabled -Dlz4=disabled -Dlzma=disabled -Dzstd=enabled -Dthreads=enabled -Ddoc=false
     - cd build
     - meson compile
