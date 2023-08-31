@@ -52,7 +52,6 @@
 #include <QPainter>
 #include <QPen>
 #include <QRect>
-#include <QLinearGradient>
 #include <QColor>
 #include <QSortFilterProxyModel>
 #include <QMimeData>
@@ -182,6 +181,9 @@ FileManagerMainWindow::FileManagerMainWindow(QWidget *parent, const QString &ini
             setContentsMargins(0, 22, 0, 0);
         }
     }
+
+    // Set margins translucent
+    setAttribute(Qt::WA_TranslucentBackground);
 
     // Initialize m_stackedWidget
     m_stackedWidget = new QStackedWidget(this);
