@@ -16,7 +16,7 @@ public:
      * @brief The AccessType enum represents the type of access to check for.
      */
     enum AccessType {
-        Writeable,
+        Writable,
         Readable
     };
 

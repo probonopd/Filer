@@ -106,7 +106,7 @@ InfoDialog::InfoDialog(const QString &filePath, QWidget *parent) :
 
 
     ui->iconInfo->setStyleSheet("QLabel { border: 1px solid grey; }");
-    ui->iconInfo->setFixedSize(128, 128);
+    ui->iconInfo->setFixedSize(48, 48);
     ui->iconInfo->setAlignment(Qt::AlignCenter);
     // Make the icon selectable
     ui->iconInfo->setFocusPolicy(Qt::ClickFocus);
@@ -160,7 +160,7 @@ void InfoDialog::setupInformation()
     }
 
     QIcon icon = QIcon::fromTheme("unknown");
-    ui->iconInfo->setPixmap(icon.pixmap(128, 128));
+    ui->iconInfo->setPixmap(icon.pixmap(32, 32));
 
     // Get the icon from CustomFileIconProvider
     CustomFileIconProvider *iconProvider = new CustomFileIconProvider();
@@ -182,7 +182,7 @@ void InfoDialog::setupInformation()
 
     QIcon i = iconProvider->icon(fileInfo);
     if (!i.isNull()) {
-        ui->iconInfo->setPixmap(i.pixmap(128, 128));
+        ui->iconInfo->setPixmap(i.pixmap(32, 32));
     }
 
     openWith = sourceModel->openWith(filePath); // Used below

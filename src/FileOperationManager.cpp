@@ -19,7 +19,7 @@ void FileOperationManager::executeFileOperation(const QStringList& fromPaths, co
     // TODO: We might also want to check whether the trees are on read-only media, in which case
     // not even root can write to them.
     bool operationNeedsRoot = false;
-    if (!areTreesAccessible(QStringList(toPath), Writeable)) {
+    if (!areTreesAccessible(QStringList(toPath), Writable)) {
         operationNeedsRoot = true;
     }
     if(operation == "--copy") {
@@ -27,7 +27,7 @@ void FileOperationManager::executeFileOperation(const QStringList& fromPaths, co
             operationNeedsRoot = true;
         }
     } else if(operation == "--move") {
-        if (!areTreesAccessible(fromPaths, Writeable)) {
+        if (!areTreesAccessible(fromPaths, Writable)) {
             operationNeedsRoot = true;
         }
     } else {
@@ -106,7 +106,7 @@ QString FileOperationManager::findFileOperationBinary() {
 bool FileOperationManager::areTreesAccessible(const QStringList &paths, AccessType accessType) {
     for (const QString &path : paths) {
         QDir rootDir(path);
-        if (accessType == Writeable) {
+        if (accessType == Writable) {
             if (!isTreeWritable(rootDir)) {
                 return false;
             }

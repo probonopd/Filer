@@ -39,6 +39,7 @@
 #include "AppGlobals.h"
 #include <QFileSystemWatcher>
 #include "Mountpoints.h"
+#include "FileOperationManager.h"
 
 QString TrashHandler::m_trashPath = QDir::homePath() + "/.local/share/Trash/files";
 
@@ -250,6 +251,41 @@ void TrashHandler::moveToTrash(const QStringList& paths) {
                 // The file/directory is on the same mount point as the Trash directory
                 // Move the file/directory to the Trash directory
                 qDebug() << "The file/directory is on the same mount point as the Trash directory";
+
+                //
+                if (!FileOperationManager::areTreesAccessible({path}, FileOperationManager::Writable)) {
+                    qDebug() << "Root access is required to move the item to Trash";
+                    qDebug() << "File/directory path: " << path;
+                    qDebug() << "New file/directory path: " << m_trashPath;
+                    int result = QMessageBox::warning(m_parent, tr("Confirm"),
+                                                      tr("Root access is required to move the selected items to the Trash. "
+                                                         "Do you want to change the ownership of the selected items to the current user?"),
+                                                      QMessageBox::Yes | QMessageBox::No,
+                                                      QMessageBox::No);
+                    if (result == QMessageBox::Yes) {
+                        // Change the ownership of the file/directory to the current user
+                        qDebug() << "Changing the ownership of the file/directory to the current user";
+
+                        QString currentUser = qgetenv("USER");
+                        QString command = QString("sudo -A -E chown -R %1:%1 %2").arg(currentUser).arg(path);
+                        qDebug() << "Command: " << command;
+                        QProcess process;
+                        process.start(command);
+                        process.waitForFinished(-1);
+                        if (process.exitCode() != 0) {
+                            QMessageBox::critical(nullptr, tr("Error"),
+                                                  tr("Failed to change the ownership of the selected items to the current user."));
+                            continue;
+                        }
+                    } else {
+                        // The user refused to change the ownership of the file/directory to the current user
+                        // hence we cannot move the file/directory to the Trash
+                        QMessageBox::critical(nullptr, tr("Error"),
+                                              tr("Failed to move the selected items to Trash."));
+                        continue;
+                    }
+                }
+
                 if (!QFile::rename(path, newFilePath)) {
                     // Failed to move the file/directory to Trash
                     QMessageBox::critical(nullptr, tr("Error"),
@@ -259,6 +295,7 @@ void TrashHandler::moveToTrash(const QStringList& paths) {
                     filesMoved = true;
                     continue;
                 }
+
             } else {
                 // The file/directory is on a different mount point than the Trash directory, hence
                 // inform the user and as whether to delete the file/directory permanently right away

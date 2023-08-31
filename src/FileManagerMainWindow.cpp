@@ -418,6 +418,30 @@ FileManagerMainWindow::FileManagerMainWindow(QWidget *parent, const QString &ini
     // Only this way the window will be destroyed immediately and not when the event loop is
     // finished and we can remove the window from the list of child windows of the parent window
     setAttribute(Qt::WA_DeleteOnClose);
+
+    /*
+     * If no window size is set, the window will be resized so that all items fit in the window.
+     * FIXME: This is not working properly yet.
+
+    // Calculate the maximum dimensions required to accommodate all items
+    int maxWidth = 0;
+    int maxHeight = 0;
+
+    // Iterate through all items in the model
+    qDebug() << "m_fileSystemModel->rowCount():" << m_fileSystemModel->rowCount();
+    for (int i = 0; i < m_fileSystemModel->rowCount(); ++i) {
+        qDebug() << "i:" << i;
+        // Get the item's x, y, width, and height
+        QModelIndex index = m_fileSystemModel->index(i, 0);
+        QRect rect = m_iconView->visualRect(index);
+        qDebug() << "rect:" << rect;
+        // Calculate the maximum width and height
+        maxWidth = qMax(maxWidth, rect.x() + rect.width());
+        maxHeight = qMax(maxHeight, rect.y() + rect.height());
+    }
+    // Set the calculated dimensions to both the QListView and QStackedWidget
+    resize(maxWidth, maxHeight);
+    */
 }
 
 void FileManagerMainWindow::setGridSize() {// Put the icons on a grid
