@@ -59,6 +59,13 @@ int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
 
+    // Ensure we are running on X11
+    if (QGuiApplication::platformName() == "wayland") {
+        qCritical() << "This application does not work on Wayland. Please use X11.";
+        qCritical() << "Wayland is missing essential functionality by design (e.g., running applications as root).";
+        return 1;
+    }
+
     QDBusConnection connection = QDBusConnection::sessionBus();
 
     // Set the application name and organization name; this is used for QSettings
