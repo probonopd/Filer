@@ -23,11 +23,12 @@ jobs:
            git submodule update --init --recursive
            git clone https://github.com/Gottox/libsqsh
            cd libsqsh
-           git checkout 0310019
+           git checkout v1.0.0
            # sed -i -e 's|=0.57|=0.53|g' meson.build
            meson setup build \
             -Dwerror=false \
             -Dexamples=false  \
+            -Dtools=false  \
             -Dcurl=disabled  \
             -Dzlib=enabled \
             -Dlz4=disabled \
