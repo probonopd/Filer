@@ -82,9 +82,17 @@ void TrashHandler::moveToTrash(const QStringList& paths) {
         if (isMountpoint) {
             qDebug() << "Path" << absoluteFilePathWithSymlinksResolved << "is a mount point";
 
+            // Never unmount /
+            if (absoluteFilePathWithSymlinksResolved == "/") {
+                qDebug() << "Path" << absoluteFilePathWithSymlinksResolved << "is /, skipping";
+                continue;
+            }
+
             // Check if there is a window for the mount point open and if so, close it
             // Get the list of open windows from FileManagerMainWindow
             FileManagerMainWindow* mainWindow = qobject_cast<FileManagerMainWindow*>(qApp->activeWindow());
+
+            QApplication::setOverrideCursor(Qt::BusyCursor);
 
             if (mainWindow->instanceExists(absoluteFilePathWithSymlinksResolved)) {
                 // Close the window for the mount point
@@ -92,18 +100,7 @@ void TrashHandler::moveToTrash(const QStringList& paths) {
                 FileManagerMainWindow* targetWindow = mainWindow->getInstanceForDirectory(absoluteFilePathWithSymlinksResolved);
                 if (targetWindow != nullptr) {
                     targetWindow->close();
-                    // Process events to make sure the window is closed; for one second; FIXME: This is a hack and does not work
-                    // for (int i = 0; i < 200; i++) {
-                    //     QCoreApplication::processEvents();
-                    //     QThread::msleep(10);
-                    // }
                 }
-            }
-
-            // Never unmount /
-            if (absoluteFilePathWithSymlinksResolved == "/") {
-                qDebug() << "Path" << absoluteFilePathWithSymlinksResolved << "is /, skipping";
-                continue;
             }
 
             // Unmount the mount point
@@ -119,6 +116,7 @@ void TrashHandler::moveToTrash(const QStringList& paths) {
                 qDebug() << "umount" << absoluteFilePathWithSymlinksResolved;
             }
             qDebug() << "Waiting for umount to finish";
+
             umount.waitForFinished(10000); // Wait for 10 seconds; it can really take that long...
             if (umount.exitCode() == 0) {
                 unmounted = true;
@@ -126,6 +124,7 @@ void TrashHandler::moveToTrash(const QStringList& paths) {
                 QMessageBox::critical(nullptr, tr("Error"),
                                       tr("Failed to unmount the mount point: ") + absoluteFilePathWithSymlinksResolved);
             }
+            QApplication::restoreOverrideCursor();
             continue;
         }
 
@@ -364,6 +363,32 @@ void TrashHandler::moveToTrash(const QStringList& paths) {
         // Only files were moved to trash
         SoundPlayer::playSound("ffft.wav");
     }
+}
+
+bool TrashHandler::unmount(const QString &absoluteFilePathWithSymlinksResolved) const {
+    bool unmounted;// Unmount the mount point
+// TODO: Might be necessary to call with sudo -A -E
+    QProcess umount;
+    // If eject-and-clean exists, use it; otherwise use umount
+// eject-and-clean is a wrapper around umount that also cleans up the mount point
+    if (QFile::exists("/usr/local/bin/eject-and-clean")) {
+        umount.start("eject-and-clean", QStringList() << absoluteFilePathWithSymlinksResolved);
+        qDebug() << "eject-and-clean" << absoluteFilePathWithSymlinksResolved;
+    } else {
+        umount.start("umount", QStringList() << absoluteFilePathWithSymlinksResolved);
+        qDebug() << "umount" << absoluteFilePathWithSymlinksResolved;
+    }
+    qDebug() << "Waiting for umount to finish";
+
+    umount.waitForFinished(10000); // Wait for 10 seconds; it can really take that long...
+    if (umount.exitCode() == 0) {
+        unmounted = true;
+    } else {
+        QMessageBox::critical(nullptr, tr("Error"),
+                              tr("Failed to unmount the mount point: ") + absoluteFilePathWithSymlinksResolved);
+    }
+    QApplication::restoreOverrideCursor();
+    return unmounted;
 }
 
 bool TrashHandler::emptyTrash() {

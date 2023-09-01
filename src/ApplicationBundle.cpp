@@ -165,7 +165,9 @@ QIcon ApplicationBundle::icon() const
             return QIcon::fromTheme("application-x-executable");
             qDebug() << "Icon image is null for file" << m_path;
         } else {
-            return quadraticIcon(QIcon(QPixmap::fromImage(image)));
+            qDebug() << "Icon image is not null for file" << m_path;
+            // return quadraticIcon(QPixmap::fromImage(image));
+            return QIcon(QPixmap::fromImage(image));
         }
     } else {
         // Get the icon from the icon file if it exists

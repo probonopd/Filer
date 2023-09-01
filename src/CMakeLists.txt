@@ -47,6 +47,7 @@ set(PROJECT_SOURCES
         CustomTreeView.cpp CustomTreeView.h
         DBusInterface.cpp DBusInterface.h
         DesktopFile.cpp DesktopFile.h
+        Executable.cpp Executable.h
         DragAndDropHandler.cpp DragAndDropHandler.h
         ElfSizeCalculator.cpp ElfSizeCalculator.h
         ExtendedAttributes.cpp ExtendedAttributes.h

@@ -43,6 +43,8 @@
 #include "TrashHandler.h"
 #include "Mountpoints.h"
 
+#include "Executable.h"
+
 CustomFileIconProvider::CustomFileIconProvider()
         : iconCreator(new CombinedIconCreator) // "Initialize the pointer in the constructor"
 {
@@ -74,7 +76,7 @@ QIcon CustomFileIconProvider::icon(const QFileInfo &info) const
     delete ea;
     if (!base64IconData.isEmpty()) {
         qDebug() << "Found user-icon extended attribute";
-        qDebug() << "base64IconData: " << base64IconData;
+        // qDebug() << "base64IconData: " << base64IconData;
         QByteArray iconData = QByteArray::fromBase64(base64IconData.toUtf8());
         QImage image;
         image.loadFromData(iconData);
@@ -265,10 +267,14 @@ QIcon CustomFileIconProvider::icon(const QFileInfo &info) const
         QString applicationIconPath = applicationPath + "/Resources/application.png";
         if (QFile::exists(applicationIconPath)) {
             applicationIcon = QIcon(applicationIconPath);
+            return (applicationIcon);
         } else {
-            applicationIcon = QIcon::fromTheme("application-x-executable");
+            // E.g., on fat32, not every file that has the executable bit set is actually an executable
+            if(Executable::hasShebangOrIsElf(info.absoluteFilePath())) {
+                applicationIcon = QIcon::fromTheme("application-x-executable");
+                return (applicationIcon);
+            }
         }
-        return (applicationIcon);
     }
 
     // Handle .DirIcon (AppDir) and volumelcon.icns (Mac)
