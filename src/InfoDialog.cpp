@@ -45,6 +45,10 @@
 #include <QMouseEvent>
 #include <QSortFilterProxyModel>
 #include "Mountpoints.h"
+#include "ExtendedAttributes.h"
+#include <QBuffer>
+#include <QIcon>
+#include <QTimer>
 
 QMap<QString, InfoDialog*> InfoDialog::instances; // All instances of InfoDialog share this map
 
@@ -106,7 +110,7 @@ InfoDialog::InfoDialog(const QString &filePath, QWidget *parent) :
 
 
     ui->iconInfo->setStyleSheet("QLabel { border: 1px solid grey; }");
-    ui->iconInfo->setFixedSize(128, 128);
+    ui->iconInfo->setFixedSize(48, 48);
     ui->iconInfo->setAlignment(Qt::AlignCenter);
     // Make the icon selectable
     ui->iconInfo->setFocusPolicy(Qt::ClickFocus);
@@ -117,6 +121,10 @@ InfoDialog::InfoDialog(const QString &filePath, QWidget *parent) :
 
     // Make it so that one can copy and paste the icon
     ui->iconInfo->setContextMenuPolicy(Qt::ActionsContextMenu);
+    QAction *cutAction = new QAction(tr("Cut"), this);
+    cutAction->setShortcut(Qt::CTRL + Qt::Key_X);
+    connect(cutAction, &QAction::triggered, this, &InfoDialog::cutIcon);
+    ui->iconInfo->addAction(cutAction);
     QAction *copyAction = new QAction(tr("Copy"), this);
     copyAction->setShortcut(Qt::CTRL + Qt::Key_C);
     connect(copyAction, &QAction::triggered, this, &InfoDialog::copyIcon);
@@ -160,7 +168,7 @@ void InfoDialog::setupInformation()
     }
 
     QIcon icon = QIcon::fromTheme("unknown");
-    ui->iconInfo->setPixmap(icon.pixmap(128, 128));
+    ui->iconInfo->setPixmap(icon.pixmap(32, 32));
 
     // Get the icon from CustomFileIconProvider
     CustomFileIconProvider *iconProvider = new CustomFileIconProvider();
@@ -175,15 +183,16 @@ void InfoDialog::setupInformation()
     CustomFileSystemModel *sourceModel = new CustomFileSystemModel();
     sourceModel->setRootPath(parentDir);
     QSortFilterProxyModel *model = new QSortFilterProxyModel();
-    qDebug() << "Still alive";
+
     model->setSourceModel(sourceModel);
-    qDebug() << "Alive no more";
+
     iconProvider->setModel(model);
 
     QIcon i = iconProvider->icon(fileInfo);
     if (!i.isNull()) {
-        ui->iconInfo->setPixmap(i.pixmap(128, 128));
+        ui->iconInfo->setPixmap(i.pixmap(32, 32));
     }
+
     openWith = sourceModel->openWith(filePath); // Used below
     delete model;
     delete sourceModel;
@@ -194,15 +203,7 @@ void InfoDialog::setupInformation()
 
     // Convert the size into a human-readable format
     QString sizeString;
-    if (fileInfo.size() < 1024) {
-        sizeString = QString::number(fileInfo.size()) + " B";
-    } else if (fileInfo.size() < 1024 * 1024) {
-        sizeString = QString::number(fileInfo.size() / 1024.0, 'f', 2) + " KB";
-    } else if (fileInfo.size() < 1024 * 1024 * 1024) {
-        sizeString = QString::number(fileInfo.size() / (1024.0 * 1024.0), 'f', 2) + " MB";
-    } else {
-        sizeString = QString::number(fileInfo.size() / (1024.0 * 1024.0 * 1024.0), 'f', 2) + " GB";
-    }
+    sizeString = convertToHumanReadableSize(fileInfo.size());
     ui->sizeInfo->setText(sizeString + " (" + QString::number(fileInfo.size()) + " bytes)");
 
     ui->createdInfo->setText(fileInfo.created().toString(Qt::DefaultLocaleLongDate));
@@ -245,17 +246,79 @@ void InfoDialog::setupInformation()
         ui->changeOpenWithButton->setEnabled(true);
     }
 
-    // If it is a mountpoint, show the filesystem type
-    if (Mountpoints::isMountpoint(filePath)) {
-        QStorageInfo info(filePath);
-        ui->typeInfo->setText(info.fileSystemType());
+    // If it is a symlink, say "Symbolic link to <target>"
+    if (fileInfo.isSymLink()) {
+        ui->typeInfo->setText(tr("Symbolic link to ") + fileInfo.symLinkTarget());
         ui->openWithInfo->setText("open");
         ui->changeOpenWithButton->setEnabled(false);
     }
 
-    // If it is a symlink, say "Symbolic link to <target>"
-    if (fileInfo.isSymLink()) {
-        ui->typeInfo->setText(tr("Symbolic link to ") + fileInfo.symLinkTarget());
+    // If it is a mountpoint, show the filesystem type
+    if (Mountpoints::isMountpoint(filePath)) {
+        QStorageInfo info(filePath);
+
+        QString fileSystemType = info.fileSystemType();
+        QString device = info.device();
+        QString mountpoint = info.rootPath();
+
+        // Disk usage
+        qint64 usedSpace = info.bytesTotal() - info.bytesFree();
+        qint64 freeSpace = info.bytesFree();
+        qint64 totalSpace = info.bytesTotal();
+        QString usedSpaceString = convertToHumanReadableSize(usedSpace);
+        QString freeSpaceString = convertToHumanReadableSize(freeSpace);
+        QString totalSpaceString = convertToHumanReadableSize(totalSpace);
+        QString percentageUsed = QString::number(usedSpace * 100 / totalSpace) + "%";
+        QString spaceString = percentageUsed + " " + tr("Full") + " (" + tr("Used: ") + usedSpaceString + ", " + tr("Free: ") + freeSpaceString + ", " + tr("Total: ") + totalSpaceString + ")";
+        ui->sizeInfo->setText(spaceString);
+        // TODO: Graphical representation of disk usage
+
+        // If it is "fuse", show the actual filesystem type
+        if (fileSystemType == "fusefs") {
+            QString mountpointToBeFound = fileInfo.absoluteFilePath();
+            if (fileInfo.isSymLink()) {
+                mountpointToBeFound = fileInfo.symLinkTarget();
+            }
+            qDebug() << "It is a fuse filesystem, so we need to find out the actual filesystem type";
+            if (QSysInfo::kernelType() == "freebsd" && QFile::exists("/var/log/automount.log")) {
+                qDebug() << "It is FreeBSD and /var/log/automount.log exists, so we use it";
+                // FIXME: Is there a better way to do this?
+                QString output = "";
+                QFile file("/var/log/automount.log");
+                if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+                    QTextStream in(&file);
+                    while (!in.atEnd()) {
+                        QString line = in.readLine();
+                        if (line.contains(mountpointToBeFound) && line.contains("mount OK")) {
+                            output = line;
+                        }
+                    }
+                    file.close();
+                }
+                qDebug() << "output:" << output;
+                if (!output.isEmpty()) {
+                    // Line format is like this:
+                    // 2023-28-28 22:14:34 /dev/da0s1: mount OK: 'mount.exfat -o uid=0 -o gid=0 -o umask=002 -o noatime /dev/da0s1 /media/Ventoy'
+                    // Parse the line, get the filesystem type, the device and the mountpoint
+                    QString partEnclosedInSingleQuotes = output.split("'")[1];
+                    // qDebug() << "partEnclosedInSingleQuotes:" << partEnclosedInSingleQuotes;
+                    fileSystemType = partEnclosedInSingleQuotes.split(" ")[0];
+                    // Remove "mount."
+                    fileSystemType = fileSystemType.replace("mount.", "");
+                    qDebug() << "fileSystemType:" << fileSystemType;
+                    // Device is the second last word
+                    device = partEnclosedInSingleQuotes.split(" ")[
+                            partEnclosedInSingleQuotes.split(" ").length() - 2];
+                    qDebug() << "device:" << device;
+                    // Mountpoint is the last word
+                    mountpoint = partEnclosedInSingleQuotes.split(" ")[
+                            partEnclosedInSingleQuotes.split(" ").length() - 1];
+                    qDebug() << "mountpoint:" << mountpoint;
+                }
+            }
+        }
+
+        ui->typeInfo->setText(tr("%1 on %2 mounted at %3").arg(fileSystemType, device).arg(mountpoint));
         ui->openWithInfo->setText("open");
         ui->changeOpenWithButton->setEnabled(false);
     }
@@ -394,6 +457,34 @@ void InfoDialog::copyIcon()
     clipboard->setPixmap(*ui->iconInfo->pixmap());
 }
 
+void InfoDialog::cutIcon()
+{
+    QClipboard *clipboard = QApplication::clipboard();
+    clipboard->setPixmap(*ui->iconInfo->pixmap());
+
+    // Clear the user-icon extended attribute
+    ExtendedAttributes *ea = new ExtendedAttributes(filePath);
+    bool result = ea->clear("user-icon");
+    if (!result) {
+        QMessageBox::warning(this, tr("Error"), tr("Error writing icon data to extended attribute."));
+    }
+    delete ea;
+
+    setupInformation();
+
+    // Touch the file and its parent directory to trigger a refresh in a lambda
+    QTimer::singleShot(0, [this]() {
+        QProcess process;
+        qDebug() << "Touching file: " << filePath;
+        process.start("touch", QStringList() << filePath);
+        process.waitForFinished();
+        qDebug() << "Touching parent directory: " << fileInfo.dir().path();
+        process.start("touch", QStringList() << fileInfo.dir().path());
+        process.waitForFinished();
+    });
+     // QMessageBox::information(this, tr("Not implemented"), tr("Storing the icon in the file is not implemented yet."));
+}
+
 void InfoDialog::pasteIcon()
 {
     // Try to construct a QIcon from the clipboard
@@ -401,8 +492,44 @@ void InfoDialog::pasteIcon()
     QIcon icon = QIcon(clipboard->pixmap());
     if (!icon.isNull()) {
         ui->iconInfo->setPixmap(icon.pixmap(128, 128));
+        // Convert QIcon to QPixmap
+        QPixmap pixmap = icon.pixmap(128, 128); // Adjust the size as needed
+
+        // Convert QPixmap to QByteArray
+        QByteArray iconData;
+        QBuffer buffer(&iconData);
+        buffer.open(QIODevice::WriteOnly);
+
+        if (pixmap.save(&buffer, "PNG")) {
+            buffer.close();
+            qDebug() << "Icon data size: " << iconData.size();
+            // Encode the icon data to base64
+            QByteArray base64IconData = iconData.toBase64();
+            qDebug() << "Writing icon data to extended attribute...";
+            // Write the icon data to extended attribute
+            ExtendedAttributes *ea = new ExtendedAttributes(filePath);
+            bool result = ea->write("user-icon", base64IconData);
+            if (!result) {
+                QMessageBox::warning(this, tr("Error"), tr("Error writing icon data to extended attribute."));
+            }
+            delete ea;
+            // Touch the file and its parent directory to trigger a refresh in a lambda
+            QTimer::singleShot(0, [this]() {
+                QProcess process;
+                qDebug() << "Touching file: " << filePath;
+                process.start("touch", QStringList() << filePath);
+                process.waitForFinished();
+                qDebug() << "Touching parent directory: " << fileInfo.dir().path();
+                process.start("touch", QStringList() << fileInfo.dir().path());
+                process.waitForFinished();
+            });
+
+        } else {
+            buffer.close();
+            return;
+        }
         // Info dialog saying that storing the icon in the file is not implemented yet
-        QMessageBox::information(this, tr("Not implemented"), tr("Storing the icon in the file is not implemented yet."));
+        // QMessageBox::information(this, tr("Not implemented"), tr("Storing the icon in the file is not implemented yet."));
     } else {
         qDebug() << "Could not construct icon from clipboard.";
     }
@@ -427,4 +554,18 @@ bool InfoDialog::eventFilter(QObject *obj, QEvent *event) {
 
     // Call the base event filter to ensure proper event handling
     return QObject::eventFilter(obj, event);
+}
+
+QString InfoDialog::convertToHumanReadableSize(qint64 size) {
+    QString sizeString;
+    if (size < 1024) {
+        sizeString = QString::number(size) + " B";
+    } else if (size < 1024 * 1024) {
+        sizeString = QString::number(size / 1024.0, 'f', 2) + " KB";
+    } else if (size < 1024 * 1024 * 1024) {
+        sizeString = QString::number(size / (1024.0 * 1024.0), 'f', 2) + " MB";
+    } else {
+        sizeString = QString::number(size / (1024.0 * 1024.0 * 1024.0), 'f', 2) + " GB";
+    }
+    return sizeString;
 }

@@ -126,10 +126,8 @@ void CustomItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &op
     // Find out whether we are drawing for the first instance (desktop)
     // or for another instance (file manager window)
     QAbstractItemView *view = static_cast<QAbstractItemView *>(parent());
-    // Get the parent (MainWindow) of the parent (QStackedWidget) of the view (CustomListView/QTreeView)
-    FileManagerMainWindow *mainWindow = static_cast<FileManagerMainWindow *>(view->parent()->parent());
-    // Assert that the parent of the parent of the view is a FileManagerMainWindow
-    Q_ASSERT(mainWindow);
+    // Get the parent (MainWindow) of the parent (QScrollArea) of the parent (QStackedWidget) of the view (CustomListView/QTreeView)
+    FileManagerMainWindow *mainWindow = static_cast<FileManagerMainWindow *>(view->window());
 
     bool isTreeView =  mainWindow->getCurrentView()->metaObject()->className() == QString("QTreeView");
 

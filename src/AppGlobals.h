@@ -15,8 +15,8 @@ public:
 
     static const QString mediaPath;
     static const QString hardDiskName;
+    static const QString desktopPictureWindowObjectName;
 
-    static const QString desktopPicturePath;
 };
 
 #endif // GLOBALS_H

@@ -67,6 +67,7 @@ private slots:
 private:
     QFileSystemWatcher m_watcher; /**< The QFileSystemWatcher used to monitor changes. */
     QString m_mediaPath; /**< The path of the directory to monitor. */
+    void startWaitingForMounted(const QString &fullPath, const QString &symlinkPath) const;
 };
 
 #endif // VOLUMEWATCHER_H

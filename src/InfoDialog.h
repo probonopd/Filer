@@ -44,13 +44,6 @@ Q_OBJECT
 
 public:
     /**
-     * @brief Constructs an InfoDialog with the given file path.
-     * @param filePath The path of the file or directory to display information for.
-     * @param parent The parent widget (optional).
-     */
-    explicit InfoDialog(const QString &filePath, QWidget *parent = nullptr);
-
-    /**
      * @brief Destructor.
      */
     ~InfoDialog();
@@ -63,6 +56,8 @@ public:
      */
     static InfoDialog* getInstance(const QString &filePath, QWidget *parent = nullptr);
 
+    static QString convertToHumanReadableSize(qint64 size);
+
 private:
     Ui::InfoDialog *ui; /**< The user interface components. */
     QString filePath; /**< The path of the file or directory. */
@@ -73,6 +68,13 @@ private:
     bool labelActive = false; /**< Whether the icon label is active. */
     bool iconClickedHandled = false; /**< Whether the icon click event was handled. */
     bool isEditable = false; /**< Whether the file is editable by the current user. */
+
+    /**
+     * @brief Constructs an InfoDialog with the given file path.
+     * @param filePath The path of the file or directory to display information for.
+     * @param parent The parent widget (optional).
+     */
+    explicit InfoDialog(const QString &filePath, QWidget *parent = nullptr);
 
     /**
      * @brief Event filter for the icon label to change the border when clicked.
@@ -103,6 +105,11 @@ private:
      * @brief Update permissions in the dialog based on the permissions of the file.
      */
     void updatePermissions();
+
+    /**
+     * @brief Cut the icon to the clipboard.
+     */
+    void cutIcon();
 
     /**
      * @brief Copy the icon to the clipboard.

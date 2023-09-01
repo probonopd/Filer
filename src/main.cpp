@@ -53,52 +53,32 @@
 #include "AppGlobals.h"
 #include <QScreen>
 #include <QPainter>
-
-void displayPicturesOnAllScreens(QApplication &app) {
-
-    if (!QFileInfo(AppGlobals::desktopPicturePath).exists()) {
-        return;
-    }
-
-    QList<QScreen*> screens = app.screens();
-
-    for (QScreen *screen : screens) {
-        QRect screenGeometry = screen->geometry();
-        QPixmap desktopPixmap = QPixmap(AppGlobals::desktopPicturePath);
-        // Create a QLabel to display the picture
-        QLabel *label = new QLabel;
-        label->setPixmap(desktopPixmap.scaled(screenGeometry.size(), Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation));
-        // Create a top-level window for each screen
-        QWidget *window = new QWidget;
-        QVBoxLayout *layout = new QVBoxLayout;
-        layout->addWidget(label);
-        layout->setContentsMargins(0, 0, 0, 0);
-        layout->setSpacing(0);
-        window->setContentsMargins(0, 0, 0, 0);
-        window->setLayout(layout);
-        window->setGeometry(screenGeometry);
-        window->show();
-        window->setFixedSize(screenGeometry.size());
-        window->setAttribute(Qt::WA_X11NetWmWindowTypeDesktop, true);
-        // Make invisible to the taskbar = Menu
-        window->setAttribute(Qt::WA_X11DoNotAcceptFocus, true);
-        // No window decorations = will not show up in Menu as a window
-        window->setWindowFlags(Qt::FramelessWindowHint);
-        // Make it an auxiliary window, not a top-level window
-        window->setWindowFlags(Qt::Tool);
-    }
-}
+#include <QSettings>
 
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
 
+    // Ensure we are running on X11
+    if (QGuiApplication::platformName() == "wayland") {
+        qCritical() << "This application does not work on Wayland. Please use X11.";
+        qCritical() << "Wayland is missing essential functionality by design (e.g., running applications as root).";
+        return 1;
+    }
+
     QDBusConnection connection = QDBusConnection::sessionBus();
 
-    // Set the application name
+    // Set the application name and organization name; this is used for QSettings
     QCoreApplication::setApplicationName("Filer");
-    // Set the application version
-    QCoreApplication::setApplicationVersion("1.0");
+    QCoreApplication::setOrganizationName("helloDesktop");
+
+    // Initialize the global QSettings instance
+    QSettings settings;
+    // Set the QSettings instance as a property of the qApp object
+    qApp->setProperty("settings", QVariant::fromValue(&settings));
+    // Load the settings from the settings file
+    settings.sync();
+
 
     // Add --version and -v
     QCommandLineParser parser;
@@ -155,7 +135,7 @@ int main(int argc, char *argv[])
         // No arguments were passed to the application
 
         // On all screens, draw the desktop picture
-        displayPicturesOnAllScreens(app);
+        FileManagerMainWindow::displayPicturesOnAllScreens();
 
         // Check whether another instance of a file manager is already running
         // by checking whether the D-Bus ""org.freedesktop.FileManager1" service is available

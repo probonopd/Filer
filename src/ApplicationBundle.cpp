@@ -39,6 +39,7 @@
 #include "SqshArchiveReader.h"
 
 #include <DesktopFile.h>
+#include <QPainter>
 
 ApplicationBundle::ApplicationBundle(const QString& path)
         : m_path(path),
@@ -73,7 +74,7 @@ ApplicationBundle::ApplicationBundle(const QString& path)
             resourcesDir.setNameFilters(filters);
             if (resourcesDir.exists()) {
                 QStringList icons = resourcesDir.entryList();
-                qDebug() << icons;
+                // qDebug() << icons;
                 if (icons.size() > 0) {
                     m_icon = resourcesDir.filePath(icons.at(0));
                 }
@@ -146,12 +147,12 @@ QIcon ApplicationBundle::icon() const
     } else if (m_type == Type::AppImage) {
         // Determine the ELF offset
         qint64 offset = ElfSizeCalculator::calculateElfSize(m_path);
-        qDebug() << "offset:" << offset << "for file" << m_path;
+        // qDebug() << "offset:" << offset << "for file" << m_path;
         // Get the data of the .DirIcon file from the squashfs
         SqshArchiveReader *reader = new SqshArchiveReader(offset);
         qDebug() << "Extracting AppImage icon for file" << m_path;
         QByteArray fileData = reader->readFileFromArchive(m_path, ".DirIcon");
-        qDebug() << "Finished extracting AppImage icon data for file" << m_path;
+        // qDebug() << "Finished extracting AppImage icon data for file" << m_path;
         delete reader;
         // If fileData is empty, return default icon
         if (fileData.isEmpty()) {
@@ -164,6 +165,8 @@ QIcon ApplicationBundle::icon() const
             return QIcon::fromTheme("application-x-executable");
             qDebug() << "Icon image is null for file" << m_path;
         } else {
+            qDebug() << "Icon image is not null for file" << m_path;
+            // return quadraticIcon(QPixmap::fromImage(image));
             return QIcon(QPixmap::fromImage(image));
         }
     } else {
@@ -174,11 +177,27 @@ QIcon ApplicationBundle::icon() const
         }
         QFile file(m_icon);
         if (file.exists()) {
-            return QIcon(m_icon);
+            // If the icon is not quadratic, extend it to a quadratic shape and align it in the center bottom
+            return quadraticIcon(QIcon(m_icon));
         } else {
             // Get the default icon if the icon file does not exist
             return QIcon::fromTheme("application-x-executable");
         }
+    }
+}
+
+QIcon ApplicationBundle::quadraticIcon(QIcon icon) const {
+    if (QPixmap(m_icon).width() != QPixmap(m_icon).height()) {
+        QPixmap pixmap(m_icon);
+        QPixmap squaredPixmap = QPixmap(pixmap.width(), pixmap.width());
+        squaredPixmap.fill(Qt::transparent);
+        QPainter painter(&squaredPixmap);
+        painter.setRenderHint(QPainter::Antialiasing);
+        painter.setRenderHint(QPainter::SmoothPixmapTransform);
+        painter.drawPixmap((pixmap.width() - pixmap.height()) / 2, 0, pixmap);
+        return QIcon(squaredPixmap);
+    } else {
+        return QIcon(m_icon);
     }
 }
 

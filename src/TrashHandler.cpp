@@ -39,6 +39,7 @@
 #include "AppGlobals.h"
 #include <QFileSystemWatcher>
 #include "Mountpoints.h"
+#include "FileOperationManager.h"
 
 QString TrashHandler::m_trashPath = QDir::homePath() + "/.local/share/Trash/files";
 
@@ -81,9 +82,17 @@ void TrashHandler::moveToTrash(const QStringList& paths) {
         if (isMountpoint) {
             qDebug() << "Path" << absoluteFilePathWithSymlinksResolved << "is a mount point";
 
+            // Never unmount /
+            if (absoluteFilePathWithSymlinksResolved == "/") {
+                qDebug() << "Path" << absoluteFilePathWithSymlinksResolved << "is /, skipping";
+                continue;
+            }
+
             // Check if there is a window for the mount point open and if so, close it
             // Get the list of open windows from FileManagerMainWindow
             FileManagerMainWindow* mainWindow = qobject_cast<FileManagerMainWindow*>(qApp->activeWindow());
+
+            QApplication::setOverrideCursor(Qt::BusyCursor);
 
             if (mainWindow->instanceExists(absoluteFilePathWithSymlinksResolved)) {
                 // Close the window for the mount point
@@ -91,18 +100,7 @@ void TrashHandler::moveToTrash(const QStringList& paths) {
                 FileManagerMainWindow* targetWindow = mainWindow->getInstanceForDirectory(absoluteFilePathWithSymlinksResolved);
                 if (targetWindow != nullptr) {
                     targetWindow->close();
-                    // Process events to make sure the window is closed; for one second; FIXME: This is a hack and does not work
-                    // for (int i = 0; i < 200; i++) {
-                    //     QCoreApplication::processEvents();
-                    //     QThread::msleep(10);
-                    // }
                 }
-            }
-
-            // Never unmount /
-            if (absoluteFilePathWithSymlinksResolved == "/") {
-                qDebug() << "Path" << absoluteFilePathWithSymlinksResolved << "is /, skipping";
-                continue;
             }
 
             // Unmount the mount point
@@ -118,6 +116,7 @@ void TrashHandler::moveToTrash(const QStringList& paths) {
                 qDebug() << "umount" << absoluteFilePathWithSymlinksResolved;
             }
             qDebug() << "Waiting for umount to finish";
+
             umount.waitForFinished(10000); // Wait for 10 seconds; it can really take that long...
             if (umount.exitCode() == 0) {
                 unmounted = true;
@@ -125,6 +124,7 @@ void TrashHandler::moveToTrash(const QStringList& paths) {
                 QMessageBox::critical(nullptr, tr("Error"),
                                       tr("Failed to unmount the mount point: ") + absoluteFilePathWithSymlinksResolved);
             }
+            QApplication::restoreOverrideCursor();
             continue;
         }
 
@@ -250,6 +250,41 @@ void TrashHandler::moveToTrash(const QStringList& paths) {
                 // The file/directory is on the same mount point as the Trash directory
                 // Move the file/directory to the Trash directory
                 qDebug() << "The file/directory is on the same mount point as the Trash directory";
+
+                //
+                if (!FileOperationManager::areTreesAccessible({path}, FileOperationManager::Writable)) {
+                    qDebug() << "Root access is required to move the item to Trash";
+                    qDebug() << "File/directory path: " << path;
+                    qDebug() << "New file/directory path: " << m_trashPath;
+                    int result = QMessageBox::warning(m_parent, tr("Confirm"),
+                                                      tr("Root access is required to move the selected items to the Trash. "
+                                                         "Do you want to change the ownership of the selected items to the current user?"),
+                                                      QMessageBox::Yes | QMessageBox::No,
+                                                      QMessageBox::No);
+                    if (result == QMessageBox::Yes) {
+                        // Change the ownership of the file/directory to the current user
+                        qDebug() << "Changing the ownership of the file/directory to the current user";
+
+                        QString currentUser = qgetenv("USER");
+                        QString command = QString("sudo -A -E chown -R %1:%1 %2").arg(currentUser).arg(path);
+                        qDebug() << "Command: " << command;
+                        QProcess process;
+                        process.start(command);
+                        process.waitForFinished(-1);
+                        if (process.exitCode() != 0) {
+                            QMessageBox::critical(nullptr, tr("Error"),
+                                                  tr("Failed to change the ownership of the selected items to the current user."));
+                            continue;
+                        }
+                    } else {
+                        // The user refused to change the ownership of the file/directory to the current user
+                        // hence we cannot move the file/directory to the Trash
+                        QMessageBox::critical(nullptr, tr("Error"),
+                                              tr("Failed to move the selected items to Trash."));
+                        continue;
+                    }
+                }
+
                 if (!QFile::rename(path, newFilePath)) {
                     // Failed to move the file/directory to Trash
                     QMessageBox::critical(nullptr, tr("Error"),
@@ -259,6 +294,7 @@ void TrashHandler::moveToTrash(const QStringList& paths) {
                     filesMoved = true;
                     continue;
                 }
+
             } else {
                 // The file/directory is on a different mount point than the Trash directory, hence
                 // inform the user and as whether to delete the file/directory permanently right away
@@ -327,6 +363,32 @@ void TrashHandler::moveToTrash(const QStringList& paths) {
         // Only files were moved to trash
         SoundPlayer::playSound("ffft.wav");
     }
+}
+
+bool TrashHandler::unmount(const QString &absoluteFilePathWithSymlinksResolved) const {
+    bool unmounted;// Unmount the mount point
+// TODO: Might be necessary to call with sudo -A -E
+    QProcess umount;
+    // If eject-and-clean exists, use it; otherwise use umount
+// eject-and-clean is a wrapper around umount that also cleans up the mount point
+    if (QFile::exists("/usr/local/bin/eject-and-clean")) {
+        umount.start("eject-and-clean", QStringList() << absoluteFilePathWithSymlinksResolved);
+        qDebug() << "eject-and-clean" << absoluteFilePathWithSymlinksResolved;
+    } else {
+        umount.start("umount", QStringList() << absoluteFilePathWithSymlinksResolved);
+        qDebug() << "umount" << absoluteFilePathWithSymlinksResolved;
+    }
+    qDebug() << "Waiting for umount to finish";
+
+    umount.waitForFinished(10000); // Wait for 10 seconds; it can really take that long...
+    if (umount.exitCode() == 0) {
+        unmounted = true;
+    } else {
+        QMessageBox::critical(nullptr, tr("Error"),
+                              tr("Failed to unmount the mount point: ") + absoluteFilePathWithSymlinksResolved);
+    }
+    QApplication::restoreOverrideCursor();
+    return unmounted;
 }
 
 bool TrashHandler::emptyTrash() {

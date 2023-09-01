@@ -89,6 +89,7 @@ private:
     static QString m_trashPath; /**< The path to the trash directory. */
     QWidget *m_parent; /**< The parent QWidget used for displaying message boxes. */
     bool m_dialogShown = false; /**< Flag to track if the empty trash confirmation dialog has been shown. */
+    bool unmount(const QString &absoluteFilePathWithSymlinksResolved) const;
 };
 
 #endif // TRASHHANDLER_H

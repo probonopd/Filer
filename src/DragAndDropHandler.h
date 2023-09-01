@@ -37,8 +37,7 @@ class QAbstractItemView;
 /**
  * @file DragAndDropHandler.h
  * @class DragAndDropHandler
- * @brief The DragAndDropHandler class
- * This class handles drag and drop events for a QAbstractItemView so that we don't have to implement the same
+ * @brief Handles drag and drop events for a QAbstractItemView so that we don't have to implement the same
  * code in multiple views.
  * It is a friend class of QAbstractItemView.
  */

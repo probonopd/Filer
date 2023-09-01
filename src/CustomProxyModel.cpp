@@ -34,10 +34,39 @@
 #include <QUrl>
 #include <QFileSystemModel>
 #include "Mountpoints.h"
+#include "CustomFileSystemModel.h"
+
+QSet<QString> hiddenFileNames;
 
 CustomProxyModel::CustomProxyModel(QObject *parent)
         : QSortFilterProxyModel(parent)
 {
+}
+
+void CustomProxyModel::setSourceModel(QAbstractItemModel *sourceModel)
+{
+    QSortFilterProxyModel::setSourceModel(sourceModel);
+
+    if (QFileSystemModel *fileSystemModel = qobject_cast<QFileSystemModel *>(sourceModel)) {
+        QString rootPath = fileSystemModel->rootPath();
+        QString hiddenFilePath = rootPath + "/.hidden";
+
+        fileWatcher.addPath(hiddenFilePath);
+        // Watch for changes to the .hidden file
+        connect(&fileWatcher, &QFileSystemWatcher::fileChanged, this, &CustomProxyModel::handleHiddenFileChanged);
+        // Also watch the parent directory, in case the .hidden file gets deleted or created
+        connect(fileSystemModel, &QFileSystemModel::directoryLoaded, this, &CustomProxyModel::handleHiddenFileChanged);
+
+        QFile hiddenFile(hiddenFilePath);
+        if (hiddenFile.open(QIODevice::ReadOnly)) {
+            QTextStream in(&hiddenFile);
+            while (!in.atEnd()) {
+                QString line = in.readLine();
+                hiddenFileNames.insert(line.trimmed());
+            }
+            hiddenFile.close();
+        }
+    }
 }
 
 bool CustomProxyModel::lessThan(const QModelIndex &left, const QModelIndex &right) const
@@ -158,4 +187,53 @@ bool CustomProxyModel::canDropMimeData(const QMimeData *data, Qt::DropAction act
     // Map to source model and call its method
     QModelIndex sourceParent = mapToSource(parent);
     return sourceModel()->canDropMimeData(data, action, row, column, sourceParent);
+}
+
+
+bool CustomProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
+{
+    QModelIndex index = sourceModel()->index(sourceRow, 0, sourceParent);
+    QString fileName = static_cast<QFileSystemModel *>(sourceModel())->fileName(index);
+
+    // Filter out files starting with a dot
+    if (fileName.startsWith('.')) {
+        return false; // Do not accept this row
+    }
+
+    if (hiddenFileNames.contains(fileName.trimmed())) {
+        return false; // Do not accept this row
+    }
+
+    return true; // Accept this row
+}
+
+void CustomProxyModel::handleHiddenFileChanged(const QString &path)
+{
+    Q_UNUSED(path);
+    updateFiltering();
+}
+
+void CustomProxyModel::loadHiddenFileNames(const QString &hiddenFilePath)
+{
+    QFile hiddenFile(hiddenFilePath);
+    if (hiddenFile.open(QIODevice::ReadOnly)) {
+        QTextStream in(&hiddenFile);
+        while (!in.atEnd()) {
+            QString line = in.readLine();
+            hiddenFileNames.insert(line.trimmed());
+        }
+        hiddenFile.close();
+    }
+}
+
+void CustomProxyModel::updateFiltering()
+{
+    hiddenFileNames.clear();
+    if (QFileSystemModel *fileSystemModel = qobject_cast<QFileSystemModel *>(sourceModel())) {
+        QString rootPath = fileSystemModel->rootPath();
+        QString hiddenFilePath = rootPath + "/.hidden";
+        loadHiddenFileNames(hiddenFilePath);
+    }
+
+    invalidateFilter();
 }

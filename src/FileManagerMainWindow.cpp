@@ -52,7 +52,6 @@
 #include <QPainter>
 #include <QPen>
 #include <QRect>
-#include <QLinearGradient>
 #include <QColor>
 #include <QSortFilterProxyModel>
 #include <QMimeData>
@@ -73,6 +72,8 @@
 #include "Mountpoints.h"
 #include <QScreen>
 #include "VolumeWatcher.h"
+#include <QSettings>
+#include "PreferencesDialog.h"
 
 /*
  * This creates a FileManagerMainWindow object with a QTreeView subclass and QListView subclass widget.
@@ -181,6 +182,9 @@ FileManagerMainWindow::FileManagerMainWindow(QWidget *parent, const QString &ini
         }
     }
 
+    // Set margins translucent
+    setAttribute(Qt::WA_TranslucentBackground);
+
     // Initialize m_stackedWidget
     m_stackedWidget = new QStackedWidget(this);
 
@@ -206,6 +210,12 @@ FileManagerMainWindow::FileManagerMainWindow(QWidget *parent, const QString &ini
         // closeAllWindowsOnScreen(0); // TODO: Instead, prevent the "desktop picture only" windows created in main.cpp
         // from being available in the window menu by setting some property on them;
         // the same as we do with Installer
+
+    // The first instance also handles screen size changes
+        QList<QScreen *> screens = QGuiApplication::screens();
+        for (QScreen *screen : screens) {
+            connect(screen, &QScreen::geometryChanged, this, &FileManagerMainWindow::handleScreenChange);
+        }
     }
 
     // Create an instance of our custom QFileIconProvider
@@ -215,13 +225,6 @@ FileManagerMainWindow::FileManagerMainWindow(QWidget *parent, const QString &ini
     m_fileSystemModel->setRootPath(m_currentDir);
     m_proxyModel = new CustomProxyModel(this);
     m_proxyModel->setSourceModel(m_fileSystemModel);
-
-    // For testing, filter out anything that starts with "z"
-    // m_proxyModel->setFilterRegExp(QRegExp("^[^z].*"));
-    // Works!
-
-    // Call the function to set the filter based on the .hidden file
-    setFilterRegExpForHiddenFiles(m_proxyModel, m_currentDir + "/.hidden");
 
     m_proxyModel->setDynamicSortFilter(true);
     m_proxyModel->setSortCaseSensitivity(Qt::CaseInsensitive);
@@ -253,6 +256,7 @@ FileManagerMainWindow::FileManagerMainWindow(QWidget *parent, const QString &ini
         // of the root window in extended attributes appropriately
         // TODO: Find a way to store the position and geometry of the root window
         resize(600, 400);
+        move(40, 44); // Like the default position of windows in KWin
     }
 
     // If we are at the Trash, set the window title to "Trash"
@@ -372,10 +376,7 @@ FileManagerMainWindow::FileManagerMainWindow(QWidget *parent, const QString &ini
     // Set the view mode to IconMode with the text under the icons and make the icons freely movable
     m_iconView->setViewMode(QListView::IconMode);
     m_iconView->setMovement(QListView::Free);
-
-    // Put the icons on a grid
-    QSize iconSize = m_iconView->iconSize();
-    m_iconView->setGridSize(QSize(200, 64));
+    setGridSize();
 
     // Connect the doubleClicked() signal to the open() slot
     connect(
@@ -419,6 +420,39 @@ FileManagerMainWindow::FileManagerMainWindow(QWidget *parent, const QString &ini
     // Only this way the window will be destroyed immediately and not when the event loop is
     // finished and we can remove the window from the list of child windows of the parent window
     setAttribute(Qt::WA_DeleteOnClose);
+
+    /*
+     * If no window size is set, the window will be resized so that all items fit in the window.
+     * FIXME: This is not working properly yet.
+
+    // Calculate the maximum dimensions required to accommodate all items
+    int maxWidth = 0;
+    int maxHeight = 0;
+
+    // Iterate through all items in the model
+    qDebug() << "m_fileSystemModel->rowCount():" << m_fileSystemModel->rowCount();
+    for (int i = 0; i < m_fileSystemModel->rowCount(); ++i) {
+        qDebug() << "i:" << i;
+        // Get the item's x, y, width, and height
+        QModelIndex index = m_fileSystemModel->index(i, 0);
+        QRect rect = m_iconView->visualRect(index);
+        qDebug() << "rect:" << rect;
+        // Calculate the maximum width and height
+        maxWidth = qMax(maxWidth, rect.x() + rect.width());
+        maxHeight = qMax(maxHeight, rect.y() + rect.height());
+    }
+    // Set the calculated dimensions to both the QListView and QStackedWidget
+    resize(maxWidth, maxHeight);
+    */
+}
+
+void FileManagerMainWindow::setGridSize() {// Put the icons on a grid
+    QSize iconSize = m_iconView->iconSize();
+    // Get the gridSize from QSettings, default is 120
+    QSettings settings;
+    int gridSize = settings.value("gridSize", 120).toInt();
+    qDebug() << "gridSize:" << gridSize;
+    m_iconView->setGridSize(QSize(gridSize, 60));
 }
 
 // Saves the window geometry
@@ -475,7 +509,7 @@ void FileManagerMainWindow::moveEvent(QMoveEvent *event)
 // Callback function for when the user resizes the window
 void FileManagerMainWindow::resizeEvent(QResizeEvent *event)
 {
-    qDebug() << "resizeEvent";
+    // qDebug() << "resizeEvent";
 
     // Call the base class implementation
     QMainWindow::resizeEvent(event);
@@ -484,17 +518,11 @@ void FileManagerMainWindow::resizeEvent(QResizeEvent *event)
     if (!m_treeViewAction->isChecked()) {
         m_iconView->doItemsLayout();
     }
-
-    // TOOD: Wait until no resize events are coming in for 1 second
-    // This is necessary because the resizeEvent() is called multiple times when the user resizes
-    // the window and we only want to save the window geometry when the user has finished resizing
-    // the window. How to do this properly?
-
-    saveWindowGeometry();
 }
 
 void FileManagerMainWindow::refresh() {
     qDebug() << "Calling update() on the views";
+    setGridSize();
     m_treeView->update();
     m_iconView->update();
 }
@@ -838,6 +866,11 @@ void FileManagerMainWindow::createMenus()
 
     editMenu->addSeparator();
 
+
+    editMenu->addAction(tr("Preferences..."), this, &FileManagerMainWindow::showPreferencesDialog);
+
+    editMenu->addSeparator();
+
     // Create the "Empty Trash" action
     m_emptyTrashAction = new QAction(tr("Empty Trash"), this);
     editMenu->addAction(m_emptyTrashAction);
@@ -1033,6 +1066,14 @@ void FileManagerMainWindow::createMenus()
         QFileSystemModel *fsModel = new QFileSystemModel(completer);
         fsModel->setFilter(QDir::Dirs|QDir::Drives|QDir::NoDotAndDotDot|QDir::AllDirs); // Only directories, no files
         completer->setModel(fsModel);
+        // When the user enters "~" in the line edit, complete it to the home directory
+        QObject::connect(lineEdit, &QLineEdit::textChanged, [=](const QString &text) {
+            if (text.startsWith("~")) {
+                QString completedText = QDir::homePath() + text.mid(1) + "/";
+                lineEdit->setText(completedText);
+                lineEdit->setCursorPosition(completedText.length()); // Place cursor at the end
+            }
+        });
         fsModel->setRootPath(QString());
         lineEdit->setCompleter(completer);
         lineEdit->setPlaceholderText(tr("Enter a folder path..."));
@@ -1477,6 +1518,27 @@ void FileManagerMainWindow::renameSelectedItem()
     QRegExpValidator validator(QRegExp("[^/]*"));
     bool ok;
 
+    // Check if the item to be renamed is a mountpoint
+
+    const QString currentPath = m_proxyModel->mapToSource(selectedIndex).data(QFileSystemModel::FilePathRole).toString();
+    QString absoluteFilePath = QFileInfo(currentPath).absoluteFilePath();
+    // if absoluteFilePath is a symlink, resolve it
+    if (QFileInfo(absoluteFilePath).isSymLink()) {
+        absoluteFilePath = QFileInfo(absoluteFilePath).symLinkTarget();
+    }
+    qDebug() << "absoluteFilePath:" << absoluteFilePath;
+
+    if (Mountpoints::isMountpoint(absoluteFilePath)) {
+        // Get the filesystem type using QStorageInfo
+        const QString filesystemType = QStorageInfo(absoluteFilePath).fileSystemType();
+        qDebug() << "Filesystem type:" << filesystemType;
+        QStringList renameableFilesystems = { "ext2", "ext3", "ext4", "reiserfs", "reiser4", "ufs", "vfat", "exfat", "ntfs" };
+        // If the filesystem is not in the list of renameable filesystems, disable renaming
+        if (!renameableFilesystems.contains(filesystemType)) {
+            QMessageBox::information(this, tr("Rename"), tr("Renaming is not supported yet for the %1 filesystem type.").arg(filesystemType));
+            return;
+        }
+    }
 
     // Construct a dialog using this QLineEdit
     // QDialog dialog(this); // Never do this
@@ -1493,7 +1555,8 @@ void FileManagerMainWindow::renameSelectedItem()
     dialog->adjustSize();
     dialog->setFixedWidth(400);
     lineEdit->setText(currentName);
-    lineEdit->selectAll();
+    // Select all but the extension
+    lineEdit->setSelection(0, currentName.lastIndexOf('.'));
     lineEdit->setFocus();
     int result = dialog->exec();
 
@@ -1514,15 +1577,18 @@ void FileManagerMainWindow::renameSelectedItem()
     qDebug() << "newName:" << newName;
     qDebug() << "currentName:" << currentName;
 
-    // Check if the item to be renamed is a mountpoint
-
-    const QString currentPath = m_proxyModel->mapToSource(selectedIndex).data(QFileSystemModel::FilePathRole).toString();
-    QString absoluteFilePath = QFileInfo(currentPath).absoluteFilePath();
-    // if absoluteFilePath is a symlink, resolve it
-    if (QFileInfo(absoluteFilePath).isSymLink()) {
-        absoluteFilePath = QFileInfo(absoluteFilePath).symLinkTarget();
+    // If there was an extension, compare the old and the new extension
+    // and if they are different, ask the user if they want to continue
+    if (currentName.lastIndexOf('.') != -1) {
+        if (currentName.right(currentName.length() - currentName.lastIndexOf('.') - 1) != newName.right(newName.length() - newName.lastIndexOf('.') - 1)) {
+            // The extensions are different
+            QMessageBox::StandardButton reply;
+            reply = QMessageBox::question(this, 0, tr("Do you really want to change the file extension?"), QMessageBox::Yes|QMessageBox::No);
+            if (reply == QMessageBox::No) {
+                return;
+            }
+        }
     }
-    qDebug() << "absoluteFilePath:" << absoluteFilePath;
 
     if (Mountpoints::isMountpoint(absoluteFilePath)) {
 
@@ -1617,12 +1683,10 @@ void FileManagerMainWindow::updateMenus() {
         m_openAction->setEnabled(false);
         m_openWithAction->setEnabled(false);
         m_moveToTrashAction->setEnabled(false);
-        m_getInfoAction->setEnabled(false);
     } else {
         m_openAction->setEnabled(true);
         m_openWithAction->setEnabled(true);
         m_moveToTrashAction->setEnabled(true);
-        m_getInfoAction->setEnabled(true);
         bool allSelectedItemsCanShowContents = true;
         for (const QModelIndex &index: selectedIndexes) {
             // Check if the selected item can show its contents
@@ -1794,31 +1858,50 @@ void FileManagerMainWindow::bringToFront()
 void FileManagerMainWindow::getInfo() {
     // Get all selected items
     QModelIndexList selectedIndexes = getCurrentView()->selectionModel()->selectedIndexes();
-    for (QModelIndex index : selectedIndexes) {
-        // Get the absolute path of the item represented by the index, using the model
-        QString filePath = m_fileSystemModel->data(m_proxyModel->mapToSource(index), QFileSystemModel::FilePathRole).toString();
+
+    // If no items are selected, show the info for the current directory
+    if (selectedIndexes.isEmpty()) {
+        // Get the absolute path of the current directory
+        QString filePath = m_currentDir;
         // Destroy the dialog when it is closed
         InfoDialog *infoDialog = InfoDialog::getInstance(filePath, this);
         infoDialog->setAttribute(Qt::WA_DeleteOnClose);
         infoDialog->show();
+    } else {
+        // Iterate over the selected items
+
+        for (QModelIndex index: selectedIndexes) {
+            // Get the absolute path of the item represented by the index, using the model
+            QString filePath = m_fileSystemModel->data(m_proxyModel->mapToSource(index),
+                                                       QFileSystemModel::FilePathRole).toString();
+            // Destroy the dialog when it is closed
+            InfoDialog *infoDialog = InfoDialog::getInstance(filePath, this);
+            infoDialog->setAttribute(Qt::WA_DeleteOnClose);
+            infoDialog->show();
+        }
     }
 }
 
+/*
 void FileManagerMainWindow::setFilterRegExpForHiddenFiles(QSortFilterProxyModel *proxyModel, const QString &hiddenFilePath)
 {
     QStringList hiddenFiles;
     QFile hiddenFile(hiddenFilePath);
 
-    if (hiddenFile.open(QIODevice::ReadOnly | QIODevice::Text))
-    {
-        QTextStream in(&hiddenFile);
-        while (!in.atEnd())
+    // Check if the hidden file exists and open it for reading
+    if (hiddenFile.exists()) {
+        qDebug() << "xxxxxxxxxxx Hidden file exists: " << hiddenFilePath;
+        if (hiddenFile.open(QIODevice::ReadOnly | QIODevice::Text))
         {
-            QString line = in.readLine().trimmed();
-            if (!line.isEmpty())
-                hiddenFiles.append(QRegExp::escape(line));
+            QTextStream in(&hiddenFile);
+            while (!in.atEnd())
+            {
+                QString line = in.readLine().trimmed();
+                if (!line.isEmpty())
+                    hiddenFiles.append(QRegExp::escape(line));
+            }
+            hiddenFile.close();
         }
-        hiddenFile.close();
     }
 
     if (!hiddenFiles.isEmpty())
@@ -1833,35 +1916,102 @@ void FileManagerMainWindow::setFilterRegExpForHiddenFiles(QSortFilterProxyModel 
         // The resulting pattern hides files matching hidden filenames or starting with a dot, while showing other files.
         QString pattern = "^(?:(?!" + hiddenFiles.join('|') + "|\\.).)*$";
         QRegExp regExp(pattern);
-        qDebug() << "Filtering out hidden files using pattern:" << pattern;
+        qDebug() << "xxxxxxxxxx Filtering out hidden files using pattern:" << pattern;
         proxyModel->setFilterRegExp(regExp);
 
     }
     else
     {
         proxyModel->setFilterRegExp(QRegExp()); // Reset filter
-        // Hide all files starting with a dot
-        proxyModel->setFilterRegExp(QRegExp("^[^.].*"));
+        QString dirName = QFileInfo(hiddenFilePath).dir().absolutePath();
+        // Hide all files starting with a dot, but not the directory being shown itself (dirName)
+        proxyModel->setFilterRegExp(QRegExp("^(?:(?!\\." + dirName + ").)*$"));
     }
 }
-
-void FileManagerMainWindow::closeAllWindowsOnScreen(int targetScreenIndex) {
-    QList<QScreen*> screens = QGuiApplication::screens();
-    if (targetScreenIndex >= 0 && targetScreenIndex < screens.size()) {
-        QScreen *targetScreen = screens[targetScreenIndex];
-        QRect targetScreenGeometry = targetScreen->geometry();
-
-        for (QWidget *topLevelWidget : QApplication::topLevelWidgets()) {
-            QPoint widgetTopLeft = topLevelWidget->mapToGlobal(QPoint(0, 0));
-            if (targetScreenGeometry.contains(widgetTopLeft)) {
-                topLevelWidget->close();
-            }
-        }
-    }
-}
+*/
 
 void FileManagerMainWindow::handleSelectionChange()
 {
     updateStatusBar();
     updateMenus();
+}
+
+void FileManagerMainWindow::showPreferencesDialog()
+{
+    PreferencesDialog *preferencesDialog = PreferencesDialog::getInstance();
+    preferencesDialog->show();
+    // Connect the dialog's prefsChanged signal to the slot that updates the view
+    connect(preferencesDialog, &PreferencesDialog::prefsChanged, this, &FileManagerMainWindow::refresh);
+}
+
+void FileManagerMainWindow::handleScreenChange(const QRect &geometry) {
+    qDebug() << "Screen changed:"
+             << "Geometry:" << geometry;
+
+    // We are doing all the work only in the first instance (also for the other windows), so that it is done only once
+    if (m_isFirstInstance) {
+
+        // Move the first instance to the main screen and resize it to the screen size
+        // Move to QApplication::primaryScreen()
+        move(QApplication::desktop()->screenGeometry(0).topLeft());
+
+        setFixedSize(QApplication::desktop()->screenGeometry(0).size());
+        refresh();
+
+        // Close all desktop picture windows and create new ones
+        QList<QWidget*> topLevelWidgets = QApplication::topLevelWidgets();
+        qDebug() << "Top level widgets:" << topLevelWidgets;
+        for (QWidget *widget : topLevelWidgets) {
+            qDebug() << widget->objectName();
+            if (widget->objectName() == AppGlobals::desktopPictureWindowObjectName) {
+                qDebug() << widget->objectName() << "is a desktop picture window, closing it";
+                widget->close();
+            }
+        }
+        displayPicturesOnAllScreens();
+    }
+}
+
+// Opens windows that do nothing but show the desktop pictures on all screens but the main one
+void FileManagerMainWindow::displayPicturesOnAllScreens() {
+    QString desktopPicturePath = QSettings().value("desktopPicture", "/usr/local/share/slim/themes/default/background.jpg").toString();
+
+    if (!QFileInfo(desktopPicturePath).exists()) {
+        return;
+    }
+
+    QApplication &app = *static_cast<QApplication*>(QApplication::instance());
+    QList<QScreen*> screens = app.screens();
+
+    for (QScreen *screen : screens) {
+
+        // Skip the screen that the main window is on
+        if (screen == QApplication::primaryScreen()) {
+            continue;
+        }
+
+        QRect screenGeometry = screen->geometry();
+
+        QPixmap desktopPixmap = QPixmap(desktopPicturePath);
+        QLabel *label = new QLabel;
+        label->setPixmap(desktopPixmap.scaled(screenGeometry.size(), Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation));
+
+        QWidget *window = new QWidget;
+        QVBoxLayout *layout = new QVBoxLayout;
+        layout->addWidget(label);
+        layout->setContentsMargins(0, 0, 0, 0);
+        layout->setSpacing(0);
+
+        window->setContentsMargins(0, 0, 0, 0);
+        window->setLayout(layout);
+        window->setGeometry(screenGeometry);
+        window->setObjectName(AppGlobals::desktopPictureWindowObjectName);
+
+        window->setFixedSize(screenGeometry.size());
+        window->setAttribute(Qt::WA_X11NetWmWindowTypeDesktop, true);
+        window->setAttribute(Qt::WA_X11DoNotAcceptFocus, true);
+        window->setWindowFlags(Qt::FramelessWindowHint);
+        window->setWindowFlags(Qt::Tool);
+        window->show();
+    }
 }

@@ -43,6 +43,8 @@
 #include "TrashHandler.h"
 #include "Mountpoints.h"
 
+#include "Executable.h"
+
 CustomFileIconProvider::CustomFileIconProvider()
         : iconCreator(new CombinedIconCreator) // "Initialize the pointer in the constructor"
 {
@@ -66,7 +68,20 @@ CustomFileIconProvider::~CustomFileIconProvider()
  */
 QIcon CustomFileIconProvider::icon(const QFileInfo &info) const
 {
-    qDebug() << "CustomFileIconProvider::icon: " << info.absoluteFilePath();
+    // qDebug() << "CustomFileIconProvider::icon: " << info.absoluteFilePath();
+
+    // Try to read the "user-icon" extended attribute
+    ExtendedAttributes *ea = new ExtendedAttributes(info.absoluteFilePath());
+    QString base64IconData = ea->read("user-icon");
+    delete ea;
+    if (!base64IconData.isEmpty()) {
+        qDebug() << "Found user-icon extended attribute";
+        // qDebug() << "base64IconData: " << base64IconData;
+        QByteArray iconData = QByteArray::fromBase64(base64IconData.toUtf8());
+        QImage image;
+        image.loadFromData(iconData);
+        return (QIcon(QPixmap::fromImage(image)));
+    }
 
     // Check if the item is an application bundle and return the icon
     ApplicationBundle *bundle = new ApplicationBundle(info.absoluteFilePath());
@@ -100,14 +115,42 @@ QIcon CustomFileIconProvider::icon(const QFileInfo &info) const
     QString parentDirPath = info.absoluteFilePath().left(info.absoluteFilePath().lastIndexOf("/"));
     bool isOnDesktopOrInMedia = ((parentDirPath == QDir::homePath() + "/Desktop") || info.absoluteFilePath().startsWith("/media"));
 
+    // If ~/Desktop, ~/Documents, ~/Downloads, ~/Music, ~/Pictures, or ~/Videos, show the respective icon
+    // from the current icon theme
+    QString filePath = info.absoluteFilePath();
+    if (filePath == QDir::homePath() + "/Desktop") {
+        return (QIcon::fromTheme("user-desktop"));
+    } else if (filePath == QDir::homePath() + "/Documents") {
+        return (QIcon::fromTheme("folder-documents"));
+    } else if (filePath == QDir::homePath() + "/Downloads") {
+        return (QIcon::fromTheme("folder-download"));
+    } else if (filePath == QDir::homePath() + "/Music") {
+        return (QIcon::fromTheme("folder-music"));
+    } else if (filePath == QDir::homePath() + "/Pictures") {
+        return (QIcon::fromTheme("folder-pictures"));
+    } else if (filePath == QDir::homePath() + "/Videos") {
+        return (QIcon::fromTheme("folder-videos"));
+    } else if (filePath == QDir::homePath()) {
+        return (QIcon::fromTheme("user-home"));
+    }
+
     // If it is a directory and the symlink target is a mount point, then we want to show the drive icon
-    if (isOnDesktopOrInMedia && info.isDir() && isMediaPath || isOnDesktopOrInMedia && info.isDir() && Mountpoints::isMountpoint(absoluteFilePathWithSymLinksResolved)) {
+    if (absoluteFilePathWithSymLinksResolved == "/" || isOnDesktopOrInMedia && info.isDir() && isMediaPath || isOnDesktopOrInMedia && info.isDir() && Mountpoints::isMountpoint(absoluteFilePathWithSymLinksResolved)) {
         // Using Qt, get the device node of the mount point
         // and then use the device node to get the icon
         // qDebug() << "Mount point: " << info.absoluteFilePath();
         QStorageInfo storageInfo(info.absoluteFilePath());
         QString deviceNode = storageInfo.device();
         qDebug() << "Device node: " << deviceNode;
+
+        // If it is not mounted, then show the folder icon
+        QStringList mountPoints;
+        for (const QStorageInfo &storage : QStorageInfo::mountedVolumes()) {
+            mountPoints << storage.rootPath();
+        }
+        if (! mountPoints.contains(absoluteFilePathWithSymLinksResolved)) {
+            return (QIcon::fromTheme("folder"));
+        }
 
         // Set the icon depending on the file system type; unlike device nodes,
         // this also works for mounted disk images
@@ -203,7 +246,8 @@ QIcon CustomFileIconProvider::icon(const QFileInfo &info) const
         {
             // Create a QIcon from the QImage
             QIcon extractedIcon;
-            extractedIcon.addPixmap(QPixmap::fromImage(iconImage));
+            // Scale to 32x32; FIXME: Extract the best fitting size from the .exe file to begin with
+            extractedIcon.addPixmap(QPixmap::fromImage(iconImage.scaled(32, 32, Qt::KeepAspectRatio, Qt::SmoothTransformation)));
             return extractedIcon;
         }
         else
@@ -223,10 +267,14 @@ QIcon CustomFileIconProvider::icon(const QFileInfo &info) const
         QString applicationIconPath = applicationPath + "/Resources/application.png";
         if (QFile::exists(applicationIconPath)) {
             applicationIcon = QIcon(applicationIconPath);
+            return (applicationIcon);
         } else {
-            applicationIcon = QIcon::fromTheme("application-x-executable");
+            // E.g., on fat32, not every file that has the executable bit set is actually an executable
+            if(Executable::hasShebangOrIsElf(info.absoluteFilePath())) {
+                applicationIcon = QIcon::fromTheme("application-x-executable");
+                return (applicationIcon);
+            }
         }
-        return (applicationIcon);
     }
 
     // Handle .DirIcon (AppDir) and volumelcon.icns (Mac)
@@ -241,8 +289,6 @@ QIcon CustomFileIconProvider::icon(const QFileInfo &info) const
 
     // Construct an icon from the default document icon plus the icon of the application that will
     // be used to open the file
-
-    QString filePath = info.absoluteFilePath();
 
     /*
      * It seems like we may be running into some timing issue, where the file is not yet in the model

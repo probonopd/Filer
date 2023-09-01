@@ -35,7 +35,6 @@ include_directories(Filer PRIVATE ${LIBSQSH_INCLUDE_DIRS})
 # include_directories(/usr/include/qt5xdg /usr/local/include/qt5xdg)
 
 set(PROJECT_SOURCES
-        main.cpp
         AppGlobals.cpp AppGlobals.h
         ApplicationBundle.cpp ApplicationBundle.h
         CombinedIconCreator.cpp CombinedIconCreator.h
@@ -44,19 +43,26 @@ set(PROJECT_SOURCES
         CustomItemDelegate.cpp CustomItemDelegate.h
         CustomListView.cpp CustomListView.h
         CustomProxyModel.cpp CustomProxyModel.h
+        CustomTreeView.cpp CustomTreeView.h
         DBusInterface.cpp DBusInterface.h
         DesktopFile.cpp DesktopFile.h
+        Executable.cpp Executable.h
+        DragAndDropHandler.cpp DragAndDropHandler.h
         ElfSizeCalculator.cpp ElfSizeCalculator.h
         ExtendedAttributes.cpp ExtendedAttributes.h
         FileManagerMainWindow.cpp FileManagerMainWindow.h
+        FileOperationManager.cpp FileOperationManager.h
         InfoDialog.cpp InfoDialog.h
         LaunchDB.cpp LaunchDB.h
+        main.cpp
+        Mountpoints.cpp Mountpoints.h
+        MountWatcherThread.cpp MountWatcherThread.h
+        PreferencesDialog.cpp PreferencesDialog.h
         SoundPlayer.cpp SoundPlayer.h
         SqshArchiveReader.cpp SqshArchiveReader.h
         TrashHandler.cpp TrashHandler.h
-        FileOperationManager.cpp FileOperationManager.h
         VolumeWatcher.cpp VolumeWatcher.h
-        Mountpoints.cpp Mountpoints.h DragAndDropHandler.cpp DragAndDropHandler.h CustomTreeView.cpp CustomTreeView.h)
+        )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     qt_add_executable(Filer

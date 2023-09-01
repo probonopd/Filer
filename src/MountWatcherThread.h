@@ -24,48 +24,39 @@
  * SUCH DAMAGE.
  */
 
-/* We are using command line tools to modify extended attributes because
- * we can set those tools to setuid root. This allows us to set extended
- * attributes on files that we do not have write access to.
- */
+#ifndef MOUNTWATCHERTHREAD_H
+#define MOUNTWATCHERTHREAD_H
 
-#ifndef EXTENDEDATTRIBUTES_H
-#define EXTENDEDATTRIBUTES_H
-
-#include <QFile>
-#include <QByteArray>
+#include <QThread>
 
 /**
- * @brief The ExtendedAttributes class provides functionality to read and write extended attributes of a file.
+ * @brief The MountWatcherThread class provides a threaded mechanism for
+ *        watching and creating symlinks for mounted volumes. This class exists to make
+ *        waiting for the mounting to happen asynchronous, not blocking everything else.
+ *        QStorageInfo doesn't provide a built-in mechanism to notify when mounted volumes change;
+ *        if it did, we would not need this.
  */
-class ExtendedAttributes
-{
+class MountWatcherThread : public QThread {
+Q_OBJECT
+
 public:
     /**
-     * @brief Constructs an ExtendedAttributes object for the specified file.
-     * @param filePath The path of the file to work with.
+     * @brief Constructs a MountWatcherThread object.
+     * @param fullPath The full path of the mount point.
+     * @param symlinkPath The path where the symlink should be created.
      */
-    ExtendedAttributes(const QString &filePath);
+    MountWatcherThread(const QString &fullPath, const QString &symlinkPath);
 
+protected:
     /**
-     * @brief Writes an extended attribute for the file.
-     * @param attributeName The name of the attribute.
-     * @param attributeValue The value of the attribute to be written.
-     * @return True if the attribute was written successfully, false otherwise.
+     * @brief The overridden run method that performs the async logic for
+     *        watching and creating symlinks.
      */
-    bool write(const QString &attributeName, const QByteArray &attributeValue);
-
-    /**
-     * @brief Reads the value of an extended attribute from the file.
-     * @param attributeName The name of the attribute to read.
-     * @return The value of the attribute, or an empty QByteArray if not found.
-     */
-    QByteArray read(const QString &attributeName);
-
-    bool clear(const QString &attributeName);
+    void run() override;
 
 private:
-    QFile m_file; /**< The file associated with extended attributes. */
+    QString fullPath; ///< The full path of the mount point.
+    QString symlinkPath; ///< The path where the symlink should be created.
 };
 
-#endif // EXTENDEDATTRIBUTES_H
+#endif // MOUNTWATCHERTHREAD_H
