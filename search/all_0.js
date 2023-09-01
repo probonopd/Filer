@@ -11,5 +11,6 @@ var searchData=
   ['applicationbundle_2eh_8',['ApplicationBundle.h',['../ApplicationBundle_8h.html',1,'']]],
   ['applicationforfile_9',['applicationForFile',['../classLaunchDB.html#a34a5d045fbddae51c3938788a67ffabe',1,'LaunchDB']]],
   ['aretreesaccessible_10',['areTreesAccessible',['../classFileOperationManager.html#a542c8d770ab4eef6a16db84966482bb9',1,'FileOperationManager']]],
-  ['arguments_11',['arguments',['../classApplicationBundle.html#a12bb408f200c23347e5e43039012b87e',1,'ApplicationBundle']]]
+  ['arguments_11',['arguments',['../classApplicationBundle.html#a12bb408f200c23347e5e43039012b87e',1,'ApplicationBundle']]],
+  ['askusertomakeexecutable_12',['askUserToMakeExecutable',['../classExecutable.html#a9dc29f826552088de3bb4389d43acd88',1,'Executable']]]
 ];

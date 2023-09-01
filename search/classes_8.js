@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['preferencesdialog_133',['PreferencesDialog',['../classPreferencesDialog.html',1,'']]]
+  ['preferencesdialog_141',['PreferencesDialog',['../classPreferencesDialog.html',1,'']]]
 ];
