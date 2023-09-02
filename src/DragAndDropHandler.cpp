@@ -41,6 +41,7 @@
 #include <QMenu>
 #include <QDrag>
 #include "FileOperationManager.h"
+#include <QProcess>
 
 DragAndDropHandler::DragAndDropHandler(QAbstractItemView *view, QObject *parent)
         : QObject(parent), m_view(view) {
@@ -324,15 +325,37 @@ void DragAndDropHandler::handleDropEvent(QDropEvent* event)
                 // Make a symlink
                 QString linkPath = targetPath + "/" + QFileInfo(path).fileName();
                 linkPaths.append(linkPath);
-                qDebug() << "Creating symlink from " << path << " to " << linkPath;
-                bool result = QFile::link(path, linkPath);
-                if (!result) {
-                    qDebug() << "CustomListView::dropEvent Failed to create symlink";
-                    success = false;
-                } else {
-                    qDebug() << "CustomListView::dropEvent Symlink created";
 
+                // Check whether the parent directory of the symlink is writable by the user
+                // If not, use sudo -A -E ln -s
+                bool useSudo = false;
+                QString targetDir = QFileInfo(linkPath).dir().path();
+                useSudo = ! FileOperationManager::areTreesAccessible({targetDir}, FileOperationManager::Writable);
+                if (useSudo == false) {
+                    qDebug() << "Creating symlink from " << path << " to " << linkPath;
+                    bool result = QFile::link(path, linkPath);
+                    if (!result) {
+                        qDebug() << "CustomListView::dropEvent Failed to create symlink";
+                        success = false;
+                    } else {
+                        qDebug() << "CustomListView::dropEvent Symlink created";
+
+                    }
+                } else {
+                    QProcess *process = new QProcess();
+                    QStringList args;
+                    args << "-A" << "-E" << "ln" << "-s" << path << linkPath;
+                    qDebug() << "Creating symlink from " << path << " to " << linkPath << " using sudo";
+                    process->start("sudo", args);
+                    process->waitForFinished();
+                    if (process->exitCode() != 0) {
+                        qDebug() << "CustomListView::dropEvent Failed to create symlink";
+                        success = false;
+                    } else {
+                        qDebug() << "CustomListView::dropEvent Symlink created";
+                    }
                 }
+
             }
             if(success) {
                 // Show the links by re-using the DBusInterface class which can do this,
