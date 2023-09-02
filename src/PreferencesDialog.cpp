@@ -7,6 +7,13 @@
 #include <QLabel>
 #include <QSpacerItem>
 #include <QFile>
+#include <QMessageBox>
+#include <QDropEvent>
+#include <QMimeData>
+#include <QApplication>
+#include <QScreen>
+#include <QDesktopWidget>
+#include <QDir>
 
 // Grid sizes
 const QMap<QString, int> GridSizeMapping = {
@@ -27,7 +34,7 @@ PreferencesDialog *PreferencesDialog::getInstance(QWidget *parent)
 PreferencesDialog::PreferencesDialog(QWidget *parent) :
         QDialog(parent),
         gridSizeComboBox(new QComboBox),
-        selectPictureButton(new QPushButton(tr("Select Picture")))
+        imageLabel(new QLabel)
 {
 
     setWindowTitle(tr("Preferences"));
@@ -40,8 +47,15 @@ PreferencesDialog::PreferencesDialog(QWidget *parent) :
 
     // Desktop picture
     layout->addWidget(new QLabel(tr("Desktop Picture:")), 0, 0);
-    layout->addWidget(selectPictureButton, 0, 1);
-    onSelectPictureButtonClicked();
+
+    QRect screenGeometry = QApplication::desktop()->screenGeometry();
+    double aspectRatio = (double) screenGeometry.width() / screenGeometry.height();
+    imageLabel->setFixedSize(200, 200 / aspectRatio);
+    imageLabel->installEventFilter(this);
+    imageLabel->setAcceptDrops(true);
+    imageLabel->setAlignment(Qt::AlignCenter);
+    imageLabel->setStyleSheet("border: 2px dashed gray;");
+    layout->addWidget(imageLabel, 0, 1);
 
     // Grid size
     layout->addWidget(gridSizeLabel, 1, 0);
@@ -67,25 +81,6 @@ PreferencesDialog::PreferencesDialog(QWidget *parent) :
     loadSetting();
 }
 
-void PreferencesDialog::onSelectPictureButtonClicked() {
-    connect(selectPictureButton, &QPushButton::clicked, this, [this]() {
-        // Open a file dialog
-        QString desktopPicturePath = QFileDialog::getOpenFileName(this, tr("Select Picture"), QString(),
-                                                                  tr("Images (*.png *.jpg *.jpeg *.bmp)"));
-        if (!desktopPicturePath.isEmpty()) {
-            // Set the button's text to the file name
-            selectPictureButton->setText(QFileInfo(desktopPicturePath).fileName());
-
-            // Save the setting
-            QSettings settings;
-            settings.setValue("desktopPicture", desktopPicturePath);
-
-            // Emit a signal to the application that QSettings have been changed
-            emit prefsChanged();
-        }
-    });
-}
-
 PreferencesDialog::~PreferencesDialog()
 {
 }
@@ -97,11 +92,16 @@ void PreferencesDialog::loadSetting()
 
     // Desktop picture
     QString desktopPicturePath = settings.value("desktopPicture").toString();
+    QPixmap *pixmap = new QPixmap(desktopPicturePath);
+    if (!pixmap->isNull()) {
+        imageLabel->setPixmap(pixmap->scaled(imageLabel->size(), Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation));
+    } else {
+        // The file doesn't exist, so clear the setting
+        settings.remove("desktopPicture");
+    }
     if (!desktopPicturePath.isEmpty()) {
         // Check if the file exists
         if (QFile::exists(desktopPicturePath)) {
-            // Set the button's text to the file name
-            selectPictureButton->setText(QFileInfo(desktopPicturePath).fileName());
         } else {
             // The file doesn't exist, so clear the setting
             settings.remove("desktopPicture");
@@ -136,4 +136,74 @@ void PreferencesDialog::updateSetting(int index)
 
     // Emit a signal to the application that QSettings have been changed
     emit prefsChanged();
+}
+
+void PreferencesDialog::loadDesktopPicture()
+{
+    // Default to the path of the currently loaded desktop picture
+    QSettings settings;
+    QString defaultPath = settings.value("desktopPicture").toString();
+    // If the path is empty, default to the user's home directory
+    if (defaultPath.isEmpty()) {
+        defaultPath = QDir::homePath();
+    }
+    // Open a file dialog to select an image
+    QString filePath = QFileDialog::getOpenFileName(this, tr("Select an image"), defaultPath, tr("Images (*.png *.jpg)"));
+    if (!filePath.isEmpty()) {
+        QPixmap pixmap(filePath);
+        if (!pixmap.isNull()) {
+            imageLabel->setPixmap(pixmap.scaled(imageLabel->size(), Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation));
+            // Save the setting
+            QSettings settings;
+            settings.setValue("desktopPicture", filePath);
+            // Emit a signal to the application that QSettings have been changed
+            emit prefsChanged();
+        }
+    }
+}
+
+bool PreferencesDialog::eventFilter(QObject *obj, QEvent *event)
+{
+    if (obj == imageLabel) {
+        if (event->type() == QEvent::MouseButtonPress) {
+            QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event);
+            if (mouseEvent->button() == Qt::LeftButton) {
+                // Handle the left mouse button click here
+                // You can call your slot function or emit a signal as needed
+                loadDesktopPicture(); // Example: Call the loadDesktopPicture function
+                return true;
+            }
+        } else if (event->type() == QEvent::DragEnter) {
+            QDragEnterEvent *dragEnterEvent = static_cast<QDragEnterEvent*>(event);
+            const QMimeData *mimeData = dragEnterEvent->mimeData();
+            if (mimeData->hasUrls() && mimeData->urls().count() == 1) {
+                QString filePath = mimeData->urls().first().toLocalFile();
+                if (filePath.endsWith(".png", Qt::CaseInsensitive) || filePath.endsWith(".jpg", Qt::CaseInsensitive)) {
+                    dragEnterEvent->acceptProposedAction();
+                    return true;
+                }
+            }
+        } else if (event->type() == QEvent::Drop) {
+            QDropEvent *dropEvent = static_cast<QDropEvent*>(event);
+            const QMimeData *mimeData = dropEvent->mimeData();
+            if (mimeData->hasUrls() && mimeData->urls().count() == 1) {
+                QString filePath = mimeData->urls().first().toLocalFile();
+                if (filePath.endsWith(".png", Qt::CaseInsensitive) || filePath.endsWith(".jpg", Qt::CaseInsensitive)) {
+                    QPixmap pixmap(filePath);
+                    if (!pixmap.isNull()) {
+                        imageLabel->setPixmap(pixmap.scaled(imageLabel->size(), Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation));
+                        // Save the setting
+                        QSettings settings;
+                        settings.setValue("desktopPicture", filePath);
+                        // Emit a signal to the application that QSettings have been changed
+                        emit prefsChanged();
+                    }
+                    dropEvent->acceptProposedAction();
+                    return true;
+                }
+            }
+        }
+    }
+
+    return false; // Let the base class handle the event
 }

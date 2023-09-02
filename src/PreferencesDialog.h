@@ -52,7 +52,7 @@ private:
     PreferencesDialog(QWidget *parent = nullptr);
 
     QComboBox *gridSizeComboBox;
-    QPushButton *selectPictureButton;
+    QLabel *imageLabel;
     QGridLayout *layout;
 
     /**
@@ -60,10 +60,12 @@ private:
      */
     void loadSetting();
 
-    /**
-     * @brief onSelectPictureButtonClicked Slot for handling picture selection button click.
-     */
-    void onSelectPictureButtonClicked();
+    bool eventFilter(QObject *obj, QEvent *event); // Event filter function
+
+private slots:
+    void loadDesktopPicture();
+
+
 };
 
 #endif // PREFERENCESDIALOG_H
