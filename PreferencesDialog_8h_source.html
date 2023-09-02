@@ -93,19 +93,24 @@ $(function() {
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    <a class="code" href="classPreferencesDialog.html">PreferencesDialog</a>(QWidget *parent = <span class="keyword">nullptr</span>);</div>
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160; </div>
 <div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    QComboBox *gridSizeComboBox;</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    QPushButton *selectPictureButton;</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    QLabel *imageLabel;</div>
 <div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    QGridLayout *layout;</div>
 <div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160; </div>
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    <span class="keywordtype">void</span> loadSetting();</div>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160; </div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    <span class="keywordtype">void</span> onSelectPictureButtonClicked();</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;};</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    <span class="keywordtype">bool</span> eventFilter(QObject *obj, QEvent *event); <span class="comment">// Event filter function</span></div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160; </div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;<span class="keyword">private</span> slots:</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    <span class="keywordtype">void</span> loadDesktopPicture();</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160; </div>
 <div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160; </div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;<span class="preprocessor">#endif </span><span class="comment">// PREFERENCESDIALOG_H</span></div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;};</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160; </div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;<span class="preprocessor">#endif </span><span class="comment">// PREFERENCESDIALOG_H</span></div>
 <div class="ttc" id="aclassPreferencesDialog_html"><div class="ttname"><a href="classPreferencesDialog.html">PreferencesDialog</a></div><div class="ttdef"><b>Definition:</b> PreferencesDialog.h:18</div></div>
-<div class="ttc" id="aclassPreferencesDialog_html_a0e3927d4dbbc927879b4c4906e728f2d"><div class="ttname"><a href="classPreferencesDialog.html#a0e3927d4dbbc927879b4c4906e728f2d">PreferencesDialog::~PreferencesDialog</a></div><div class="ttdeci">~PreferencesDialog()</div><div class="ttdoc">~PreferencesDialog Destructor.</div><div class="ttdef"><b>Definition:</b> PreferencesDialog.cpp:89</div></div>
+<div class="ttc" id="aclassPreferencesDialog_html_a0e3927d4dbbc927879b4c4906e728f2d"><div class="ttname"><a href="classPreferencesDialog.html#a0e3927d4dbbc927879b4c4906e728f2d">PreferencesDialog::~PreferencesDialog</a></div><div class="ttdeci">~PreferencesDialog()</div><div class="ttdoc">~PreferencesDialog Destructor.</div><div class="ttdef"><b>Definition:</b> PreferencesDialog.cpp:84</div></div>
 <div class="ttc" id="aclassPreferencesDialog_html_a5411a11d1601e88ce944200bd891fddf"><div class="ttname"><a href="classPreferencesDialog.html#a5411a11d1601e88ce944200bd891fddf">PreferencesDialog::prefsChanged</a></div><div class="ttdeci">void prefsChanged()</div><div class="ttdoc">prefsChanged Signal emitted when preferences are changed.</div></div>
-<div class="ttc" id="aclassPreferencesDialog_html_ac2b07b18ab6963e33c9416ecb07d0011"><div class="ttname"><a href="classPreferencesDialog.html#ac2b07b18ab6963e33c9416ecb07d0011">PreferencesDialog::getInstance</a></div><div class="ttdeci">static PreferencesDialog * getInstance(QWidget *parent=nullptr)</div><div class="ttdoc">getInstance Returns the singleton instance of PreferencesDialog.</div><div class="ttdef"><b>Definition:</b> PreferencesDialog.cpp:17</div></div>
+<div class="ttc" id="aclassPreferencesDialog_html_ac2b07b18ab6963e33c9416ecb07d0011"><div class="ttname"><a href="classPreferencesDialog.html#ac2b07b18ab6963e33c9416ecb07d0011">PreferencesDialog::getInstance</a></div><div class="ttdeci">static PreferencesDialog * getInstance(QWidget *parent=nullptr)</div><div class="ttdoc">getInstance Returns the singleton instance of PreferencesDialog.</div><div class="ttdef"><b>Definition:</b> PreferencesDialog.cpp:24</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
