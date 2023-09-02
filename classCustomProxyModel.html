@@ -101,6 +101,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aa2876b59f5d211ef776339766009f201"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCustomProxyModel.html#aa2876b59f5d211ef776339766009f201">lessThan</a> (const QModelIndex &amp;left, const QModelIndex &amp;right) const override</td></tr>
 <tr class="memdesc:aa2876b59f5d211ef776339766009f201"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns whether the item referred to by the given index is less than the item referred to by the given other index. Used for sorting. Sorts mount points before non-mount points.  <a href="classCustomProxyModel.html#aa2876b59f5d211ef776339766009f201">More...</a><br /></td></tr>
 <tr class="separator:aa2876b59f5d211ef776339766009f201"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af12d9244671caafaff18bb00aa7166ed"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCustomProxyModel.html#af12d9244671caafaff18bb00aa7166ed">setFilteringEnabled</a> (bool enable)</td></tr>
+<tr class="memdesc:af12d9244671caafaff18bb00aa7166ed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Toggles the filtering behavior on/off.  <a href="classCustomProxyModel.html#af12d9244671caafaff18bb00aa7166ed">More...</a><br /></td></tr>
+<tr class="separator:af12d9244671caafaff18bb00aa7166ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1f641eea7928c25842cce4801dade216"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCustomProxyModel.html#a1f641eea7928c25842cce4801dade216">setSourceModel</a> (QAbstractItemModel *sourceModel) override</td></tr>
+<tr class="memdesc:a1f641eea7928c25842cce4801dade216"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the source model for the proxy model to sourceModel. We override this because we read the hidden file names from the .hidden file when the source model is set.  <a href="classCustomProxyModel.html#a1f641eea7928c25842cce4801dade216">More...</a><br /></td></tr>
+<tr class="separator:a1f641eea7928c25842cce4801dade216"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1ed15aeba798ba45349ad141ae37d07e"><td class="memItemLeft" align="right" valign="top"><a id="a1ed15aeba798ba45349ad141ae37d07e"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>dropMimeData</b> (const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &amp;parent) override</td></tr>
 <tr class="separator:a1ed15aeba798ba45349ad141ae37d07e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -116,12 +122,12 @@ Qt::ItemFlags&#160;</td><td class="memItemRight" valign="bottom"><b>flags</b> (c
 <tr class="memitem:ae48cd69a1b02fce7b7809ff284d6e9fd"><td class="memItemLeft" align="right" valign="top"><a id="ae48cd69a1b02fce7b7809ff284d6e9fd"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>canDropMimeData</b> (const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &amp;parent) const override</td></tr>
 <tr class="separator:ae48cd69a1b02fce7b7809ff284d6e9fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a44684db85ac91007c276efae32ecf42f"><td class="memItemLeft" align="right" valign="top"><a id="a44684db85ac91007c276efae32ecf42f"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>isFilteringEnabled</b> () const</td></tr>
+<tr class="separator:a44684db85ac91007c276efae32ecf42f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
-<tr class="memitem:a1f641eea7928c25842cce4801dade216"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCustomProxyModel.html#a1f641eea7928c25842cce4801dade216">setSourceModel</a> (QAbstractItemModel *sourceModel) override</td></tr>
-<tr class="memdesc:a1f641eea7928c25842cce4801dade216"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the source model for the proxy model to sourceModel. We override this because we read the hidden file names from the .hidden file when the source model is set.  <a href="classCustomProxyModel.html#a1f641eea7928c25842cce4801dade216">More...</a><br /></td></tr>
-<tr class="separator:a1f641eea7928c25842cce4801dade216"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3628773c3a1898ebdd7f2552a7509bd9"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCustomProxyModel.html#a3628773c3a1898ebdd7f2552a7509bd9">filterAcceptsRow</a> (int sourceRow, const QModelIndex &amp;sourceParent) const override</td></tr>
 <tr class="memdesc:a3628773c3a1898ebdd7f2552a7509bd9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns whether the item in the row indicated by the given source row and source parent should be included in the model or whether it should be filtered out.  <a href="classCustomProxyModel.html#a3628773c3a1898ebdd7f2552a7509bd9">More...</a><br /></td></tr>
 <tr class="separator:a3628773c3a1898ebdd7f2552a7509bd9"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -249,6 +255,32 @@ Protected Member Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="af12d9244671caafaff18bb00aa7166ed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af12d9244671caafaff18bb00aa7166ed">&#9670;&nbsp;</a></span>setFilteringEnabled()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void CustomProxyModel::setFilteringEnabled </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enable</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Toggles the filtering behavior on/off. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">enable</td><td>True to enable filtering, false to disable it. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="a1f641eea7928c25842cce4801dade216"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a1f641eea7928c25842cce4801dade216">&#9670;&nbsp;</a></span>setSourceModel()</h2>
 
@@ -268,7 +300,7 @@ Protected Member Functions</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">protected</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">

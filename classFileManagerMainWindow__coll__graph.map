@@ -1,6 +1,8 @@
 <map id="FileManagerMainWindow" name="FileManagerMainWindow">
-<area shape="rect" id="node1" title=" " alt="" coords="5,171,192,197"/>
-<area shape="rect" id="node2" title=" " alt="" coords="19,81,135,108"/>
-<area shape="rect" id="node3" href="$classCustomFileSystemModel.html" title=" " alt="" coords="160,81,344,108"/>
-<area shape="rect" id="node4" title=" " alt="" coords="180,5,324,32"/>
+<area shape="rect" id="node1" title=" " alt="" coords="127,171,314,197"/>
+<area shape="rect" id="node2" title=" " alt="" coords="5,81,121,108"/>
+<area shape="rect" id="node3" href="$classCustomProxyModel.html" title="A custom proxy model for sorting items in views." alt="" coords="146,81,295,108"/>
+<area shape="rect" id="node4" title=" " alt="" coords="137,5,305,32"/>
+<area shape="rect" id="node5" href="$classCustomFileSystemModel.html" title=" " alt="" coords="319,81,503,108"/>
+<area shape="rect" id="node6" title=" " alt="" coords="339,5,483,32"/>
 </map>
