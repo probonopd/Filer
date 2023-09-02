@@ -64,16 +64,12 @@ public:
      */
     bool lessThan(const QModelIndex &left, const QModelIndex &right) const override;
 
-    // This gets called when a file is dropped onto the view
-    bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) override;
+    /**
+    * @brief Toggles the filtering behavior on/off.
+    * @param enable True to enable filtering, false to disable it.
+    */
+    void setFilteringEnabled(bool enable);
 
-    //  These functions are used to set the supported drag and drop actions for the model.
-    Qt::DropActions supportedDropActions() const override;
-    Qt::DropActions supportedDragActions() const override;
-    Qt::ItemFlags flags(const QModelIndex &index) const override;
-    bool canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const override;
-
-protected:
     /**
      * @brief Sets the source model for the proxy model to sourceModel.
      *        We override this because we read the hidden file names from the
@@ -82,6 +78,17 @@ protected:
      */
     void setSourceModel(QAbstractItemModel *sourceModel) override;
 
+    // This gets called when a file is dropped onto the view
+    bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) override;
+
+    //  These functions are used to set the supported drag and drop actions for the model.
+    Qt::DropActions supportedDropActions() const override;
+    Qt::DropActions supportedDragActions() const override;
+    Qt::ItemFlags flags(const QModelIndex &index) const override;
+    bool canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const override;
+    bool isFilteringEnabled() const;
+
+protected:
     /**
      * @brief Returns whether the item in the row indicated by the given source row and
      *        source parent should be included in the model or whether it should be
@@ -98,6 +105,8 @@ private slots:
 private:
     void loadHiddenFileNames(const QString &hiddenFilePath);
     void updateFiltering();
+
+    bool filteringEnabled;
 
     /**
      * @brief Contains the hidden file names from the .hidden file.

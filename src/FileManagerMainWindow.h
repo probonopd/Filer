@@ -38,7 +38,7 @@
 #include "CustomFileSystemModel.h"
 #include "CustomListView.h"
 #include "ExtendedAttributes.h"
-#include <QSortFilterProxyModel>
+#include "CustomProxyModel.h"
 #include <QRect>
 
 class FileManagerMainWindow : public QMainWindow
@@ -70,7 +70,7 @@ public:
     void refresh();
 
     CustomFileSystemModel *m_fileSystemModel;
-    QSortFilterProxyModel *m_proxyModel;
+    CustomProxyModel *m_proxyModel;
 
     bool isFirstInstance() const;
 
@@ -123,7 +123,8 @@ private:
     QAction *m_moveToTrashAction;
     QAction *m_emptyTrashAction;
 
-    QAction *m_showHideStatusBarAction;
+    QAction *m_showHiddenFilesAction;
+    QAction *m_showStatusBarAction;
 
     QStringList readFilenamesFromHiddenFile(const QString &filePath);
 
@@ -143,6 +144,8 @@ private:
     void handleSelectionChange();
 
     void showPreferencesDialog();
+
+    void showHideHiddenFiles();
 
     void setGridSize();
 

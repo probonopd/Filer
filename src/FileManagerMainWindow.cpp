@@ -411,9 +411,9 @@ FileManagerMainWindow::FileManagerMainWindow(QWidget *parent, const QString &ini
         showIconView();
     }
 
-    // If this is the first instance, disable m_showHideStatusBarAction
+    // If this is the first instance, disable m_showStatusBarAction
     if (instanceCount == 0) {
-        m_showHideStatusBarAction->setEnabled(false);
+        m_showStatusBarAction->setEnabled(false);
     }
 
     // Call destructor and destroy the window immediately when the window is closed
@@ -903,19 +903,36 @@ void FileManagerMainWindow::createMenus()
 
     viewMenu->addSeparator();
 
+    // Create the Show/Hide Hidden Files action
+    QAction *showHideHiddenFilesAction = new QAction(tr("Show Hidden Files"), this);
+    m_showHiddenFilesAction = showHideHiddenFilesAction;
+    viewMenu->addAction(showHideHiddenFilesAction);
+    connect(showHideHiddenFilesAction, &QAction::triggered, this,
+            &FileManagerMainWindow::showHideHiddenFiles);
+    m_showHiddenFilesAction->setCheckable(true);
+    viewMenu->addSeparator();
+
     // Create the Show/Hide Status Bar action
-    QAction *showHideStatusBarAction = new QAction(tr("Show/Hide Status Bar"), this);
-    m_showHideStatusBarAction = showHideStatusBarAction;
-
-    // Add the Show/Hide Status Bar action to the View menu
+    QAction *showHideStatusBarAction = new QAction(tr("Show Status Bar"), this);
+    m_showStatusBarAction = showHideStatusBarAction;
     viewMenu->addAction(showHideStatusBarAction);
-
-    // Connect the triggered() signal of the Show/Hide Status Bar action to a slot
     connect(showHideStatusBarAction, &QAction::triggered, this,
             &FileManagerMainWindow::showHideStatusBar);
-
-    // Add the View menu to the menu bar
+    m_showStatusBarAction->setCheckable(true);
     m_menuBar->addMenu(viewMenu);
+
+    connect(viewMenu, &QMenu::aboutToShow, this, [this, viewMenu]() {
+        if (m_proxyModel->isFilteringEnabled()) {
+            m_showHiddenFilesAction->setChecked(false);
+        } else {
+            m_showHiddenFilesAction->setChecked(true);
+        }
+        if (m_statusBar->isVisible()) {
+            m_showStatusBarAction->setChecked(true);
+        } else {
+            m_showStatusBarAction->setChecked(false);
+        }
+    });
 
     // Create the Go menu
     QMenu *goMenu = new QMenu(tr("Go"), this);
@@ -2013,5 +2030,17 @@ void FileManagerMainWindow::displayPicturesOnAllScreens() {
         window->setWindowFlags(Qt::FramelessWindowHint);
         window->setWindowFlags(Qt::Tool);
         window->show();
+    }
+}
+
+void FileManagerMainWindow::showHideHiddenFiles() {
+    // Check if the menu action is checked or not
+    if (m_proxyModel->isFilteringEnabled()) {
+        qDebug() << "showHideHiddenFiles(): Hiding hidden files";
+        m_proxyModel->setFilteringEnabled(false);
+    }
+    else {
+        qDebug() << "showHideHiddenFiles(): Showing hidden files";
+        m_proxyModel->setFilteringEnabled(true);
     }
 }

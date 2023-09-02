@@ -39,7 +39,8 @@
 QSet<QString> hiddenFileNames;
 
 CustomProxyModel::CustomProxyModel(QObject *parent)
-        : QSortFilterProxyModel(parent)
+        : QSortFilterProxyModel(parent),
+          filteringEnabled(true) // Enable filtering by default
 {
 }
 
@@ -192,6 +193,11 @@ bool CustomProxyModel::canDropMimeData(const QMimeData *data, Qt::DropAction act
 
 bool CustomProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
 {
+    if (!filteringEnabled) {
+        // If filtering is disabled, accept all rows
+        return true;
+    }
+
     QModelIndex index = sourceModel()->index(sourceRow, 0, sourceParent);
     QString fileName = static_cast<QFileSystemModel *>(sourceModel())->fileName(index);
 
@@ -236,4 +242,17 @@ void CustomProxyModel::updateFiltering()
     }
 
     invalidateFilter();
+}
+
+void CustomProxyModel::setFilteringEnabled(bool enable)
+{
+    if (filteringEnabled != enable) {
+        filteringEnabled = enable;
+        updateFiltering();
+    }
+}
+
+bool CustomProxyModel::isFilteringEnabled() const
+{
+    return filteringEnabled;
 }
