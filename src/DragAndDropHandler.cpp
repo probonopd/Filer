@@ -42,6 +42,10 @@
 #include <QDrag>
 #include "FileOperationManager.h"
 #include <QProcess>
+#include <TrashHandler.h>
+#include <QUrl>
+#include <QDir>
+#include <Mountpoints.h>
 
 DragAndDropHandler::DragAndDropHandler(QAbstractItemView *view, QObject *parent)
         : QObject(parent), m_view(view) {
@@ -111,7 +115,7 @@ void DragAndDropHandler::handleDragMoveEvent(QDragMoveEvent* event)
         if (!m_springTimer.isActive()) {
             m_potentialTargetIndex = index;
             qDebug() << "CustomListView::dragMoveEvent m_potentialTargetIndex.isValid()";
-            m_springTimer.start(1000); // Start the timer with a 1-second delay
+            m_springTimer.start(2000); // Start the timer with a 2-second delay
         }
     } else {
         m_springTimer.stop();
@@ -139,6 +143,11 @@ void DragAndDropHandler::mouseHoversOver() {
     // Spring-loaded folders
     if (m_potentialTargetIndex.isValid()) {
         QString path = m_potentialTargetIndex.data(QFileSystemModel::FilePathRole).toString();
+        // If the path is the ~/Desktop/Trash, don't spring-load it
+        if (path == QDir::homePath() + "/Desktop/Trash") {
+            qDebug() << "Ignoring because it is the Trash";
+            return;
+        }
         // Check if it is an application bundle
         ApplicationBundle* app = new ApplicationBundle(path);
         if (app->isValid()) {
@@ -228,7 +237,19 @@ void DragAndDropHandler::handleDropEvent(QDropEvent* event)
         QString targetPath = m_potentialTargetIndex.data(QFileSystemModel::FilePathRole).toString();
         if (!targetPath.isEmpty()) {
             qDebug() << "CustomListView::dropEvent targetPath" << targetPath;
-            // Check if it is an application bundle
+            // Check if the target is the Trash
+            if (targetPath == QDir::homePath() + "/Desktop/Trash") {
+                qDebug() << "CustomListView::dropEvent targetPath is Trash";
+                QStringList paths = {};
+                for (int i = 0; i < urls.size(); ++i) {
+                    paths.append(urls.at(i).toLocalFile());
+                }
+                TrashHandler *th = new TrashHandler();
+                th->moveToTrash({paths});
+                delete th;
+                return;
+            }
+            // Check if the target is an application bundle
             ApplicationBundle* app = new ApplicationBundle(targetPath);
             if (app->isValid()) {
                 for (int i = 0; i < urls.size(); ++i) {
