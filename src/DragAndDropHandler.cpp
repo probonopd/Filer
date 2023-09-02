@@ -143,15 +143,15 @@ void DragAndDropHandler::mouseHoversOver() {
     // Spring-loaded folders
     if (m_potentialTargetIndex.isValid()) {
         QString path = m_potentialTargetIndex.data(QFileSystemModel::FilePathRole).toString();
-        // If the path is the ~/Desktop/Trash, don't spring-load it
+        // If the item dragged onto is the ~/Desktop/Trash, don't spring-load it
         if (path == QDir::homePath() + "/Desktop/Trash") {
-            qDebug() << "Ignoring because it is the Trash";
+            qDebug() << "Ignoring spring-loading because it is the Trash";
             return;
         }
-        // Check if it is an application bundle
+        // Check the item dragged onto is an application bundle
         ApplicationBundle* app = new ApplicationBundle(path);
         if (app->isValid()) {
-            qDebug() << "Ignoring because it is an application bundle";
+            qDebug() << "Ignoring spring-loading because it is an application bundle";
             // This is handled elsewhere
         } else if (QFileInfo(path).isDir()) {
             qDebug() << "CustomListView::mouseHoversOver !app->isValid()";
@@ -261,10 +261,16 @@ void DragAndDropHandler::handleDropEvent(QDropEvent* event)
                     // TODO: Check if the app supports the MIME type or whether a modifier key is pressed
                     app->launch({path});
                 }
+                delete app;
+                return;
             }
             delete app;
-            return;
-
+            // Check if the target is a directory
+            if (QFileInfo(targetPath).isDir()) {
+                qDebug() << "CustomListView::dropEvent targetPath is a directory";
+                // Show the drop menu
+                showDropMenu(event, urls, targetPath);
+            }
         }
 
         // Find out the directory where the files are being dropped in case they are not being dropped onto an item
@@ -278,11 +284,6 @@ void DragAndDropHandler::handleDropEvent(QDropEvent* event)
             QModelIndex rootIndex = sourceModel->index(sourceModel->rootPath());
             targetPath = rootIndex.data(QFileSystemModel::FilePathRole).toString();
         }
-
-        // Get the coordinates of the mouse
-        QPoint mousePos = event->pos();
-        // Map to global coordinates
-        mousePos = m_view->viewport()->mapToGlobal(mousePos);
 
         // Check if the destination is the parent directory of the source directory
         // of all the files being dropped; if so, do nothing
@@ -301,104 +302,8 @@ void DragAndDropHandler::handleDropEvent(QDropEvent* event)
             qDebug() << "CustomListView::dropEvent Ignoring this drop because the parent directory of the source directory is the same as the destination directory";
             return;
         }
+        showDropMenu(event, urls, targetPath);
 
-        // Show a context menu asking what to do with the files
-        // Copy, Move, Link, Cancel
-        QMenu menu(m_view);
-        QAction *copyAction = menu.addAction("Copy");
-        QAction *moveAction = menu.addAction("Move");
-        QAction *linkAction = menu.addAction("Link");
-        menu.addSeparator();
-        QAction *cancelAction = menu.addAction("Cancel");
-        // Show the menu at the global mouse coordinates
-        QAction *selectedAction = menu.exec(mousePos);
-        if (selectedAction == copyAction) {
-            qDebug() << "CustomListView::dropEvent copyAction";
-            event->setDropAction(Qt::CopyAction);
-            QStringList sourceFilePaths;
-            for (const QUrl &url : urls) {
-                sourceFilePaths.append(url.toLocalFile());
-                qDebug() << "Shall copy " << url.toLocalFile() << " to " << targetPath;
-            }
-            FileOperationManager::copyWithProgress(sourceFilePaths, targetPath);
-        } else if (selectedAction == moveAction) {
-            qDebug() << "CustomListView::dropEvent moveAction";
-            event->setDropAction(Qt::MoveAction);
-            QStringList sourceFilePaths;
-            for (const QUrl &url : urls) {
-                sourceFilePaths.append(url.toLocalFile());
-                qDebug() << "Shall move " << url.toLocalFile() << " to " << targetPath;
-            }
-            FileOperationManager::moveWithProgress(sourceFilePaths, targetPath);
-        } else if (selectedAction == linkAction) {
-            qDebug() << "CustomListView::dropEvent linkAction";
-            event->setDropAction(Qt::LinkAction);
-            // Symlink the files
-            bool success = true;
-            QStringList linkPaths;
-            for (int i = 0; i < urls.size(); ++i) {
-                // Convert the url to a local path
-                QString path = urls.at(i).toLocalFile();
-                // Skip source if its parent directory is the same as the destination directory
-                if (QFileInfo(path).dir().path() == targetPath) {
-                    continue;
-                }
-                // Make a symlink
-                QString linkPath = targetPath + "/" + QFileInfo(path).fileName();
-                linkPaths.append(linkPath);
-
-                // Check whether the parent directory of the symlink is writable by the user
-                // If not, use sudo -A -E ln -s
-                bool useSudo = false;
-                QString targetDir = QFileInfo(linkPath).dir().path();
-                useSudo = ! FileOperationManager::areTreesAccessible({targetDir}, FileOperationManager::Writable);
-                if (useSudo == false) {
-                    qDebug() << "Creating symlink from " << path << " to " << linkPath;
-                    bool result = QFile::link(path, linkPath);
-                    if (!result) {
-                        qDebug() << "CustomListView::dropEvent Failed to create symlink";
-                        success = false;
-                    } else {
-                        qDebug() << "CustomListView::dropEvent Symlink created";
-
-                    }
-                } else {
-                    QProcess *process = new QProcess();
-                    QStringList args;
-                    args << "-A" << "-E" << "ln" << "-s" << path << linkPath;
-                    qDebug() << "Creating symlink from " << path << " to " << linkPath << " using sudo";
-                    process->start("sudo", args);
-                    process->waitForFinished();
-                    if (process->exitCode() != 0) {
-                        qDebug() << "CustomListView::dropEvent Failed to create symlink";
-                        success = false;
-                    } else {
-                        qDebug() << "CustomListView::dropEvent Symlink created";
-                    }
-                }
-
-            }
-            if(success) {
-                // Show the links by re-using the DBusInterface class which can do this,
-                // but without doing an actual DBus call
-                DBusInterface *dbi = new DBusInterface();
-                QStringList urls;
-                for (int i = 0; i < linkPaths.size(); ++i) {
-                    urls.append(QUrl::fromLocalFile(linkPaths.at(i)).toString());
-                }
-                dbi->ShowItems(urls, QString("startUpId"));
-                delete dbi;
-            }
-        } else if (selectedAction == cancelAction) {
-            qDebug() << "CustomListView::dropEvent cancelAction";
-            // TODO: Move the items back to where they came from
-            // TODO: How to do this? How to get the original position of the items?
-            event->setDropAction(Qt::IgnoreAction);
-        }
-        qDebug() << "event->dropAction() set to:" << event->dropAction();
-
-        // Accept the event
-        event->accept(); // Not sure whether this should be done here or in the model
     }
 
     // Let the model handle the drop event
@@ -407,6 +312,110 @@ void DragAndDropHandler::handleDropEvent(QDropEvent* event)
     int row = index.row();
     int column = index.column();
     m_view->model()->dropMimeData(event->mimeData(), event->dropAction(), row, column, index);
+}
+
+void DragAndDropHandler::showDropMenu(QDropEvent *event, QList<QUrl> &urls,
+                                      const QString &targetPath) const {// Show a context menu asking what to do with the files
+// Copy, Move, Link, Cancel
+    QMenu menu(m_view);
+    QAction *copyAction = menu.addAction("Copy");
+    QAction *moveAction = menu.addAction("Move");
+    QAction *linkAction = menu.addAction("Link");
+    menu.addSeparator();
+    QAction *cancelAction = menu.addAction("Cancel");
+    // Show the menu at the global mouse coordinates
+    // Get the coordinates of the mouse
+    QPoint mousePos = event->pos();
+    // Map to global coordinates
+    mousePos = m_view->viewport()->mapToGlobal(mousePos);
+    QAction *selectedAction = menu.exec(mousePos);
+    if (selectedAction == copyAction) {
+        qDebug() << "CustomListView::dropEvent copyAction";
+        event->setDropAction(Qt::CopyAction);
+        QStringList sourceFilePaths;
+        for (const QUrl &url : urls) {
+            sourceFilePaths.append(url.toLocalFile());
+            qDebug() << "Shall copy " << url.toLocalFile() << " to " << targetPath;
+        }
+        FileOperationManager::copyWithProgress(sourceFilePaths, targetPath);
+    } else if (selectedAction == moveAction) {
+        qDebug() << "CustomListView::dropEvent moveAction";
+        event->setDropAction(Qt::MoveAction);
+        QStringList sourceFilePaths;
+        for (const QUrl &url : urls) {
+            sourceFilePaths.append(url.toLocalFile());
+            qDebug() << "Shall move " << url.toLocalFile() << " to " << targetPath;
+        }
+        FileOperationManager::moveWithProgress(sourceFilePaths, targetPath);
+    } else if (selectedAction == linkAction) {
+        qDebug() << "CustomListView::dropEvent linkAction";
+        event->setDropAction(Qt::LinkAction);
+        // Symlink the files
+        bool success = true;
+        QStringList linkPaths;
+        for (int i = 0; i < urls.size(); ++i) {
+            // Convert the url to a local path
+            QString path = urls.at(i).toLocalFile();
+            // Skip source if its parent directory is the same as the destination directory
+            if (QFileInfo(path).dir().path() == targetPath) {
+                continue;
+            }
+            // Make a symlink
+            QString linkPath = targetPath + "/" + QFileInfo(path).fileName();
+            linkPaths.append(linkPath);
+
+            // Check whether the parent directory of the symlink is writable by the user
+            // If not, use sudo -A -E ln -s
+            bool useSudo = false;
+            QString targetDir = QFileInfo(linkPath).dir().path();
+            useSudo = ! FileOperationManager::areTreesAccessible({targetDir}, FileOperationManager::Writable);
+            if (useSudo == false) {
+                qDebug() << "Creating symlink from " << path << " to " << linkPath;
+                bool result = QFile::link(path, linkPath);
+                if (!result) {
+                    qDebug() << "CustomListView::dropEvent Failed to create symlink";
+                    success = false;
+                } else {
+                    qDebug() << "CustomListView::dropEvent Symlink created";
+
+                }
+            } else {
+                QProcess *process = new QProcess();
+                QStringList args;
+                args << "-A" << "-E" << "ln" << "-s" << path << linkPath;
+                qDebug() << "Creating symlink from " << path << " to " << linkPath << " using sudo";
+                process->start("sudo", args);
+                process->waitForFinished();
+                if (process->exitCode() != 0) {
+                    qDebug() << "CustomListView::dropEvent Failed to create symlink";
+                    success = false;
+                } else {
+                    qDebug() << "CustomListView::dropEvent Symlink created";
+                }
+            }
+
+        }
+        if(success) {
+            // Show the links by re-using the DBusInterface class which can do this,
+            // but without doing an actual DBus call
+            DBusInterface *dbi = new DBusInterface();
+            QStringList urls;
+            for (int i = 0; i < linkPaths.size(); ++i) {
+                urls.append(QUrl::fromLocalFile(linkPaths.at(i)).toString());
+            }
+            dbi->ShowItems(urls, QString("startUpId"));
+            delete dbi;
+        }
+    } else if (selectedAction == cancelAction) {
+        qDebug() << "CustomListView::dropEvent cancelAction";
+        // TODO: Move the items back to where they came from
+        // TODO: How to do this? How to get the original position of the items?
+        event->setDropAction(Qt::IgnoreAction);
+    }
+    qDebug() << "event->dropAction() set to:" << event->dropAction();
+
+    // Accept the event
+    event->accept(); // Not sure whether this should be done here or in the model
 }
 
 void DragAndDropHandler::handleStartDrag(Qt::DropActions supportedActions) {

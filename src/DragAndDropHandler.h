@@ -104,6 +104,8 @@ private:
     // For spring-loaded folders
     QTimer m_springTimer;
     QModelIndex m_potentialTargetIndex;
+
+    void showDropMenu(QDropEvent *event, QList<QUrl> &urls, const QString &targetPath) const;
 };
 
 #endif // DRAGANDDROPHANDLER_H
