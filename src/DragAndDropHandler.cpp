@@ -270,6 +270,8 @@ void DragAndDropHandler::handleDropEvent(QDropEvent* event)
                 qDebug() << "CustomListView::dropEvent targetPath is a directory";
                 // Show the drop menu
                 showDropMenu(event, urls, targetPath);
+                event->acceptProposedAction();
+                return;
             }
         }
 
