@@ -136,6 +136,11 @@ InfoDialog::InfoDialog(const QString &filePath, QWidget *parent) :
 
     setupInformation();
 
+    // Remove all columns right from the 2nd one
+    for (int i = 2; i < ui->gridLayout->columnCount(); i++) {
+        ui->gridLayout->removeItem(ui->gridLayout->itemAtPosition(0, i));
+    }
+
     // Destroy the dialog when it is closed
     setAttribute(Qt::WA_DeleteOnClose);
 
@@ -153,6 +158,12 @@ InfoDialog::InfoDialog(const QString &filePath, QWidget *parent) :
 
 InfoDialog::~InfoDialog()
 {
+    // Write comments to extended attribute "comments"
+    if (isEditable) {
+        ExtendedAttributes *ea = new ExtendedAttributes(filePath);
+        ea->write("comments", ui->plainTextEdit->toPlainText().toUtf8());
+        delete ea;
+    }
     instances.remove(filePath);
     delete ui;
 }
@@ -161,11 +172,21 @@ void InfoDialog::setupInformation()
 {
 
     QFile file(filePath);
-    if (file.exists() && file.permissions() & QFile::WriteOwner) {
+    if (file.exists() && file.permissions() & QFile::WriteUser) {
         isEditable = true;
     } else {
         isEditable = false;
     }
+
+    if(!isEditable) {
+        ui->plainTextEdit->setReadOnly(true);
+        ui->plainTextEdit->setStyleSheet("QPlainTextEdit { background-color: #f0f0f0; }");
+    }
+
+    ExtendedAttributes *ea = new ExtendedAttributes(filePath);
+    QString comments = ea->read("comments");
+    delete ea;
+    ui->plainTextEdit->setPlainText(comments);
 
     QIcon icon = QIcon::fromTheme("unknown");
     ui->iconInfo->setPixmap(icon.pixmap(32, 32));
