@@ -229,6 +229,9 @@ void CustomProxyModel::loadHiddenFileNames(const QString &hiddenFilePath)
             hiddenFileNames.insert(line.trimmed());
         }
         hiddenFile.close();
+        // trash-can.desktop is always hidden; it is a leftover from the old Filer
+        // TODO: Once the old Filer has been out of use for a while, this can be removed
+        hiddenFileNames.insert("trash-can.desktop");
     }
 }
 
