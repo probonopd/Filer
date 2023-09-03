@@ -47,8 +47,9 @@ CustomListView::CustomListView(QWidget* parent) : QListView(parent) {
 
     // Do not relayout while the window is being resized
     setResizeMode(QListView::Fixed); // "The items will only be laid out the first time the view is shown"
-    // FIXME: Why does this not work? The items are still being laid out while the window is being resized
-    // Do we need to specifically block the resize event?
+    // For this to work properly, we seemingly need to set item positions
+    // using CustomFileSystemModel::setPositionForIndex before the view is resized
+    // so that the positions are known while the view is resized
 
     should_paint_desktop_picture = false;
 

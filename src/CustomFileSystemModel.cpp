@@ -239,7 +239,9 @@ void CustomFileSystemModel::setPositionForIndex(const QPoint& position, const QM
     qDebug() << "Updating model with coordinates for " << itemPath << ": " << position;
     iconCoordinates[index] = position;
 
-    // Write extended attribute
+    // Write extended attribute; this is too costly to do here, since setPositionForIndex is called
+    // all the time when the window is resized. So we do it in persistItemPositions instead, and only
+    // when the user closes the window.
     // ExtendedAttributes *ea = new ExtendedAttributes(itemPath);
     // QString coordinates = QString::number(position.x()) + "," + QString::number(position.y());
     // ea->write("coordinates", coordinates.toUtf8());
