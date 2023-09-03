@@ -51,6 +51,10 @@ public:
         QListView::setPositionForIndex(position, index);
     }
 
+    // This is used to draw items at the correct position after a drop
+    // if they were just moved in the same view
+    void specialDropEvent(QDropEvent *event);
+
     // Public function to get the item delegate for a given index
     QAbstractItemDelegate* getItemDelegateForIndex(const QModelIndex& index) const {
         return itemDelegate(index);
@@ -62,11 +66,12 @@ public:
 
     void queueLayout(int delay = 0);
 
+    void dropEvent(QDropEvent *event) override;
+
 protected:
     void dragEnterEvent(QDragEnterEvent *event) override;
     void dragMoveEvent(QDragMoveEvent *event) override;
     void dragLeaveEvent(QDragLeaveEvent *event) override;
-    void dropEvent(QDropEvent *event) override;
     void startDrag(Qt::DropActions supportedActions) override;
     virtual void resizeEvent(QResizeEvent* event) override;
 

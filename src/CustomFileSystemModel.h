@@ -59,6 +59,8 @@ public:
     void setPositionForIndex(const QPoint& position, const QModelIndex& index) const;
     QPoint& getPositionForIndex(const QModelIndex& index) const;
 
+    void persistItemPositions() const;
+
 private:
     // Private member variable to store "open-with" attributes.
     mutable QMap<QModelIndex, QByteArray> openWithAttributes;

@@ -558,6 +558,10 @@ FileManagerMainWindow::~FileManagerMainWindow()
         }
     }
 
+    // Call persistItemPositions(); on the source model of the icon view
+    // to save the positions of the items in the icon view
+    m_fileSystemModel->persistItemPositions();
+
     // Tell all windows that they should be redrawn
     // so that they can update their icons to reflect the new state of
     // folders being open

@@ -234,12 +234,36 @@ bool CustomFileSystemModel::createBrowserBookmarkFile(const QMimeData *data, QSt
 
 void CustomFileSystemModel::setPositionForIndex(const QPoint& position, const QModelIndex& index) const {
     qDebug() << "CustomFileSystemModel::setPositionForIndex";
-    qDebug() << "TODO: Implement CustomFileSystemModel::setPositionForIndex()";
+
+    QString itemPath = fileInfo(index).absoluteFilePath();
+    qDebug() << "Updating model with coordinates for " << itemPath << ": " << position;
+    iconCoordinates[index] = position;
+
     // Write extended attribute
+    // ExtendedAttributes *ea = new ExtendedAttributes(itemPath);
+    // QString coordinates = QString::number(position.x()) + "," + QString::number(position.y());
+    // ea->write("coordinates", coordinates.toUtf8());
+    // delete ea;
+
+}
+
+void CustomFileSystemModel::persistItemPositions() const {
+    qDebug() << "CustomFileSystemModel::persistItemPositions";
+
+    // Iterate over all iconCoordinates and write them to extended attributes
+    for (QModelIndex index : iconCoordinates.keys()) {
+            QString itemPath = fileInfo(index).absoluteFilePath();
+            qDebug() << "Updating model with coordinates for " << itemPath << ": " << iconCoordinates[index];
+            // Write extended attribute
+            ExtendedAttributes *ea = new ExtendedAttributes(itemPath);
+            QString coordinates = QString::number(iconCoordinates[index].x()) + "," + QString::number(iconCoordinates[index].y());
+            ea->write("coordinates", coordinates.toUtf8());
+            delete ea;
+    }
 }
 
 QPoint& CustomFileSystemModel::getPositionForIndex(const QModelIndex& index) const {
-    qDebug() << "CustomFileSystemModel::getPositionForIndex";
+    // qDebug() << "CustomFileSystemModel::getPositionForIndex";
 
     if (index.isValid() && iconCoordinates.contains(index)) {
         return iconCoordinates[index];

@@ -43,7 +43,7 @@ CustomListView::CustomListView(QWidget* parent) : QListView(parent) {
 
     // Make items freely movable
     setMovement(QListView::Free);
-    // TODO: This alone is not sufficient; do we have to handle/accept internal moves in the dropEvent?
+    // This alone is not sufficient; dropEvent of the view (superclass) also needs to be called
 
     // Do not relayout while the window is being resized
     setResizeMode(QListView::Fixed); // "The items will only be laid out the first time the view is shown"
@@ -52,7 +52,15 @@ CustomListView::CustomListView(QWidget* parent) : QListView(parent) {
 
     should_paint_desktop_picture = false;
 
+    // Allow drag and drop
+    setDragEnabled(true);
+    setAcceptDrops(true);
+    setDropIndicatorShown(true);
+    setDragDropMode(QAbstractItemView::DragDrop);
+    setDefaultDropAction(Qt::MoveAction);
+
     DragAndDropHandler *handler = new DragAndDropHandler(this);
+
     connect(this, &CustomListView::dragEnterEventSignal, handler, &DragAndDropHandler::handleDragEnterEvent);
     connect(this, &CustomListView::dragMoveEventSignal, handler, &DragAndDropHandler::handleDragMoveEvent);
     connect(this, &CustomListView::dropEventSignal, handler, &DragAndDropHandler::handleDropEvent);
@@ -62,7 +70,6 @@ CustomListView::CustomListView(QWidget* parent) : QListView(parent) {
     m_layoutTimer = new QTimer();
     m_layoutTimer->setSingleShot(true);
     connect(m_layoutTimer, &QTimer::timeout, this, &CustomListView::layoutItems);
-
 
     m_sourceModel = this->model();
     // m_sourceModel = m_proxyModel->sourceModel();
@@ -176,10 +183,10 @@ void CustomListView::layoutItems() {
     for (int row = 0; row < itemCount; ++row) {
         QModelIndex index = model->index(row, 0, rootIndex);
         QModelIndex sourceIndex = model->mapToSource(index);
-        qDebug() << "CustomListView::layoutItems() index" << index;
+        // qDebug() << "CustomListView::layoutItems() index" << index;
         // Print the name of the item
         QString path = model->data(index, Qt::DisplayRole).toString();
-        qDebug() << "CustomListView::layoutItems() path" << path;
+        // qDebug() << "CustomListView::layoutItems() path" << path;
 
         // If needed, we could use getItemDelegateForIndex
         // QAbstractItemDelegate* delegate = this->getItemDelegateForIndex(index);
@@ -198,7 +205,7 @@ void CustomListView::layoutItems() {
             y = position.y();
             // TODO: If we are rendering the desktop and the item is outside the window, move it inside
             setPositionForIndex(QPoint(x, y), index); // Actually move it
-            sourceModel->setPositionForIndex(QPoint(x, y), sourceIndex); // Persist it
+            sourceModel->setPositionForIndex(QPoint(x, y), sourceIndex);
         } else {
             // Randomize within the whole window
             // x = qrand() % (this->width() - 100);
@@ -233,4 +240,42 @@ void CustomListView::updateGeometries() {
     qDebug() << "CustomListView::updateGeometries";
     // QListView::updateGeometries();
     queueLayout(0);
+}
+
+// Make superclass' dropEvent(QDropEvent *event) public
+// This is used to draw items at the correct position after a drop
+// if they were just moved in the same view
+void CustomListView::specialDropEvent(QDropEvent *event) {
+    QListView::dropEvent(event);
+
+    // Print all the model indexes of the dropped items
+    QAbstractItemModel* model = this->model();
+    qDebug() << "CustomListView::specialDropEvent() model" << model;
+    QModelIndexList indexes = this->selectedIndexes();
+    qDebug() << "CustomListView::specialDropEvent() indexes" << indexes;
+
+            foreach (QModelIndex index, indexes) {
+            qDebug() << "CustomListView::specialDropEvent() index" << index;
+
+            // Print the name of the item
+            QString path = model->data(index, Qt::DisplayRole).toString();
+            qDebug() << "CustomListView::specialDropEvent() path" << path;
+
+            // Map the index to the source model
+            QAbstractProxyModel* proxyModel = qobject_cast<QAbstractProxyModel*>(model);
+            qDebug() << "CustomListView::specialDropEvent() proxyModel" << proxyModel;
+            QModelIndex sourceIndex = proxyModel->mapToSource(index);
+            CustomFileSystemModel* sourceModel = qobject_cast<CustomFileSystemModel*>(proxyModel->sourceModel());
+            qDebug() << "CustomListView::specialDropEvent() sourceIndex" << sourceIndex;
+
+            // Map the position to global coordinates
+            QPoint globalPos = this->mapToGlobal(this->visualRect(index).center());
+
+            // Convert global coordinates to local coordinates
+            QPoint position = this->mapFromGlobal(globalPos);
+
+            qDebug() << "CustomListView::specialDropEvent() position" << position;
+            sourceModel->setPositionForIndex(position, sourceIndex);
+
+        }
 }

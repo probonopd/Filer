@@ -62,6 +62,7 @@ DragAndDropHandler::DragAndDropHandler(QAbstractItemView *view, QObject *parent)
     m_view->setDragEnabled(true);
     m_view->setDropIndicatorShown(true);
     m_view->setDefaultDropAction(Qt::MoveAction);
+    m_view->setDragDropMode(QAbstractItemView::InternalMove);
 
     // https://doc.qt.io/qt-5/model-view-programming.html#using-convenience-views
     // Enable the user to move the items around within the view
@@ -90,6 +91,7 @@ void DragAndDropHandler::handleDragEnterEvent(QDragEnterEvent* event)
         event->ignore();
     }
     // m_view->dragEnterEvent(event);
+    event->acceptProposedAction();
 }
 
 void DragAndDropHandler::handleDragMoveEvent(QDragMoveEvent* event)
@@ -122,6 +124,8 @@ void DragAndDropHandler::handleDragMoveEvent(QDragMoveEvent* event)
         m_potentialTargetIndex = QModelIndex();
         qDebug() << "CustomListView::dragMoveEvent !m_potentialTargetIndex.isValid()";
     }
+
+    event->acceptProposedAction();
 
     // Call super class dragMoveEvent
     // m_view->dragMoveEvent(event);
@@ -304,11 +308,22 @@ void DragAndDropHandler::handleDropEvent(QDropEvent* event)
             qDebug() << "CustomListView::dropEvent Ignoring this item because the parent directory of the dragged items is the same as the destination directory";
             // Accept the drop event
             event->acceptProposedAction();
+            // Print the coordinates of the drop event
+            qDebug() << "CustomListView::dropEvent pos" << event->pos();
+
+            // Cast m_view to CustomListView because we have to call specialDropEvent on it
+            // which persists the new coordinates of the dropped items and then calls
+            // the superclass's dropEvent to actually move the items to the new coordinates
+            CustomListView* view = static_cast<CustomListView*>(m_view);
+            view->specialDropEvent(event);
+
             return;
         }
         showDropMenu(event, urls, targetPath);
 
     }
+
+
 
     // Let the model handle the drop event
     // QUESTION: Is this the correct way to do it? Is this documented anywhere?
@@ -420,6 +435,8 @@ void DragAndDropHandler::showDropMenu(QDropEvent *event, QList<QUrl> &urls,
 
     // Accept the event
     event->accept(); // Not sure whether this should be done here or in the model
+
+    // QListView::dropEvent(event);
 }
 
 void DragAndDropHandler::handleStartDrag(Qt::DropActions supportedActions) {
