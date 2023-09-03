@@ -32,14 +32,24 @@
 #include "FileManagerMainWindow.h"
 #include "ApplicationBundle.h"
 #include <QApplication>
-#include "CustomProxyModel.h"
 #include "DBusInterface.h"
 #include "FileOperationManager.h"
 #include "DragAndDropHandler.h"
 #include "AppGlobals.h"
 #include <QSettings>
 
+
 CustomListView::CustomListView(QWidget* parent) : QListView(parent) {
+
+    // Make items freely movable
+    setMovement(QListView::Free);
+    // TODO: This alone is not sufficient; do we have to handle/accept internal moves in the dropEvent?
+
+    // Do not relayout while the window is being resized
+    setResizeMode(QListView::Fixed); // "The items will only be laid out the first time the view is shown"
+    // FIXME: Why does this not work? The items are still being laid out while the window is being resized
+    // Do we need to specifically block the resize event?
+
     should_paint_desktop_picture = false;
 
     DragAndDropHandler *handler = new DragAndDropHandler(this);
@@ -48,6 +58,15 @@ CustomListView::CustomListView(QWidget* parent) : QListView(parent) {
     connect(this, &CustomListView::dropEventSignal, handler, &DragAndDropHandler::handleDropEvent);
     connect(this, &CustomListView::dragLeaveEventSignal, handler, &DragAndDropHandler::handleDragLeaveEvent);
     connect(this, &CustomListView::startDragSignal, handler, &DragAndDropHandler::handleStartDrag);
+
+    m_layoutTimer = new QTimer();
+    m_layoutTimer->setSingleShot(true);
+    connect(m_layoutTimer, &QTimer::timeout, this, &CustomListView::layoutItems);
+
+
+    m_sourceModel = this->model();
+    // m_sourceModel = m_proxyModel->sourceModel();
+
 }
 
 CustomListView::~CustomListView() {
@@ -136,4 +155,82 @@ void CustomListView::startDrag(Qt::DropActions supportedActions) {
     // We handle this in the DragAndDropHandler, so we emit a signal here
     // which is connected to the DragAndDropHandler
    emit startDragSignal(supportedActions);
+}
+
+void CustomListView::layoutItems() {
+    qDebug() << "CustomListView::layoutItems";
+    if (m_layoutTimer->isActive()) {
+        m_layoutTimer->stop();
+    }
+
+    QAbstractProxyModel* model = qobject_cast<QAbstractProxyModel*>(this->model());
+    qDebug() << "CustomListView::layoutItems() model" << model;
+    CustomFileSystemModel* sourceModel = qobject_cast<CustomFileSystemModel*>(model->sourceModel());
+    qDebug() << "CustomListView::layoutItems() sourceModel" << sourceModel;
+    QModelIndex rootIndex = this->rootIndex();
+    qDebug() << "CustomListView::layoutItems() rootIndex" << rootIndex;
+    QString rootPath = model->data(rootIndex, Qt::DisplayRole).toString();
+
+    int itemCount = model->rowCount(rootIndex);
+    qDebug() << "CustomListView::layoutItems() itemCount" << itemCount;
+    for (int row = 0; row < itemCount; ++row) {
+        QModelIndex index = model->index(row, 0, rootIndex);
+        QModelIndex sourceIndex = model->mapToSource(index);
+        qDebug() << "CustomListView::layoutItems() index" << index;
+        // Print the name of the item
+        QString path = model->data(index, Qt::DisplayRole).toString();
+        qDebug() << "CustomListView::layoutItems() path" << path;
+
+        // If needed, we could use getItemDelegateForIndex
+        // QAbstractItemDelegate* delegate = this->getItemDelegateForIndex(index);
+        // qDebug() << "CustomListView::layoutItems() delegate" << delegate;
+        // We could also cast it to CustomItemDelegate if we really needed to
+        // but for now we don't need to. Maybe we will need this later when we want to
+        // get the size of the item, for example.
+
+        int x = -1;
+        int y = -1;
+
+        QPoint position = sourceModel->getPositionForIndex(sourceIndex);
+        if (position != QPoint(-1, -1)) {
+            qDebug() << "CustomListView::layoutItems() position" << position;
+            x = position.x();
+            y = position.y();
+            // TODO: If we are rendering the desktop and the item is outside the window, move it inside
+            setPositionForIndex(QPoint(x, y), index); // Actually move it
+            sourceModel->setPositionForIndex(QPoint(x, y), sourceIndex); // Persist it
+        } else {
+            // Randomize within the whole window
+            // x = qrand() % (this->width() - 100);
+            // y = qrand() % (this->height() - 100);
+        }
+
+        // TODO: Align the items to make efficient use of the space
+        // Calculate positions based on the width and height of the items
+        // and the width and height of the window, so that we can have the items aligned without
+        // being too close to each other, and without having too much space between them.
+        // So no real grid, but a more dynamic layout.
+
+
+    }
+}
+
+void CustomListView::queueLayout(int delay) {
+   // qDebug() << "CustomListView::queueLayout" << delay;
+    m_layoutTimer->stop();
+    m_layoutTimer->start(delay);
+}
+
+void CustomListView::resizeEvent(QResizeEvent* event) {
+    qDebug() << "CustomListView::resizeEvent";
+    // Ignore the event, because we don't want to layout the items immediately
+    // FIXME: This is not working yet
+    event->ignore();
+    // queueLayout(100);
+}
+
+void CustomListView::updateGeometries() {
+    qDebug() << "CustomListView::updateGeometries";
+    // QListView::updateGeometries();
+    queueLayout(0);
 }

@@ -301,7 +301,9 @@ void DragAndDropHandler::handleDropEvent(QDropEvent* event)
         }
         if (parentIsSource) {
             qDebug() << "CustomListView::dropEvent parentIsSource";
-            qDebug() << "CustomListView::dropEvent Ignoring this drop because the parent directory of the source directory is the same as the destination directory";
+            qDebug() << "CustomListView::dropEvent Ignoring this item because the parent directory of the dragged items is the same as the destination directory";
+            // Accept the drop event
+            event->acceptProposedAction();
             return;
         }
         showDropMenu(event, urls, targetPath);

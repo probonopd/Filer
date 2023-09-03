@@ -33,6 +33,7 @@
 #include <QPaintEvent>
 #include <QDebug>
 #include <QTimer>
+#include "CustomProxyModel.h"
 
 class CustomListView : public QListView {
     Q_OBJECT
@@ -59,12 +60,21 @@ public:
 
     void paintEvent(QPaintEvent* event) override;
 
+    void queueLayout(int delay = 0);
+
 protected:
     void dragEnterEvent(QDragEnterEvent *event) override;
     void dragMoveEvent(QDragMoveEvent *event) override;
     void dragLeaveEvent(QDragLeaveEvent *event) override;
     void dropEvent(QDropEvent *event) override;
     void startDrag(Qt::DropActions supportedActions) override;
+    virtual void resizeEvent(QResizeEvent* event) override;
+
+    void updateGeometries() override;
+
+protected slots:
+    // Custom layout for the items, allowing to set the icon coordinates
+    void layoutItems();
 
 signals:
     void dragEnterEventSignal(QDragEnterEvent *event);
@@ -75,7 +85,9 @@ signals:
 
 private:
     bool should_paint_desktop_picture = false;
-
+    QTimer* m_layoutTimer;
+    // QAbstractProxyModel* m_proxyModel;
+    QAbstractItemModel* m_sourceModel;
 
 };
 

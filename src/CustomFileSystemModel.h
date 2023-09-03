@@ -47,11 +47,6 @@ public:
     // So we'll use the QFileInfo instead for now
     QString openWith(const QFileInfo& fileInfo) const;
 
-    // Public method to access the icon coordinates
-    // NOTE: Would like to do this with an index, but as above,
-    // we'll use the QFileInfo instead for now
-    QPoint getIconCoordinates(const QFileInfo& fileInfo) const;
-
     // This gets called when a file is dropped onto the view
     bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) override;
 
@@ -60,6 +55,9 @@ public:
     Qt::DropActions supportedDragActions() const override;
     Qt::ItemFlags flags(const QModelIndex &index) const override;
     bool canDropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) const override;
+
+    void setPositionForIndex(const QPoint& position, const QModelIndex& index) const;
+    QPoint& getPositionForIndex(const QModelIndex& index) const;
 
 private:
     // Private member variable to store "open-with" attributes.

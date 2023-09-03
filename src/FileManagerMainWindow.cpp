@@ -205,6 +205,11 @@ FileManagerMainWindow::FileManagerMainWindow(QWidget *parent, const QString &ini
 
     // Draw the desktop picture for the first instance
     if (m_isFirstInstance) {
+
+        // Disable scrollbars
+        m_iconView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        m_iconView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+
         m_iconView->requestDesktopPictureToBePainted(true);
 
         // closeAllWindowsOnScreen(0); // TODO: Instead, prevent the "desktop picture only" windows created in main.cpp
@@ -373,9 +378,9 @@ FileManagerMainWindow::FileManagerMainWindow(QWidget *parent, const QString &ini
     m_iconView->setIconSize(QSize(32, 32));
     m_treeView->setIconSize(QSize(16, 16));
 
-    // Set the view mode to IconMode with the text under the icons and make the icons freely movable
+    // Set the view mode to IconMode with the text under the icons
     m_iconView->setViewMode(QListView::IconMode);
-    m_iconView->setMovement(QListView::Free);
+
     setGridSize();
 
     // Connect the doubleClicked() signal to the open() slot

@@ -92,37 +92,6 @@ QString CustomFileSystemModel::openWith(const QFileInfo& fileInfo) const {
     return attributeValue;
 }
 
-QPoint CustomFileSystemModel::getIconCoordinates(const QFileInfo& fileInfo) const {
-    QString filePath = fileInfo.absoluteFilePath();
-
-    // If we already have the coords, return them
-    QModelIndex index = CustomFileSystemModel::index(filePath);
-    if (index.isValid() && iconCoordinates.contains(index)) {
-        return iconCoordinates[index];
-    }
-
-    // Otherwise, get them from extended attributes
-    QPoint coords = QPoint(-1, -1); // Invalid coordinates; we'll use this to indicate that we didn't find any
-    ExtendedAttributes ea(filePath);
-    QString coordinates = ea.read("coordinates");
-    if (!coordinates.isEmpty()) {
-        qDebug() << "Read coordinates from extended attributes: " << coordinates;
-        QStringList coordinatesList = coordinates.split(",");
-        int x = coordinatesList.at(0).toInt();
-        int y = coordinatesList.at(1).toInt();
-        coords = QPoint(x, y);
-        if (index.isValid()) {
-            // If we found it, store it in the model for future use
-            qDebug() << "Updating model with coordinates for " << filePath << ": " << coords;
-            iconCoordinates[index] = coords;
-        } else {
-            // qDebug() << "Did not find " << filePath << " in the model. FIXME: Find the reason why this happens. Working around for now.";
-            // Once we have solved this condition, we can use an index instead of a QFileInfo for this method.
-        }
-    }
-    return coords;
-}
-
 // https://doc.qt.io/qt-5/model-view-programming.html#inserting-dropped-data-into-a-model
 // Dropped data is handled by a model's reimplementation of QAbstractItemModel::dropMimeData()
 bool CustomFileSystemModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent)
@@ -261,4 +230,40 @@ bool CustomFileSystemModel::createBrowserBookmarkFile(const QMimeData *data, QSt
     }
 
     return false;
+}
+
+void CustomFileSystemModel::setPositionForIndex(const QPoint& position, const QModelIndex& index) const {
+    qDebug() << "CustomFileSystemModel::setPositionForIndex";
+    qDebug() << "TODO: Implement CustomFileSystemModel::setPositionForIndex()";
+    // Write extended attribute
+}
+
+QPoint& CustomFileSystemModel::getPositionForIndex(const QModelIndex& index) const {
+    qDebug() << "CustomFileSystemModel::getPositionForIndex";
+
+    if (index.isValid() && iconCoordinates.contains(index)) {
+        return iconCoordinates[index];
+    }
+
+    // Otherwise, get them from extended attributes
+    QPoint coords = QPoint(-1, -1); // Invalid coordinates; we'll use this to indicate that we didn't find any
+    QString filePath = this->filePath(index);
+    ExtendedAttributes ea(filePath);
+    QString coordinates = ea.read("coordinates");
+    if (!coordinates.isEmpty()) {
+        qDebug() << "Read coordinates from extended attributes: " << coordinates;
+        QStringList coordinatesList = coordinates.split(",");
+        int x = coordinatesList.at(0).toInt();
+        int y = coordinatesList.at(1).toInt();
+        coords = QPoint(x, y);
+        if (index.isValid()) {
+            // If we found it, store it in the model for future use
+            qDebug() << "Updating model with coordinates for " << filePath << ": " << coords;
+            iconCoordinates[index] = coords;
+        }
+    }
+    // return coords; // warning: reference to stack memory associated with local variable 'coords' returned [-Wreturn-stack-address]
+    // So we need to return a copy instead
+    QPoint* coordsCopy = new QPoint(coords);
+    return *coordsCopy;
 }
