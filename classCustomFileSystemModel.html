@@ -101,9 +101,6 @@ QVariant&#160;</td><td class="memItemRight" valign="bottom"><b>fileData</b> (con
 <tr class="memitem:a2b9cc4f5f92f2cf944d13410e44e4abb"><td class="memItemLeft" align="right" valign="top"><a id="a2b9cc4f5f92f2cf944d13410e44e4abb"></a>
 QString&#160;</td><td class="memItemRight" valign="bottom"><b>openWith</b> (const QFileInfo &amp;fileInfo) const</td></tr>
 <tr class="separator:a2b9cc4f5f92f2cf944d13410e44e4abb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a96fa0221892bbe18eb5febe373ce327e"><td class="memItemLeft" align="right" valign="top"><a id="a96fa0221892bbe18eb5febe373ce327e"></a>
-QPoint&#160;</td><td class="memItemRight" valign="bottom"><b>getIconCoordinates</b> (const QFileInfo &amp;fileInfo) const</td></tr>
-<tr class="separator:a96fa0221892bbe18eb5febe373ce327e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a52686cc6fb81a0dcba2e089ed2bd0e82"><td class="memItemLeft" align="right" valign="top"><a id="a52686cc6fb81a0dcba2e089ed2bd0e82"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>dropMimeData</b> (const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &amp;parent) override</td></tr>
 <tr class="separator:a52686cc6fb81a0dcba2e089ed2bd0e82"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -119,6 +116,12 @@ Qt::ItemFlags&#160;</td><td class="memItemRight" valign="bottom"><b>flags</b> (c
 <tr class="memitem:a0cc7428a44c334a49d3783b91a6b4cbc"><td class="memItemLeft" align="right" valign="top"><a id="a0cc7428a44c334a49d3783b91a6b4cbc"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>canDropMimeData</b> (const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &amp;parent) const override</td></tr>
 <tr class="separator:a0cc7428a44c334a49d3783b91a6b4cbc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0a423ab07fe39d7451581aaf79c726d4"><td class="memItemLeft" align="right" valign="top"><a id="a0a423ab07fe39d7451581aaf79c726d4"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setPositionForIndex</b> (const QPoint &amp;position, const QModelIndex &amp;index) const</td></tr>
+<tr class="separator:a0a423ab07fe39d7451581aaf79c726d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a72c9aae98529ba3c905b10e63b5b1316"><td class="memItemLeft" align="right" valign="top"><a id="a72c9aae98529ba3c905b10e63b5b1316"></a>
+QPoint &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getPositionForIndex</b> (const QModelIndex &amp;index) const</td></tr>
+<tr class="separator:a72c9aae98529ba3c905b10e63b5b1316"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li><a class="el" href="CustomFileSystemModel_8h_source.html">CustomFileSystemModel.h</a></li>
