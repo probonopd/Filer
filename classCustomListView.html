@@ -116,6 +116,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ae31126edf4220a34bf366a09a2d2026d"><td class="memItemLeft" align="right" valign="top"><a id="ae31126edf4220a34bf366a09a2d2026d"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>setPositionForIndex</b> (const QPoint &amp;position, const QModelIndex &amp;index)</td></tr>
 <tr class="separator:ae31126edf4220a34bf366a09a2d2026d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa7148f9a7b6324e7a51ff3622b10ac8c"><td class="memItemLeft" align="right" valign="top"><a id="aa7148f9a7b6324e7a51ff3622b10ac8c"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>specialDropEvent</b> (QDropEvent *event)</td></tr>
+<tr class="separator:aa7148f9a7b6324e7a51ff3622b10ac8c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac2cabe62aeb2c89883e591b309fd9334"><td class="memItemLeft" align="right" valign="top"><a id="ac2cabe62aeb2c89883e591b309fd9334"></a>
 QAbstractItemDelegate *&#160;</td><td class="memItemRight" valign="bottom"><b>getItemDelegateForIndex</b> (const QModelIndex &amp;index) const</td></tr>
 <tr class="separator:ac2cabe62aeb2c89883e591b309fd9334"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -128,6 +131,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>paintEvent</b> (QPain
 <tr class="memitem:accd28da8eaa8ff4d8dfe99228a21e1b4"><td class="memItemLeft" align="right" valign="top"><a id="accd28da8eaa8ff4d8dfe99228a21e1b4"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>queueLayout</b> (int delay=0)</td></tr>
 <tr class="separator:accd28da8eaa8ff4d8dfe99228a21e1b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7eb3e3c0d305dc78faa436002cf48909"><td class="memItemLeft" align="right" valign="top"><a id="a7eb3e3c0d305dc78faa436002cf48909"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>dropEvent</b> (QDropEvent *event) override</td></tr>
+<tr class="separator:a7eb3e3c0d305dc78faa436002cf48909"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-slots"></a>
 Protected Slots</h2></td></tr>
@@ -146,9 +152,6 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>dragMoveEvent</b> (QD
 <tr class="memitem:a0f2e69851a9113790633ef50deb6938c"><td class="memItemLeft" align="right" valign="top"><a id="a0f2e69851a9113790633ef50deb6938c"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>dragLeaveEvent</b> (QDragLeaveEvent *event) override</td></tr>
 <tr class="separator:a0f2e69851a9113790633ef50deb6938c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7eb3e3c0d305dc78faa436002cf48909"><td class="memItemLeft" align="right" valign="top"><a id="a7eb3e3c0d305dc78faa436002cf48909"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>dropEvent</b> (QDropEvent *event) override</td></tr>
-<tr class="separator:a7eb3e3c0d305dc78faa436002cf48909"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a325e117c5716393f743e38fac94a5ea9"><td class="memItemLeft" align="right" valign="top"><a id="a325e117c5716393f743e38fac94a5ea9"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>startDrag</b> (Qt::DropActions supportedActions) override</td></tr>
 <tr class="separator:a325e117c5716393f743e38fac94a5ea9"><td class="memSeparator" colspan="2">&#160;</td></tr>
