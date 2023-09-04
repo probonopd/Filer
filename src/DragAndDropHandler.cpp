@@ -114,9 +114,9 @@ void DragAndDropHandler::handleDragMoveEvent(QDragMoveEvent* event)
     QModelIndex index = m_view->indexAt(event->pos());
 
     if (index.isValid()) {
+        qDebug() << "CustomListView::dragMoveEvent index.isValid()";
         if (!m_springTimer.isActive()) {
             m_potentialTargetIndex = index;
-            qDebug() << "CustomListView::dragMoveEvent m_potentialTargetIndex.isValid()";
             m_springTimer.start(2000); // Start the timer with a 2-second delay
         }
     } else {
@@ -240,10 +240,10 @@ void DragAndDropHandler::handleDropEvent(QDropEvent* event)
 
         QString targetPath = m_potentialTargetIndex.data(QFileSystemModel::FilePathRole).toString();
         if (!targetPath.isEmpty()) {
-            qDebug() << "CustomListView::dropEvent targetPath" << targetPath;
+            qDebug() << "DragAndDropHandler::handleDropEvent targetPath" << targetPath;
             // Check if the target is the Trash
             if (targetPath == QDir::homePath() + "/Desktop/Trash") {
-                qDebug() << "CustomListView::dropEvent targetPath is Trash";
+                qDebug() << "DragAndDropHandler::handleDropEvent targetPath is Trash";
                 QStringList paths = {};
                 for (int i = 0; i < urls.size(); ++i) {
                     paths.append(urls.at(i).toLocalFile());
@@ -261,7 +261,7 @@ void DragAndDropHandler::handleDropEvent(QDropEvent* event)
                     QString path = urls.at(i).toLocalFile();
                     // Check MIME type of the file
                     QString mimeType = QMimeDatabase().mimeTypeForFile(path).name();
-                    qDebug() << "CustomListView::dropEvent mimeType" << mimeType;
+                    qDebug() << "DragAndDropHandler::handleDropEvent mimeType" << mimeType;
                     // TODO: Check if the app supports the MIME type or whether a modifier key is pressed
                     app->launch({path});
                 }
@@ -271,7 +271,7 @@ void DragAndDropHandler::handleDropEvent(QDropEvent* event)
             delete app;
             // Check if the target is a directory
             if (QFileInfo(targetPath).isDir()) {
-                qDebug() << "CustomListView::dropEvent targetPath is a directory";
+                qDebug() << "DragAndDropHandler::handleDropEvent targetPath is a directory";
                 // Show the drop menu
                 showDropMenu(event, urls, targetPath);
                 event->acceptProposedAction();
@@ -304,12 +304,13 @@ void DragAndDropHandler::handleDropEvent(QDropEvent* event)
             }
         }
         if (parentIsSource) {
-            qDebug() << "CustomListView::dropEvent parentIsSource";
-            qDebug() << "CustomListView::dropEvent Ignoring this item because the parent directory of the dragged items is the same as the destination directory";
+            qDebug() << "DragAndDropHandler::handleDropEvent parentIsSource";
+            qDebug() << "DragAndDropHandler::handleDropEvent Ignoring this item because the parent directory of the dragged items is the same as the destination directory";
+
             // Accept the drop event
             event->acceptProposedAction();
             // Print the coordinates of the drop event
-            qDebug() << "CustomListView::dropEvent pos" << event->pos();
+            qDebug() << "DragAndDropHandler::handleDropEvent pos" << event->pos();
 
             // Cast m_view to CustomListView because we have to call specialDropEvent on it
             // which persists the new coordinates of the dropped items and then calls
@@ -437,56 +438,4 @@ void DragAndDropHandler::showDropMenu(QDropEvent *event, QList<QUrl> &urls,
     event->accept(); // Not sure whether this should be done here or in the model
 
     // QListView::dropEvent(event);
-}
-
-void DragAndDropHandler::handleStartDrag(Qt::DropActions supportedActions) {
-    qDebug() << "DragAndDropHandler::startDrag";
-    // Get the selected items
-    QModelIndexList selectedIndexes = m_view->selectionModel()->selectedIndexes();
-    // Get the model for this view
-    CustomProxyModel* model = static_cast<CustomProxyModel*>(m_view->model());
-    CustomFileSystemModel* sourceModel = static_cast<CustomFileSystemModel*>(model->sourceModel());
-    // Get the root index and from it, get the current directory
-    QModelIndex rootIndex = sourceModel->index(sourceModel->rootPath());
-    QString currentDirectory = rootIndex.data(QFileSystemModel::FilePathRole).toString();
-    // Get the list of paths for the selected items
-    QStringList paths;
-    for (int i = 0; i < selectedIndexes.size(); ++i) {
-        QModelIndex index = selectedIndexes.at(i);
-        // Get the url for this index
-        QString path = index.data(QFileSystemModel::FilePathRole).toString();
-        // Add it to the list of urls
-        paths.append(path);
-    }
-    // Create a mime data object
-    QMimeData *mimeData = new QMimeData;
-    // Convert the paths to a list of QUrls
-    QList<QUrl> urlList;
-    for (int i = 0; i < paths.size(); ++i) {
-        urlList.append(QUrl::fromLocalFile(paths.at(i)));
-    }
-    // Set the urls as the mime data
-    mimeData->setUrls(urlList);
-    // Create a drag object
-    QDrag *drag = new QDrag(m_view);
-    // Set the mime data for the drag object
-    drag->setMimeData(mimeData);
-
-    // Set the icon for the drag object so that while dragging, the icon being dragged is actually shown
-    // Get the icon for the first item
-    QModelIndex firstIndex = selectedIndexes.at(0);
-    QIcon icon = model->data(firstIndex, Qt::DecorationRole).value<QIcon>();
-    // Get the pixmap for the icon
-    // TODO: Which pixmap to use if there are multiple items?
-    // The one for the first item? Or the one for the whole selection?
-    // Or make a special "multiple items" icon?
-    QPixmap pixmap = icon.pixmap(64, 64);
-    // Set the pixmap for the drag object
-    drag->setPixmap(pixmap);
-    // Set coordinates for the drag object
-    drag->setHotSpot(QPoint(pixmap.width()/2, pixmap.height()/2));
-
-    // Start the drag
-    drag->exec(supportedActions);
-
 }

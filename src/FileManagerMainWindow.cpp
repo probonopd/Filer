@@ -371,7 +371,7 @@ FileManagerMainWindow::FileManagerMainWindow(QWidget *parent, const QString &ini
         // Mirror the layout of the icons
         m_iconView->setLayoutDirection(Qt::RightToLeft);
         // Make the items the same size to make the layout look orderly
-        m_iconView->setUniformItemSizes(true);
+        // m_iconView->setUniformItemSizes(true);
     }
 
     // Set the icon size to 32x32 pixels
@@ -457,6 +457,8 @@ void FileManagerMainWindow::setGridSize() {// Put the icons on a grid
     QSettings settings;
     int gridSize = settings.value("gridSize", 120).toInt();
     qDebug() << "gridSize:" << gridSize;
+    // NOTE: When the grid size is smaller than height/width of the item, the item will be cut off
+    // Also, without setting any grid size, the items will not be shown at all?
     m_iconView->setGridSize(QSize(gridSize, 60));
 }
 
@@ -529,6 +531,8 @@ void FileManagerMainWindow::refresh() {
     qDebug() << "Calling update() on the views";
     setGridSize();
     m_treeView->update();
+    // Block updating the view until all items have been moved to their custom positions in CustomListView::layoutItems()
+    m_iconView->viewport()->setUpdatesEnabled(false);
     m_iconView->update();
 }
 

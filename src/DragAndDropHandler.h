@@ -81,13 +81,6 @@ public slots:
      */
     void handleDragLeaveEvent(QDragLeaveEvent *event);
 
-    /**
-     * @brief Handles the start drag event.
-     *
-     * @param supportedActions The supported drag actions.
-     */
-    void handleStartDrag(Qt::DropActions supportedActions);
-
 private slots:
     /**
      * @brief springLoad

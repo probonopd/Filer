@@ -41,6 +41,11 @@
 
 CustomListView::CustomListView(QWidget* parent) : QListView(parent) {
 
+    // FIXME: How to fill the background before we block updates?
+
+    // Block updating the view until all items have been moved to their custom positions in CustomListView::layoutItems()
+    this->viewport()->setUpdatesEnabled(false);
+
     // Make items freely movable
     setMovement(QListView::Free);
     // This alone is not sufficient; dropEvent of the view (superclass) also needs to be called
@@ -66,7 +71,6 @@ CustomListView::CustomListView(QWidget* parent) : QListView(parent) {
     connect(this, &CustomListView::dragMoveEventSignal, handler, &DragAndDropHandler::handleDragMoveEvent);
     connect(this, &CustomListView::dropEventSignal, handler, &DragAndDropHandler::handleDropEvent);
     connect(this, &CustomListView::dragLeaveEventSignal, handler, &DragAndDropHandler::handleDragLeaveEvent);
-    connect(this, &CustomListView::startDragSignal, handler, &DragAndDropHandler::handleStartDrag);
 
     m_layoutTimer = new QTimer();
     m_layoutTimer->setSingleShot(true);
@@ -162,7 +166,10 @@ void CustomListView::dropEvent(QDropEvent *event) {
 void CustomListView::startDrag(Qt::DropActions supportedActions) {
     // We handle this in the DragAndDropHandler, so we emit a signal here
     // which is connected to the DragAndDropHandler
-   emit startDragSignal(supportedActions);
+    // emit startDragSignal(supportedActions);
+
+    // Superclass implementation
+    QListView::startDrag(supportedActions);
 }
 
 void CustomListView::layoutItems() {
@@ -221,6 +228,11 @@ void CustomListView::layoutItems() {
 
 
     }
+    
+    // Undo "Block updating the view until all items have been moved to their custom positions in CustomListView::layoutItems()"
+    // In 10 ms, we call this->viewport()->setUpdatesEnabled(false);
+    // FIXME: Do not hardcode a particular delay, but get called whenever the view is ready to be updated
+    QTimer::singleShot(10, [this] () { this->viewport()->setUpdatesEnabled(true); });
 }
 
 void CustomListView::queueLayout(int delay) {

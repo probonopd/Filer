@@ -97,7 +97,6 @@ QString CustomFileSystemModel::openWith(const QFileInfo& fileInfo) const {
 bool CustomFileSystemModel::dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent)
 {
     qDebug() << "CustomFileSystemModel::dropMimeData action" << action;
-    qDebug() << "TODO: Implement the actual filesystem operations in dropMimeData()";
 
     // https://doc.qt.io/qt-5/model-view-programming.html#inserting-dropped-data-into-a-model
     // When a drop occurs, the model index corresponding to the parent item will either be valid,
@@ -111,6 +110,32 @@ bool CustomFileSystemModel::dropMimeData(const QMimeData *data, Qt::DropAction a
         qDebug() << "CustomFileSystemModel::dropMimeData dropTargetPath:" << dropTargetPath;
     } else {
         qDebug() << "CustomFileSystemModel::dropMimeData Drop occurred on an item, TODO: Handle in item delegate";
+        qDebug() << "CustomFileSystemModel::dropMimeData index:" << index;
+
+        // Get root index of this model
+        QModelIndex rootIndex = this->index(rootPath());
+        qDebug() << "CustomFileSystemModel::dropMimeData rootIndex:" << rootIndex;
+        // Get the full path of the root index
+        QString rootPath = filePath(rootIndex);
+        qDebug() << "CustomFileSystemModel::dropMimeData rootPath:" << rootPath;
+
+        // From the model, get the full path of the item that was dropped on
+        dropTargetPath = filePath(index);
+        qDebug() << "CustomFileSystemModel::dropMimeData dropTargetPath:" << dropTargetPath;
+
+        // Get the full path and compare it; if it is the same, then do as in "drop occurred on top level of the model"
+        if (dropTargetPath == rootPath) {
+            qDebug() << "CustomFileSystemModel::dropMimeData Drop occurred on an item but it is the same as the root item, TODO: Handle!";
+            qDebug() << "XXXXXXXXXXXXXX FIXME XXXXXXXXXXXXXXX";
+            // In this case, CustomListView::specialDropEvent() will still get called but it will
+            // set the wrong position, so we need to handle this case here.
+            // FIXME: Find a solution for this.
+
+        } else {
+            qDebug() << "CustomFileSystemModel::dropMimeData Drop occurred on an item, TODO: Handle in item delegate";
+            qDebug() << "CustomFileSystemModel::dropMimeData index:" << index;
+        }
+
         // TODO: Handle this case in the item delegate since finding out which item was dropped on is not trivial here
     }
 
@@ -236,7 +261,7 @@ void CustomFileSystemModel::setPositionForIndex(const QPoint& position, const QM
     qDebug() << "CustomFileSystemModel::setPositionForIndex";
 
     QString itemPath = fileInfo(index).absoluteFilePath();
-    qDebug() << "Updating model with coordinates for " << itemPath << ": " << position;
+    // qDebug() << "Updating model with coordinates for " << itemPath << ": " << position;
     iconCoordinates[index] = position;
 
     // Write extended attribute; this is too costly to do here, since setPositionForIndex is called
@@ -255,7 +280,7 @@ void CustomFileSystemModel::persistItemPositions() const {
     // Iterate over all iconCoordinates and write them to extended attributes
     for (QModelIndex index : iconCoordinates.keys()) {
             QString itemPath = fileInfo(index).absoluteFilePath();
-            qDebug() << "Updating model with coordinates for " << itemPath << ": " << iconCoordinates[index];
+            qDebug() << "Writing coordinates for " << itemPath << ": " << iconCoordinates[index];
             // Write extended attribute
             ExtendedAttributes *ea = new ExtendedAttributes(itemPath);
             QString coordinates = QString::number(iconCoordinates[index].x()) + "," + QString::number(iconCoordinates[index].y());
@@ -272,7 +297,9 @@ QPoint& CustomFileSystemModel::getPositionForIndex(const QModelIndex& index) con
     }
 
     // Otherwise, get them from extended attributes
-    QPoint coords = QPoint(-1, -1); // Invalid coordinates; we'll use this to indicate that we didn't find any
+    QPoint *coords = new QPoint(-1, -1); // Invalid coordinates; we'll use this to indicate that we didn't find any
+    // FIXME: Destroy coords later, otherwise we'll leak memory?
+
     QString filePath = this->filePath(index);
     ExtendedAttributes ea(filePath);
     QString coordinates = ea.read("coordinates");
@@ -281,15 +308,13 @@ QPoint& CustomFileSystemModel::getPositionForIndex(const QModelIndex& index) con
         QStringList coordinatesList = coordinates.split(",");
         int x = coordinatesList.at(0).toInt();
         int y = coordinatesList.at(1).toInt();
-        coords = QPoint(x, y);
+        coords = new QPoint(x, y);
         if (index.isValid()) {
             // If we found it, store it in the model for future use
-            qDebug() << "Updating model with coordinates for " << filePath << ": " << coords;
-            iconCoordinates[index] = coords;
+            // qDebug() << "Updating model with coordinates for " << filePath << ": " << coords;
+            iconCoordinates[index] = *coords;
         }
     }
-    // return coords; // warning: reference to stack memory associated with local variable 'coords' returned [-Wreturn-stack-address]
-    // So we need to return a copy instead
-    QPoint* coordsCopy = new QPoint(coords);
-    return *coordsCopy;
+
+    return *coords;
 }

@@ -38,7 +38,6 @@ CustomTreeView::CustomTreeView(QWidget* parent) : QTreeView(parent) {
     connect(this, &CustomTreeView::dragMoveEventSignal, handler, &DragAndDropHandler::handleDragMoveEvent);
     connect(this, &CustomTreeView::dropEventSignal, handler, &DragAndDropHandler::handleDropEvent);
     connect(this, &CustomTreeView::dragLeaveEventSignal, handler, &DragAndDropHandler::handleDragLeaveEvent);
-    connect(this, &CustomTreeView::startDragSignal, handler, &DragAndDropHandler::handleStartDrag);
 }
 
 void CustomTreeView::dragEnterEvent(QDragEnterEvent *event) {
