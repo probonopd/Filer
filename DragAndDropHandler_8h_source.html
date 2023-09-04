@@ -115,26 +115,23 @@ $(function() {
 <div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160; </div>
 <div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classDragAndDropHandler.html#a6e1eef11fd5ba688779813cd34d02f11">handleDragLeaveEvent</a>(QDragLeaveEvent *event);</div>
 <div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160; </div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classDragAndDropHandler.html#a74df26d7fe7b005a69b3f9ef7fa2a8ae">handleStartDrag</a>(Qt::DropActions supportedActions);</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160; </div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;<span class="keyword">private</span> slots:</div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;    <span class="keywordtype">void</span> mouseHoversOver();</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;<span class="keyword">private</span> slots:</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;    <span class="keywordtype">void</span> mouseHoversOver();</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160; </div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;    QAbstractItemView *m_view;</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160; </div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;    <span class="comment">// For spring-loaded folders</span></div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;    QTimer m_springTimer;</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;    QModelIndex m_potentialTargetIndex;</div>
 <div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160; </div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;    QAbstractItemView *m_view;</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;    <span class="keywordtype">void</span> showDropMenu(QDropEvent *event, QList&lt;QUrl&gt; &amp;urls, <span class="keyword">const</span> QString &amp;targetPath) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;};</div>
 <div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160; </div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;    <span class="comment">// For spring-loaded folders</span></div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;    QTimer m_springTimer;</div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;    QModelIndex m_potentialTargetIndex;</div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160; </div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;    <span class="keywordtype">void</span> showDropMenu(QDropEvent *event, QList&lt;QUrl&gt; &amp;urls, <span class="keyword">const</span> QString &amp;targetPath) <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;};</div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160; </div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;<span class="preprocessor">#endif </span><span class="comment">// DRAGANDDROPHANDLER_H</span></div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;<span class="preprocessor">#endif </span><span class="comment">// DRAGANDDROPHANDLER_H</span></div>
 <div class="ttc" id="aclassDragAndDropHandler_html"><div class="ttname"><a href="classDragAndDropHandler.html">DragAndDropHandler</a></div><div class="ttdoc">Handles drag and drop events for a QAbstractItemView so that we don't have to implement the same code...</div><div class="ttdef"><b>Definition:</b> DragAndDropHandler.h:44</div></div>
 <div class="ttc" id="aclassDragAndDropHandler_html_a274ddb01d749d1e212626dffc2778fb7"><div class="ttname"><a href="classDragAndDropHandler.html#a274ddb01d749d1e212626dffc2778fb7">DragAndDropHandler::handleDragEnterEvent</a></div><div class="ttdeci">void handleDragEnterEvent(QDragEnterEvent *event)</div><div class="ttdoc">Handles the drag enter event.</div><div class="ttdef"><b>Definition:</b> DragAndDropHandler.cpp:77</div></div>
 <div class="ttc" id="aclassDragAndDropHandler_html_a6e1eef11fd5ba688779813cd34d02f11"><div class="ttname"><a href="classDragAndDropHandler.html#a6e1eef11fd5ba688779813cd34d02f11">DragAndDropHandler::handleDragLeaveEvent</a></div><div class="ttdeci">void handleDragLeaveEvent(QDragLeaveEvent *event)</div><div class="ttdoc">Handles the drag leave event.</div><div class="ttdef"><b>Definition:</b> DragAndDropHandler.cpp:134</div></div>
-<div class="ttc" id="aclassDragAndDropHandler_html_a74df26d7fe7b005a69b3f9ef7fa2a8ae"><div class="ttname"><a href="classDragAndDropHandler.html#a74df26d7fe7b005a69b3f9ef7fa2a8ae">DragAndDropHandler::handleStartDrag</a></div><div class="ttdeci">void handleStartDrag(Qt::DropActions supportedActions)</div><div class="ttdoc">Handles the start drag event.</div><div class="ttdef"><b>Definition:</b> DragAndDropHandler.cpp:442</div></div>
 <div class="ttc" id="aclassDragAndDropHandler_html_a91781a6bc8f9aeebb8ebc04e59f65d64"><div class="ttname"><a href="classDragAndDropHandler.html#a91781a6bc8f9aeebb8ebc04e59f65d64">DragAndDropHandler::handleDropEvent</a></div><div class="ttdeci">void handleDropEvent(QDropEvent *event)</div><div class="ttdoc">Handles the drop event.</div><div class="ttdef"><b>Definition:</b> DragAndDropHandler.cpp:197</div></div>
 <div class="ttc" id="aclassDragAndDropHandler_html_aa9cd39ceed0c2248ea7942c30cc1ffb9"><div class="ttname"><a href="classDragAndDropHandler.html#aa9cd39ceed0c2248ea7942c30cc1ffb9">DragAndDropHandler::handleDragMoveEvent</a></div><div class="ttdeci">void handleDragMoveEvent(QDragMoveEvent *event)</div><div class="ttdoc">Handles the drag move event.</div><div class="ttdef"><b>Definition:</b> DragAndDropHandler.cpp:97</div></div>
 <div class="ttc" id="aclassDragAndDropHandler_html_ab649794d2fad0b6d3f6aaba6af2bfa86"><div class="ttname"><a href="classDragAndDropHandler.html#ab649794d2fad0b6d3f6aaba6af2bfa86">DragAndDropHandler::DragAndDropHandler</a></div><div class="ttdeci">DragAndDropHandler(QAbstractItemView *view, QObject *parent=nullptr)</div><div class="ttdoc">Constructs a DragAndDropHandler with the given QAbstractItemView and parent object.</div><div class="ttdef"><b>Definition:</b> DragAndDropHandler.cpp:50</div></div>

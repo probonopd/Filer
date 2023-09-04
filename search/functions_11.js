@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['_7einfodialog_235',['~InfoDialog',['../classInfoDialog.html#a691489763ca5ecf37b51bed3c9786d06',1,'InfoDialog']]],
-  ['_7epreferencesdialog_236',['~PreferencesDialog',['../classPreferencesDialog.html#a0e3927d4dbbc927879b4c4906e728f2d',1,'PreferencesDialog']]]
+  ['_7einfodialog_233',['~InfoDialog',['../classInfoDialog.html#a691489763ca5ecf37b51bed3c9786d06',1,'InfoDialog']]],
+  ['_7epreferencesdialog_234',['~PreferencesDialog',['../classPreferencesDialog.html#a0e3927d4dbbc927879b4c4906e728f2d',1,'PreferencesDialog']]]
 ];
