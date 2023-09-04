@@ -43,6 +43,7 @@ To try it out, run the latest [experimental helloSystem ISO](https://github.com/
 |Do not have spring-loaded folders|Has spring-loaded folders|DONE|
 |Use Gtk-centric dependencies like Glib, Gdk, Gio, polkit|Does not use Gtk-centric dependencies|DONE|
 |Refuse to copy/move/delete items which the user doesn't have access to|Asks user for root password to copy/move/delete items which the user doesn't have access to|DONE for copy/move, TODO for delete|
+|Use weird locations like `computer://` and `network://` that are nowhere in the filesystem|Uses proper paths in the filesystem for everything|DONE|
 
 My conclusion is that most "desktop environments" are made by people who don't actually love the desktop. Or else, those basic things would work.
 
