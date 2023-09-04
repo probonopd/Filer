@@ -2,6 +2,8 @@
 
 A clean rewrite of the Filer for [helloSystem](https://hellosystem.github.io/) (but not limited to it), inspired by [John Siracusa's descriptions of "Spatial Orientation"](https://arstechnica.com/gadgets/2003/04/finder/).
 
+To try it out, run the latest [experimental helloSystem ISO](https://github.com/helloSystem/ISO/releases/) build and press the "V" key for verbose boot (this will cause this new, work-in-progress Filer to be loaded).
+
 ![](https://user-images.githubusercontent.com/2480569/206650534-a035fc64-5993-41dd-8753-1076f47598c5.png)
 
 * No GLib dependency
@@ -41,12 +43,19 @@ A clean rewrite of the Filer for [helloSystem](https://hellosystem.github.io/) (
 |Do not have spring-loaded folders|Has spring-loaded folders|DONE|
 |Use Gtk-centric dependencies like Glib, Gdk, Gio, polkit|Does not use Gtk-centric dependencies|DONE|
 |Refuse to copy/move/delete items which the user doesn't have access to|Asks user for root password to copy/move/delete items which the user doesn't have access to|DONE for copy/move, TODO for delete|
+|Use weird locations like `computer://` and `network://` that are nowhere in the filesystem|Uses proper paths in the filesystem for everything|DONE|
 
 My conclusion is that most "desktop environments" are made by people who don't actually love the desktop. Or else, those basic things would work.
 
 ## Developer documentation (Doxygen)
 
 https://probonopd.github.io/Filer/annotated.html
+
+## Q&A
+
+__Q: Can this run on Linux?__
+
+A: It does build and it can run, but in order to give the full experience, you might want to consider using [helloSystem](https://hellosystem.github.io/), which comes with additional tools and careful preconfiguration to make Filer work as intended.
 
 ## References
 
