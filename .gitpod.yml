@@ -1,8 +1,8 @@
 image:
   file: .gitpod.Dockerfile
 
-tasks:
-    - name: dependencies
-      # Install dependencies as defined in GitHub Actions
-      command: |
-          cat .github/workflows/ubuntu.yml | grep "sudo apt-get install" | xargs | sh
+#tasks:
+#    - name: dependencies
+#      # Install dependencies as defined in GitHub Actions
+#      command: |
+#          cat .github/workflows/ubuntu.yml | grep "sudo apt-get install" | xargs | sh
