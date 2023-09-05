@@ -1,4 +1,4 @@
-FROM gitpod/workspace-full
+FROM ubuntu:20.04
 
 # Install Git
 RUN sudo apt-get update && \
@@ -6,3 +6,5 @@ RUN sudo apt-get update && \
 
 # You can customize the Docker image further if needed
 # For example, install additional tools or libraries
+
+RUN sudo apt-get install -y build-essential
