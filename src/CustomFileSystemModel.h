@@ -31,11 +31,17 @@
 #include "LaunchDB.h"
 #include "CombinedIconCreator.h"
 
+static const int OpenWithRole = Qt::UserRole + 1;
+static const int CanOpenRole = Qt::UserRole + 2;
+static const int IsApplicationRole =  Qt::UserRole + 3;
+
 class CustomFileSystemModel : public QFileSystemModel
 {
 Q_OBJECT
 public:
     explicit CustomFileSystemModel(QObject* parent = nullptr);
+
+    QVariant data(const QModelIndex& index, int role = Qt::ToolTipRole) const override;
 
     QByteArray readExtendedAttribute(const QModelIndex& index, const QString& attributeName) const;
 
