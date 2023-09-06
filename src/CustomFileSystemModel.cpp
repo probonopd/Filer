@@ -318,3 +318,14 @@ QPoint& CustomFileSystemModel::getPositionForIndex(const QModelIndex& index) con
 
     return *coords;
 }
+
+QVariant CustomFileSystemModel::data(const QModelIndex& index, int role) const
+{
+    if (role == Qt::ToolTipRole) {
+        qDebug() << "CustomFileSystemModel::data Qt::ToolTipRole" << filePath(index);
+        // Return the file path as the tooltip
+        return filePath(index);
+    }
+
+    return QFileSystemModel::data(index, role);
+}
