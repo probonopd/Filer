@@ -243,26 +243,24 @@ bool CustomFileSystemModel::createBrowserBookmarkFile(const QMimeData *data, QSt
         titleText = data->text();
     }
 
-    QFile file(dropTargetPath + "/" + makeFilenameSafe(titleText) + ".desktop");
+    QFile file(dropTargetPath + "/" + makeFilenameSafe(titleText) + ".html");
     qDebug() << "CustomFileSystemModel::createBrowserBookmarkFile" << file.fileName();
-    QString titleTextShort = titleText.split("/").last();
+    // Write a simple HTML file that redirects to the URL
     if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
         QTextStream stream(&file);
-        stream << "[Desktop Entry]\n";
-        stream << "Name=" + titleTextShort + "\n";
-        stream << "Exec=open " << "\"" + data->urls().first().toString(QUrl::FullyEncoded) + "\"\n";
-        // stream << "URL=" << "\"" + data->urls().first().toString(QUrl::FullyEncoded) + "\"\n";
-        stream << "Type=Application\n";
-        stream << "Icon=gnome-globe\n";
+        stream << "<!DOCTYPE html>\n";
+        stream << "<html>\n";
+        stream << "<head>\n";
+        stream << "<meta http-equiv=\"refresh\" content=\"0; url=" << data->urls().first().toString(QUrl::FullyEncoded) << "\">\n";
+        stream << "</head>\n";
+        stream << "<body>\n";
+        stream << "</body>\n";
+        stream << "</html>\n";
         file.close();
-        // chmod 0755 equivalent
-        file.setPermissions(QFile::ReadOwner | QFile::WriteOwner | QFile::ExeOwner |
-                            QFile::ReadGroup | QFile::ExeGroup |
-                            QFile::ReadOther | QFile::ExeOther);
-        qDebug() << "CustomFileSystemModel::createBrowserBookmarkFile Successfully created bookmark file";
         return true;
+    } else {
+        return false;
     }
-
     return false;
 }
 
