@@ -592,3 +592,17 @@ bool CustomFileSystemModel::setData(const QModelIndex &idx, const QVariant &valu
 
     return false;
 }
+
+void CustomFileSystemModel::removeCustomCoordinates(const QModelIndex& index) const {
+    qDebug() << "Removing index" << index << "from icon coordinates map";
+    // Remove the index from the icon coordinates map
+    if (iconCoordinates.contains(index)) {
+        iconCoordinates.remove(index);
+
+        // Clear the extended attributes of the index
+        QString filePath = index.data(QFileSystemModel::FilePathRole).toString();
+        ExtendedAttributes *ea = new ExtendedAttributes(filePath);
+        ea->clear("coordinates");
+        delete ea;
+    }
+}

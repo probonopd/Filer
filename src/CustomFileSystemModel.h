@@ -73,6 +73,8 @@ public:
 
     bool setData(const QModelIndex &idx, const QVariant &value, int role) override;
 
+    void removeCustomCoordinates(const QModelIndex& index) const;
+
 private:
     // Private member variable to store "open-with" attributes.
     mutable QMap<QModelIndex, QByteArray> openWithAttributes;

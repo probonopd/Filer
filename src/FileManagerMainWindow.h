@@ -150,6 +150,8 @@ private:
     void setGridSize();
 
     void handleScreenChange(const QRect &geometry);
+
+    void alignIcons();
 };
 
 #endif // FILEMANAGERMAINWINDOW_H

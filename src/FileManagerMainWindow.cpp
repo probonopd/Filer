@@ -74,6 +74,7 @@
 #include "VolumeWatcher.h"
 #include <QSettings>
 #include "PreferencesDialog.h"
+#include "ExtendedAttributes.h"
 
 /*
  * This creates a FileManagerMainWindow object with a QTreeView subclass and QListView subclass widget.
@@ -910,6 +911,13 @@ void FileManagerMainWindow::createMenus()
     viewMenu->addAction(m_iconViewAction);
     if (m_isFirstInstance)
         viewMenu->actions().last()->setEnabled(false);
+
+    viewMenu->addSeparator();
+
+    // Create the Align To Grid action
+    QAction *alignToGridAction = new QAction(tr("Align To Grid"), this);
+    viewMenu->addAction(alignToGridAction);
+    connect(alignToGridAction, &QAction::triggered, this, &FileManagerMainWindow::alignIcons);
 
     viewMenu->addSeparator();
 
@@ -1912,4 +1920,27 @@ void FileManagerMainWindow::showHideHiddenFiles() {
         qDebug() << "showHideHiddenFiles(): Showing hidden files";
         m_proxyModel->setFilteringEnabled(true);
     }
+}
+
+void FileManagerMainWindow::alignIcons() {
+    qDebug() << "alignIcons()";
+    QAbstractItemView *view = qobject_cast<QAbstractItemView*>(m_stackedWidget->currentWidget());
+
+    // Get selected items
+    QModelIndexList selectedIndexes = view->selectionModel()->selectedIndexes();
+
+    for (QModelIndex index : selectedIndexes) {
+        qDebug() << "alignIcons(): Index:" << index;
+        // Map to source index
+        QModelIndex sourceIndex = m_proxyModel->mapToSource(index);
+        qDebug() << "alignIcons(): Source index:" << sourceIndex;
+        // Remove from map of coordinates
+        m_fileSystemModel->removeCustomCoordinates(sourceIndex);
+        refresh();
+
+    }
+
+    // Probably we need some more methods in the model to do this properly;
+    // e.g., remove from the map of coordinates, so that the coordinates are not written
+    // again...
 }
