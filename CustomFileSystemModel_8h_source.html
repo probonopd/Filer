@@ -140,37 +140,39 @@ $(function() {
 <div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160; </div>
 <div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    <span class="keywordtype">bool</span> setData(<span class="keyword">const</span> QModelIndex &amp;idx, <span class="keyword">const</span> QVariant &amp;value, <span class="keywordtype">int</span> role) <span class="keyword">override</span>;</div>
 <div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160; </div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    <span class="comment">// Private member variable to store &quot;open-with&quot; attributes.</span></div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;    <span class="keyword">mutable</span> QMap&lt;QModelIndex, QByteArray&gt; openWithAttributes;</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160; </div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    <span class="comment">// Private member variable to store &quot;open-with&quot; attributes.</span></div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;    <span class="keyword">mutable</span> QMap&lt;QModelIndex, QByteArray&gt; canOpenAttributes;</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160; </div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;    <span class="comment">// Private member variable to store icon coordinates.</span></div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;    <span class="keyword">mutable</span> QMap&lt;QModelIndex, QPoint&gt; iconCoordinates;</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160; </div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;    <span class="comment">// Private member variable to store whether an item is an application.</span></div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;    <span class="keyword">mutable</span> QMap&lt;QModelIndex, bool&gt; isApplication;</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160; </div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    <a class="code" href="classLaunchDB.html">LaunchDB</a> ldb;</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    <span class="keywordtype">void</span> removeCustomCoordinates(<span class="keyword">const</span> QModelIndex&amp; index) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160; </div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;    <span class="comment">// Private member variable to store &quot;open-with&quot; attributes.</span></div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    <span class="keyword">mutable</span> QMap&lt;QModelIndex, QByteArray&gt; openWithAttributes;</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160; </div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    <span class="comment">// Private member variable to store &quot;open-with&quot; attributes.</span></div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;    <span class="keyword">mutable</span> QMap&lt;QModelIndex, QByteArray&gt; canOpenAttributes;</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160; </div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;    <span class="comment">// Private member variable to store icon coordinates.</span></div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;    <span class="keyword">mutable</span> QMap&lt;QModelIndex, QPoint&gt; iconCoordinates;</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160; </div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;    <span class="comment">// Private member variable to store whether an item is an application.</span></div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    <span class="keyword">mutable</span> QMap&lt;QModelIndex, bool&gt; isApplication;</div>
 <div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160; </div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;    <span class="comment">// Private method to create a bookmark file via drag and drop, e.g., from a web browser</span></div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;    <span class="keywordtype">bool</span> createBrowserBookmarkFile(<span class="keyword">const</span> QMimeData *data, QString dropTargetPath) <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160; </div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;    <span class="comment">// Private helper method to make a filename safe for the filesystem, e.g., for saving bookmarks from a web browser</span></div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;    QString makeFilenameSafe(<span class="keyword">const</span> QString&amp; input) <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160; </div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;    <span class="comment">// The following class is defined in &quot;CustomFileIconProvider.h&quot;; why does the compiler not see it?</span></div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;    <span class="comment">// This is because the compiler does not see the definition of the class CustomFileIconProvider</span></div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;    <span class="comment">// in the header file CustomFileIconProvider.h for some reason. Why?</span></div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;    <span class="comment">// It is defined in the same directory as this file, and the header file is included.</span></div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;    <a class="code" href="classCustomFileIconProvider.html">CustomFileIconProvider</a> *m_IconProvider;</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;    <span class="comment">// FIXME:  Why are we getting error: unknown type name &#39;CustomFileIconProvider&#39;; did you mean &#39;QFileIconProvider&#39;?</span></div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160; </div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;};</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;    <a class="code" href="classLaunchDB.html">LaunchDB</a> ldb;</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160; </div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;    <span class="comment">// Private method to create a bookmark file via drag and drop, e.g., from a web browser</span></div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;    <span class="keywordtype">bool</span> createBrowserBookmarkFile(<span class="keyword">const</span> QMimeData *data, QString dropTargetPath) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160; </div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;    <span class="comment">// Private helper method to make a filename safe for the filesystem, e.g., for saving bookmarks from a web browser</span></div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;    QString makeFilenameSafe(<span class="keyword">const</span> QString&amp; input) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160; </div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;    <span class="comment">// The following class is defined in &quot;CustomFileIconProvider.h&quot;; why does the compiler not see it?</span></div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;    <span class="comment">// This is because the compiler does not see the definition of the class CustomFileIconProvider</span></div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;    <span class="comment">// in the header file CustomFileIconProvider.h for some reason. Why?</span></div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;    <span class="comment">// It is defined in the same directory as this file, and the header file is included.</span></div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;    <a class="code" href="classCustomFileIconProvider.html">CustomFileIconProvider</a> *m_IconProvider;</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;    <span class="comment">// FIXME:  Why are we getting error: unknown type name &#39;CustomFileIconProvider&#39;; did you mean &#39;QFileIconProvider&#39;?</span></div>
 <div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160; </div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;<span class="preprocessor">#endif </span><span class="comment">// CUSTOMFILESYSTEMMODEL_H</span></div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;};</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160; </div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;<span class="preprocessor">#endif </span><span class="comment">// CUSTOMFILESYSTEMMODEL_H</span></div>
 <div class="ttc" id="aclassCustomFileIconProvider_html"><div class="ttname"><a href="classCustomFileIconProvider.html">CustomFileIconProvider</a></div><div class="ttdef"><b>Definition:</b> CustomFileIconProvider.h:9</div></div>
 <div class="ttc" id="aclassCustomFileSystemModel_html"><div class="ttname"><a href="classCustomFileSystemModel.html">CustomFileSystemModel</a></div><div class="ttdef"><b>Definition:</b> CustomFileSystemModel.h:41</div></div>
 <div class="ttc" id="aclassLaunchDB_html"><div class="ttname"><a href="classLaunchDB.html">LaunchDB</a></div><div class="ttdoc">The LaunchDB class provides functionality to retrieve the default application associated with a file.</div><div class="ttdef"><b>Definition:</b> LaunchDB.h:43</div></div>
