@@ -65,69 +65,34 @@ $(function() {
 <div class="title">CustomFileIconProvider.h</div>  </div>
 </div><!--header-->
 <div class="contents">
-<a href="CustomFileIconProvider_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="comment">/*-</span></div>
-<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="comment"> * Copyright (c) 2022-23 Simon Peter &lt;probono@puredarwin.org&gt;</span></div>
-<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment"> * All rights reserved.</span></div>
-<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment"> * Redistribution and use in source and binary forms, with or without</span></div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment"> * modification, are permitted provided that the following conditions</span></div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment"> * are met:</span></div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="comment"> * 1. Redistributions of source code must retain the above copyright</span></div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="comment"> *    notice, this list of conditions and the following disclaimer.</span></div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="comment"> * 2. Redistributions in binary form must reproduce the above copyright</span></div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="comment"> *    notice, this list of conditions and the following disclaimer in the</span></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="comment"> *    documentation and/or other materials provided with the distribution.</span></div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="comment"> * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS &quot;AS IS&quot; AND</span></div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="comment"> * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE</span></div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="comment"> * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE</span></div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="comment"> * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE</span></div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="comment"> * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL</span></div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="comment"> * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS</span></div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="comment"> * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)</span></div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="comment"> * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT</span></div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="comment"> * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY</span></div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="comment"> * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF</span></div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="comment"> * SUCH DAMAGE.</span></div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="comment"> */</span></div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160; </div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="preprocessor">#ifndef Filer_CUSTOMFILEICONPROVIDER_H</span></div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="preprocessor">#define Filer_CUSTOMFILEICONPROVIDER_H</span></div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160; </div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="preprocessor">#include &lt;QFileIconProvider&gt;</span></div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="preprocessor">#include &lt;QMimeDatabase&gt;</span></div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="preprocessor">#include &quot;LaunchDB.h&quot;</span></div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="preprocessor">#include &lt;QModelIndex&gt;</span></div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="preprocessor">#include &quot;CustomFileSystemModel.h&quot;</span></div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="preprocessor">#include &quot;CombinedIconCreator.h&quot;</span></div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="preprocessor">#include &lt;QAbstractProxyModel&gt;</span></div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160; </div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="keyword">class </span>QAbstractItemModel;</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160; </div>
-<div class="line"><a name="l00046"></a><span class="lineno"><a class="line" href="classCustomFileIconProvider.html">   46</a></span>&#160;<span class="keyword">class </span><a class="code" href="classCustomFileIconProvider.html">CustomFileIconProvider</a> : <span class="keyword">public</span> QFileIconProvider</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;{</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    <a class="code" href="classCustomFileIconProvider.html#a322f569b919c68ec1fde054191bfe1f9">CustomFileIconProvider</a>();</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160; </div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    ~<a class="code" href="classCustomFileIconProvider.html">CustomFileIconProvider</a>();</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160; </div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    QIcon <a class="code" href="classCustomFileIconProvider.html#a2e44d2e48b65690d1d3ae2d0b8d8b6fc">icon</a>(<span class="keyword">const</span> QFileInfo &amp;info) <span class="keyword">const override</span>;</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160; </div>
-<div class="line"><a name="l00063"></a><span class="lineno"><a class="line" href="classCustomFileIconProvider.html#ae4a1e7f693687f0be2b62c94d921cea6">   63</a></span>&#160;    QString <a class="code" href="classCustomFileIconProvider.html#ae4a1e7f693687f0be2b62c94d921cea6">currentThemeName</a>; </div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classCustomFileIconProvider.html#a782951a5e9ef5717fc9e76eff1be6d26">setModel</a>(QAbstractProxyModel* model);</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160; </div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    <span class="keyword">const</span> QAbstractProxyModel* m_model; </div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    <a class="code" href="classCombinedIconCreator.html">CombinedIconCreator</a>* iconCreator;; </div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;};</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160; </div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;<span class="preprocessor">#endif </span><span class="comment">// Filer_CUSTOMFILEICONPROVIDER_H</span></div>
+<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#ifndef ICONPROVIDER_H</span></div>
+<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="preprocessor">#define ICONPROVIDER_H</span></div>
+<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160; </div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="preprocessor">#include &lt;QFileIconProvider&gt;</span></div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor">#include &quot;CombinedIconCreator.h&quot;</span></div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor">#include &lt;QAbstractItemModel&gt;</span></div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160; </div>
+<div class="line"><a name="l00008"></a><span class="lineno"><a class="line" href="classCustomFileIconProvider.html">    8</a></span>&#160;<span class="keyword">class </span><a class="code" href="classCustomFileIconProvider.html">CustomFileIconProvider</a> : <span class="keyword">public</span> QFileIconProvider</div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;{</div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;    <a class="code" href="classCustomFileIconProvider.html">CustomFileIconProvider</a>();</div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;    ~<a class="code" href="classCustomFileIconProvider.html">CustomFileIconProvider</a>();</div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160; </div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;    <span class="comment">// Override the icon() function to provide custom icons.</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;    QIcon icon(<span class="keyword">const</span> QFileInfo &amp;info) <span class="keyword">const override</span>;</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;    QIcon documentIcon(<span class="keyword">const</span> QFileInfo &amp;info, QString openWith) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160; </div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;    <span class="keywordtype">void</span> setModel(QAbstractItemModel *model);</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160; </div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;    <a class="code" href="classCombinedIconCreator.html">CombinedIconCreator</a>* m_iconCreator;</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160; </div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    QIcon userIcon(<span class="keyword">const</span> QFileInfo &amp;info) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;};</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160; </div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="preprocessor">#endif </span><span class="comment">// ICONPROVIDER_H</span></div>
 <div class="ttc" id="aclassCombinedIconCreator_html"><div class="ttname"><a href="classCombinedIconCreator.html">CombinedIconCreator</a></div><div class="ttdoc">The CombinedIconCreator class is responsible for creating combined icons by overlaying a document ico...</div><div class="ttdef"><b>Definition:</b> CombinedIconCreator.h:58</div></div>
-<div class="ttc" id="aclassCustomFileIconProvider_html"><div class="ttname"><a href="classCustomFileIconProvider.html">CustomFileIconProvider</a></div><div class="ttdef"><b>Definition:</b> CustomFileIconProvider.h:47</div></div>
-<div class="ttc" id="aclassCustomFileIconProvider_html_a2e44d2e48b65690d1d3ae2d0b8d8b6fc"><div class="ttname"><a href="classCustomFileIconProvider.html#a2e44d2e48b65690d1d3ae2d0b8d8b6fc">CustomFileIconProvider::icon</a></div><div class="ttdeci">QIcon icon(const QFileInfo &amp;info) const override</div><div class="ttdoc">Retrieves the custom icon for the specified file info.</div><div class="ttdef"><b>Definition:</b> CustomFileIconProvider.cpp:69</div></div>
-<div class="ttc" id="aclassCustomFileIconProvider_html_a322f569b919c68ec1fde054191bfe1f9"><div class="ttname"><a href="classCustomFileIconProvider.html#a322f569b919c68ec1fde054191bfe1f9">CustomFileIconProvider::CustomFileIconProvider</a></div><div class="ttdeci">CustomFileIconProvider()</div><div class="ttdoc">Constructs a CustomFileIconProvider object.</div><div class="ttdef"><b>Definition:</b> CustomFileIconProvider.cpp:48</div></div>
-<div class="ttc" id="aclassCustomFileIconProvider_html_a782951a5e9ef5717fc9e76eff1be6d26"><div class="ttname"><a href="classCustomFileIconProvider.html#a782951a5e9ef5717fc9e76eff1be6d26">CustomFileIconProvider::setModel</a></div><div class="ttdeci">void setModel(QAbstractProxyModel *model)</div><div class="ttdoc">Sets the QAbstractProxyModel associated with the icon provider.</div><div class="ttdef"><b>Definition:</b> CustomFileIconProvider.cpp:396</div></div>
-<div class="ttc" id="aclassCustomFileIconProvider_html_ae4a1e7f693687f0be2b62c94d921cea6"><div class="ttname"><a href="classCustomFileIconProvider.html#ae4a1e7f693687f0be2b62c94d921cea6">CustomFileIconProvider::currentThemeName</a></div><div class="ttdeci">QString currentThemeName</div><div class="ttdef"><b>Definition:</b> CustomFileIconProvider.h:63</div></div>
+<div class="ttc" id="aclassCustomFileIconProvider_html"><div class="ttname"><a href="classCustomFileIconProvider.html">CustomFileIconProvider</a></div><div class="ttdef"><b>Definition:</b> CustomFileIconProvider.h:9</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

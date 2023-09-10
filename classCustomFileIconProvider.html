@@ -63,7 +63,6 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="#pub-attribs">Public Attributes</a> &#124;
 <a href="classCustomFileIconProvider-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">CustomFileIconProvider Class Reference</div>  </div>
@@ -90,108 +89,16 @@ Collaboration diagram for CustomFileIconProvider:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a322f569b919c68ec1fde054191bfe1f9"><td class="memItemLeft" align="right" valign="top"><a id="a322f569b919c68ec1fde054191bfe1f9"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCustomFileIconProvider.html#a322f569b919c68ec1fde054191bfe1f9">CustomFileIconProvider</a> ()</td></tr>
-<tr class="memdesc:a322f569b919c68ec1fde054191bfe1f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructs a <a class="el" href="classCustomFileIconProvider.html">CustomFileIconProvider</a> object. <br /></td></tr>
-<tr class="separator:a322f569b919c68ec1fde054191bfe1f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2e44d2e48b65690d1d3ae2d0b8d8b6fc"><td class="memItemLeft" align="right" valign="top">QIcon&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCustomFileIconProvider.html#a2e44d2e48b65690d1d3ae2d0b8d8b6fc">icon</a> (const QFileInfo &amp;info) const override</td></tr>
-<tr class="memdesc:a2e44d2e48b65690d1d3ae2d0b8d8b6fc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieves the custom icon for the specified file info.  <a href="classCustomFileIconProvider.html#a2e44d2e48b65690d1d3ae2d0b8d8b6fc">More...</a><br /></td></tr>
+<tr class="memitem:a2e44d2e48b65690d1d3ae2d0b8d8b6fc"><td class="memItemLeft" align="right" valign="top"><a id="a2e44d2e48b65690d1d3ae2d0b8d8b6fc"></a>
+QIcon&#160;</td><td class="memItemRight" valign="bottom"><b>icon</b> (const QFileInfo &amp;info) const override</td></tr>
 <tr class="separator:a2e44d2e48b65690d1d3ae2d0b8d8b6fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a782951a5e9ef5717fc9e76eff1be6d26"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCustomFileIconProvider.html#a782951a5e9ef5717fc9e76eff1be6d26">setModel</a> (QAbstractProxyModel *model)</td></tr>
-<tr class="memdesc:a782951a5e9ef5717fc9e76eff1be6d26"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the QAbstractProxyModel associated with the icon provider.  <a href="classCustomFileIconProvider.html#a782951a5e9ef5717fc9e76eff1be6d26">More...</a><br /></td></tr>
-<tr class="separator:a782951a5e9ef5717fc9e76eff1be6d26"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
-Public Attributes</h2></td></tr>
-<tr class="memitem:ae4a1e7f693687f0be2b62c94d921cea6"><td class="memItemLeft" align="right" valign="top">QString&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCustomFileIconProvider.html#ae4a1e7f693687f0be2b62c94d921cea6">currentThemeName</a></td></tr>
-<tr class="separator:ae4a1e7f693687f0be2b62c94d921cea6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0cd967bdb8c989b61f951780d732a9cc"><td class="memItemLeft" align="right" valign="top"><a id="a0cd967bdb8c989b61f951780d732a9cc"></a>
+QIcon&#160;</td><td class="memItemRight" valign="bottom"><b>documentIcon</b> (const QFileInfo &amp;info, QString openWith) const</td></tr>
+<tr class="separator:a0cd967bdb8c989b61f951780d732a9cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0488d6476a2d31d76ed0b919db802397"><td class="memItemLeft" align="right" valign="top"><a id="a0488d6476a2d31d76ed0b919db802397"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setModel</b> (QAbstractItemModel *model)</td></tr>
+<tr class="separator:a0488d6476a2d31d76ed0b919db802397"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Member Function Documentation</h2>
-<a id="a2e44d2e48b65690d1d3ae2d0b8d8b6fc"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2e44d2e48b65690d1d3ae2d0b8d8b6fc">&#9670;&nbsp;</a></span>icon()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">QIcon CustomFileIconProvider::icon </td>
-          <td>(</td>
-          <td class="paramtype">const QFileInfo &amp;&#160;</td>
-          <td class="paramname"><em>info</em></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Retrieves the custom icon for the specified file info. </p>
-<p><a class="el" href="classCustomFileIconProvider.html#a2e44d2e48b65690d1d3ae2d0b8d8b6fc" title="Retrieves the custom icon for the specified file info.">CustomFileIconProvider::icon</a> Returns the icon for the given file info.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">info</td><td>The QFileInfo object representing the file or directory. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>The QIcon representing the custom icon for the file or directory.</dd></dl>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">info</td><td>The file info </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>The icon </dd></dl>
-
-</div>
-</div>
-<a id="a782951a5e9ef5717fc9e76eff1be6d26"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a782951a5e9ef5717fc9e76eff1be6d26">&#9670;&nbsp;</a></span>setModel()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void CustomFileIconProvider::setModel </td>
-          <td>(</td>
-          <td class="paramtype">QAbstractProxyModel *&#160;</td>
-          <td class="paramname"><em>model</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Sets the QAbstractProxyModel associated with the icon provider. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">model</td><td>The QAbstractProxyModel to set. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<h2 class="groupheader">Member Data Documentation</h2>
-<a id="ae4a1e7f693687f0be2b62c94d921cea6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae4a1e7f693687f0be2b62c94d921cea6">&#9670;&nbsp;</a></span>currentThemeName</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">QString CustomFileIconProvider::currentThemeName</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>The name of the current theme. </p>
-
-</div>
-</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li><a class="el" href="CustomFileIconProvider_8h_source.html">CustomFileIconProvider.h</a></li>
 <li>CustomFileIconProvider.cpp</li>
