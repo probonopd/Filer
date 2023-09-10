@@ -36,7 +36,7 @@
 #include <sys/extattr.h>
 #elif defined(__linux__)
 #include <sys/types.h>
-#include <sys/xattr.h>
+#include <linux/xattr.h>
 #endif
 
 ExtendedAttributes::ExtendedAttributes(const QString &filePath) : m_file(filePath) { }
