@@ -37,7 +37,8 @@
 #include "DragAndDropHandler.h"
 #include "AppGlobals.h"
 #include <QSettings>
-
+#include <QScrollBar>
+#include <QStandardPaths>
 
 CustomListView::CustomListView(QWidget* parent) : QListView(parent) {
 
@@ -176,6 +177,12 @@ void CustomListView::startDrag(Qt::DropActions supportedActions) {
 }
 
 void CustomListView::layoutItems() {
+
+    int max_x = 0;
+    int max_y = 0;
+    int max_width = 0;
+    int max_height = 0;
+
     qDebug() << "CustomListView::layoutItems";
     if (m_layoutTimer->isActive()) {
         m_layoutTimer->stop();
@@ -187,7 +194,8 @@ void CustomListView::layoutItems() {
     qDebug() << "CustomListView::layoutItems() sourceModel" << sourceModel;
     QModelIndex rootIndex = this->rootIndex();
     qDebug() << "CustomListView::layoutItems() rootIndex" << rootIndex;
-    QString rootPath = model->data(rootIndex, Qt::DisplayRole).toString();
+    QString rootPath = model->data(rootIndex, QFileSystemModel::FilePathRole).toString();
+    qDebug() << "CustomListView::layoutItems() rootPath" << rootPath;
 
     int itemCount = model->rowCount(rootIndex);
     qDebug() << "CustomListView::layoutItems() itemCount" << itemCount;
@@ -214,6 +222,8 @@ void CustomListView::layoutItems() {
             // qDebug() << "CustomListView::layoutItems() position" << position;
             x = position.x();
             y = position.y();
+            max_x = qMax(max_x, x);
+            max_y = qMax(max_y, y);
             // TODO: If we are rendering the desktop and the item is outside the window, move it inside
             setPositionForIndex(QPoint(x, y), index); // Actually move it
             sourceModel->setPositionForIndex(QPoint(x, y), sourceIndex);
@@ -228,10 +238,26 @@ void CustomListView::layoutItems() {
         // and the width and height of the window, so that we can have the items aligned without
         // being too close to each other, and without having too much space between them.
         // So no real grid, but a more dynamic layout.
-
-
     }
-    
+
+    // Print the maximum x and y values
+    qDebug() << "CustomListView::layoutItems() max_x" << max_x;
+    qDebug() << "CustomListView::layoutItems() max_y" << max_y;
+
+    // Print scroll bar range
+    qDebug() << "CustomListView::layoutItems() horizontalScrollBar()->minimum()" << this->horizontalScrollBar()->minimum();
+    qDebug() << "CustomListView::layoutItems() horizontalScrollBar()->maximum()" << this->horizontalScrollBar()->maximum();
+
+    // Set scroll bar range if we are not rendering the desktop
+    // FIXME: Calculate the range based on the size of the items
+    // Maybe we need the delegates for this?
+    // This is probably not correct, but it seems to give a usable approximation
+    QString desktopPath = QStandardPaths::writableLocation(QStandardPaths::DesktopLocation);
+    if (rootPath != desktopPath) {
+        this->horizontalScrollBar()->setRange(0, max_x-100);
+        this->verticalScrollBar()->setRange(0, max_y-200);
+    }
+
     // Undo "Block updating the view until all items have been moved to their custom positions in CustomListView::layoutItems()"
     // In 10 ms, we call this->viewport()->setUpdatesEnabled(false);
     // FIXME: Do not hardcode a particular delay, but get called whenever the view is ready to be updated
