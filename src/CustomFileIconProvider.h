@@ -1,76 +1,26 @@
-/*-
- * Copyright (c) 2022-23 Simon Peter <probono@puredarwin.org>
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS "AS IS" AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
- * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
- * SUCH DAMAGE.
- */
-
-#ifndef Filer_CUSTOMFILEICONPROVIDER_H
-#define Filer_CUSTOMFILEICONPROVIDER_H
+#ifndef ICONPROVIDER_H
+#define ICONPROVIDER_H
 
 #include <QFileIconProvider>
-#include <QMimeDatabase>
-#include "LaunchDB.h"
-#include <QModelIndex>
-#include "CustomFileSystemModel.h"
 #include "CombinedIconCreator.h"
-#include <QAbstractProxyModel>
+#include <QAbstractItemModel>
 
-class QAbstractItemModel;
-
-/**
- * @file CustomFileIconProvider.h
- * @brief The CustomFileIconProvider class provides custom icons for files and directories.
- *
- * This class extends QFileIconProvider to provide custom icons based on the file type and context.
- */
 class CustomFileIconProvider : public QFileIconProvider
 {
 public:
-    /**
-     * @brief Constructs a CustomFileIconProvider object.
-     */
     CustomFileIconProvider();
-
     ~CustomFileIconProvider();
 
-    /**
-     * @brief Retrieves the custom icon for the specified file info.
-     * @param info The QFileInfo object representing the file or directory.
-     * @return The QIcon representing the custom icon for the file or directory.
-     */
+    // Override the icon() function to provide custom icons.
     QIcon icon(const QFileInfo &info) const override;
+    QIcon documentIcon(const QFileInfo &info, QString openWith) const;
 
-    QString currentThemeName; /**< The name of the current theme. */
-
-    /**
-     * @brief Sets the QAbstractProxyModel associated with the icon provider.
-     * @param model The QAbstractProxyModel to set.
-     */
-    void setModel(QAbstractProxyModel* model);
+    void setModel(QAbstractItemModel *model);
 
 private:
-    const QAbstractProxyModel* m_model; /**< Pointer to the QAbstractProxyModel associated with the icon provider. */
-    CombinedIconCreator* iconCreator;; /**< Pointer to the CombinedIconCreator associated with the icon provider. */
+    CombinedIconCreator* m_iconCreator;
+
+    QIcon userIcon(const QFileInfo &info) const;
 };
 
-#endif // Filer_CUSTOMFILEICONPROVIDER_H
+#endif // ICONPROVIDER_H

@@ -46,6 +46,9 @@ CustomListView::CustomListView(QWidget* parent) : QListView(parent) {
     // Block updating the view until all items have been moved to their custom positions in CustomListView::layoutItems()
     this->viewport()->setUpdatesEnabled(false);
 
+    // Single click to rename; this requires the item to have the Qt::ItemIsEditable flag set
+    setEditTriggers(QAbstractItemView::EditKeyPressed | QAbstractItemView::SelectedClicked);
+
     // Make items freely movable
     setMovement(QListView::Free);
     // This alone is not sufficient; dropEvent of the view (superclass) also needs to be called
@@ -208,7 +211,7 @@ void CustomListView::layoutItems() {
 
         QPoint position = sourceModel->getPositionForIndex(sourceIndex);
         if (position != QPoint(-1, -1)) {
-            qDebug() << "CustomListView::layoutItems() position" << position;
+            // qDebug() << "CustomListView::layoutItems() position" << position;
             x = position.x();
             y = position.y();
             // TODO: If we are rendering the desktop and the item is outside the window, move it inside

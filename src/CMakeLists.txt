@@ -38,7 +38,6 @@ set(PROJECT_SOURCES
         AppGlobals.cpp AppGlobals.h
         ApplicationBundle.cpp ApplicationBundle.h
         CombinedIconCreator.cpp CombinedIconCreator.h
-        CustomFileIconProvider.cpp CustomFileIconProvider.h
         CustomFileSystemModel.cpp CustomFileSystemModel.h
         CustomItemDelegate.cpp CustomItemDelegate.h
         CustomListView.cpp CustomListView.h
@@ -52,6 +51,7 @@ set(PROJECT_SOURCES
         ExtendedAttributes.cpp ExtendedAttributes.h
         FileManagerMainWindow.cpp FileManagerMainWindow.h
         FileOperationManager.cpp FileOperationManager.h
+        CustomFileIconProvider.cpp CustomFileIconProvider.h
         InfoDialog.cpp InfoDialog.h
         LaunchDB.cpp LaunchDB.h
         main.cpp

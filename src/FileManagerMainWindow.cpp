@@ -26,7 +26,7 @@
 
 #include "FileManagerMainWindow.h"
 #include "CustomItemDelegate.h"
-#include "CustomFileIconProvider.h"
+
 #include "FileOperationManager.h"
 
 #include <QMenuBar>
@@ -223,9 +223,6 @@ FileManagerMainWindow::FileManagerMainWindow(QWidget *parent, const QString &ini
         }
     }
 
-    // Create an instance of our custom QFileIconProvider
-    CustomFileIconProvider provider;
-
     m_fileSystemModel = new CustomFileSystemModel(this);
     m_fileSystemModel->setRootPath(m_currentDir);
     m_proxyModel = new CustomProxyModel(this);
@@ -238,16 +235,11 @@ FileManagerMainWindow::FileManagerMainWindow(QWidget *parent, const QString &ini
     m_proxyModel->setSortRole(Qt::DecorationRole);
     m_proxyModel->sort(0, Qt::AscendingOrder);
 
-    provider.setModel(m_proxyModel);
-
-    // Make the file system model use the custom icon provider
-    m_fileSystemModel->setIconProvider(&provider);
-
     // Set the file system model as the model for the tree view and icon view
     m_treeView->setModel(m_proxyModel);
     m_iconView->setModel(m_proxyModel);
 
-    // Preload the data for the tree view (so that e.g., CustomIconProvider can know open-with attributes)
+    // Without this, every window just shows /
     m_treeView->setRootIndex(m_proxyModel->mapFromSource(m_fileSystemModel->index(m_currentDir)));
     m_iconView->setRootIndex(m_proxyModel->mapFromSource(m_fileSystemModel->index(m_currentDir)));
 
@@ -538,7 +530,7 @@ void FileManagerMainWindow::refresh() {
 
 FileManagerMainWindow::~FileManagerMainWindow()
 {
-    qDebug() << "Destructor called";
+    qDebug() << "FileManagerMainWindow::~FileManagerMainWindow()";
 
     // Save the window geometry
     saveWindowGeometry();
@@ -578,6 +570,8 @@ FileManagerMainWindow::~FileManagerMainWindow()
     });
 
     delete m_extendedAttributes;
+
+    qDebug() << "FileManagerMainWindow::~FileManagerMainWindow() done";
 }
 
 void FileManagerMainWindow::createMenus()
@@ -1904,6 +1898,7 @@ void FileManagerMainWindow::getInfo() {
             // Get the absolute path of the item represented by the index, using the model
             QString filePath = m_fileSystemModel->data(m_proxyModel->mapToSource(index),
                                                        QFileSystemModel::FilePathRole).toString();
+            qDebug() << "XXXXXXXXXXXXXX Selected file path:" << filePath;
             // Destroy the dialog when it is closed
             InfoDialog *infoDialog = InfoDialog::getInstance(filePath, this);
             infoDialog->setAttribute(Qt::WA_DeleteOnClose);

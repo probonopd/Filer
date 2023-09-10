@@ -28,7 +28,6 @@
 #include "CustomItemDelegate.h"
 #include "FileManagerMainWindow.h"
 
-#include <QFileIconProvider>
 #include <QFileInfo>
 #include <QIcon>
 #include <QPainter>
@@ -53,17 +52,6 @@ CustomItemDelegate::CustomItemDelegate(QObject* parent, QAbstractProxyModel* fil
 
     // Initialize the m_fileSystemModel member variable with the provided QFileSystemModel pointer
     m_fileSystemModel = fileSystemModel;
-
-    // Create an instance of the custom icon provider
-    iconProvider = new CustomFileIconProvider();
-
-    // Set the custom file system model in the file icon provider.
-    iconProvider->setModel(m_fileSystemModel);
-
-    // Set the icon provider for the model
-    // Get the model's source model and cast it as a CustomFileSystemModel
-    CustomFileSystemModel* customFileSystemModel = qobject_cast<CustomFileSystemModel*>(m_fileSystemModel->sourceModel());
-    customFileSystemModel->setIconProvider(iconProvider);
 
     // Create a QTimeLine instance for the animation
     animationTimeline = new QTimeLine(1000, this); // 1000 ms duration for the animation
@@ -90,25 +78,6 @@ CustomItemDelegate::CustomItemDelegate(QObject* parent, QAbstractProxyModel* fil
 CustomItemDelegate::~CustomItemDelegate()
 {
     delete animationTimeline;
-    delete iconProvider;
-}
-
-// Reimplement the displayText() function of the CustomItemDelegate class
-// to show a different name for application bundles
-QString CustomItemDelegate::displayText(const QVariant &value, const QLocale &locale) const
-{
-    // Get the original name of the item
-    QString originalName = value.toString();
-
-    // QString originalName = QStyledItemDelegate::displayText(value, locale);
-    if (originalName.endsWith(".app") || originalName.endsWith(".AppDir")
-        || originalName.endsWith(".AppImage") || originalName.endsWith(".desktop")) {
-        // Return the default name
-        return QFileInfo(originalName).completeBaseName();
-    } else {
-        // Return the default name
-        return QStyledItemDelegate::displayText(value, locale);
-    }
 }
 
 // Reimplement the paint() function of the CustomItemDelegate class

@@ -74,8 +74,6 @@ InfoDialog::InfoDialog(const QString &filePath, QWidget *parent) :
         fileInfo(filePath)
 {
 
-    this->filePath = filePath;
-
     // Check if an instance already exists for this file
     if (instances.contains(filePath)) {
         InfoDialog *existingDialog = instances.value(filePath);
@@ -191,9 +189,6 @@ void InfoDialog::setupInformation()
     QIcon icon = QIcon::fromTheme("unknown");
     ui->iconInfo->setPixmap(icon.pixmap(32, 32));
 
-    // Get the icon from CustomFileIconProvider
-    CustomFileIconProvider *iconProvider = new CustomFileIconProvider();
-
     // CustomFileSystemModel *model = new CustomFileSystemModel();
     // Parent directory of filePath
     QString parentDir = filePath.mid(0, filePath.lastIndexOf("/"));
@@ -207,17 +202,13 @@ void InfoDialog::setupInformation()
 
     model->setSourceModel(sourceModel);
 
-    iconProvider->setModel(model);
-
-    QIcon i = iconProvider->icon(fileInfo);
-    if (!i.isNull()) {
-        ui->iconInfo->setPixmap(i.pixmap(32, 32));
-    }
+    QModelIndex index = model->mapFromSource(sourceModel->index(filePath));
+    QIcon i = model->data(index, Qt::DecorationRole).value<QIcon>();
+    ui->iconInfo->setPixmap(i.pixmap(32, 32));
 
     openWith = sourceModel->openWith(filePath); // Used below
     delete model;
     delete sourceModel;
-    delete iconProvider;
 
     ui->pathInfo->setText(filePath);
     ui->pathInfo->setTextInteractionFlags(Qt::TextSelectableByMouse | Qt::TextSelectableByKeyboard);
@@ -244,7 +235,7 @@ void InfoDialog::setupInformation()
     }
 
     // Check if it is a bundle and if it is, show its type
-    // Check if the item is an application bundle and return the icon
+    // Check if the item is an application bundle
     ApplicationBundle *b = new ApplicationBundle(filePath);
     if (b->isValid()) {
         ui->openWithInfo->setText("launch");

@@ -43,6 +43,7 @@
 #include <QItemSelectionModel>
 #include <QStandardItemModel>
 #include "CustomFileIconProvider.h"
+#include <QAbstractProxyModel>
 
 /// Add a custom role to store the delegate position
 enum CustomItemDelegateRole {
@@ -71,14 +72,6 @@ public:
 
     // Destructor
     ~CustomItemDelegate();
-
-    /**
-     * @brief Returns the displayed text for the item at the specified index.
-     * @param value The data value.
-     * @param locale The locale to be used.
-     * @return The formatted display text.
-     */
-    QString displayText(const QVariant &value, const QLocale &locale) const override;
 
     /**
      * @brief Renders the item's appearance using a QPainter.
@@ -180,8 +173,6 @@ private:
     QMenu menu;
 
     QTimeLine* animationTimeline;
-
-    CustomFileIconProvider* iconProvider;
 
     qreal currentAnimationValue;
 

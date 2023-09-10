@@ -38,9 +38,9 @@ bool Executable::hasShebang(const QString& path) {
 
     // Check if the file starts with the shebang sequence
     QByteArray firstTwoBytes = file.read(2);
-    qDebug() << "First two bytes:" << firstTwoBytes;
+    // qDebug() << "First two bytes:" << firstTwoBytes;
     if (firstTwoBytes == "#!") {
-        qDebug() << "File has a shebang.";
+        // qDebug() << "File has a shebang.";
         // Exception: If the MIME type is e.g., "application/x-raw-disk-image",
         // then we ignore the shebang
         if (QMimeDatabase().mimeTypeForFile(path).name().contains("disk-image")) {
@@ -49,7 +49,7 @@ bool Executable::hasShebang(const QString& path) {
         }
         return true;
     } else {
-        qDebug() << "File does not have a shebang.";
+        // qDebug() << "File does not have a shebang.";
         return false;
     }
 }
@@ -62,10 +62,10 @@ bool Executable::isElf(const QString& path) {
     if (mimeType == "application/x-executable" || \
         mimeType == "application/x-pie-executable" || \
         mimeType == "application/vnd-appimage") {
-        qDebug() << "File is an ELF executable.";
+        // qDebug() << "File is an ELF executable.";
         return true;
     } else {
-        qDebug() << "File is not an ELF executable.";
+        // qDebug() << "File is not an ELF executable.";
         return false;
     }
 }
@@ -106,13 +106,13 @@ bool Executable::askUserToMakeExecutable(const QString& path) {
 
 bool Executable::hasShebangOrIsElf(const QString& path) {
     if (hasShebang(path)) {
-        qDebug() << tr("File has a shebang.");
+        // qDebug() << tr("File has a shebang.");
         return true;
     } else if (isElf(path)) {
-        qDebug() << tr("File is an ELF.");
+        // qDebug() << tr("File is an ELF.");
         return true;
     } else {
-        qDebug() << tr("File does not have a shebang or is not an ELF.");
+        // qDebug() << tr("File does not have a shebang or is not an ELF.");
         return false;
     }
 }

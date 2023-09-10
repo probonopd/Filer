@@ -33,6 +33,9 @@ CustomTreeView::CustomTreeView(QWidget* parent) : QTreeView(parent) {
     // Allow sorting by clicking on the column headers
     setSortingEnabled(true);
 
+    // Single click to rename; this requires the item to have the Qt::ItemIsEditable flag set
+    setEditTriggers(QAbstractItemView::EditKeyPressed | QAbstractItemView::SelectedClicked);
+
     DragAndDropHandler *handler = new DragAndDropHandler(this);
     connect(this, &CustomTreeView::dragEnterEventSignal, handler, &DragAndDropHandler::handleDragEnterEvent);
     connect(this, &CustomTreeView::dragMoveEventSignal, handler, &DragAndDropHandler::handleDragMoveEvent);

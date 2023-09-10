@@ -31,11 +31,20 @@
 #include <QMimeData>
 #include <QUrl>
 #include <QMessageBox>
+#include "CustomFileIconProvider.h"
 
 CustomFileSystemModel::CustomFileSystemModel(QObject* parent)
         : QFileSystemModel(parent)
 {
     LaunchDB ldb;
+
+    m_IconProvider = new CustomFileIconProvider();
+    // m_IconProvider->setModel(this);
+}
+
+CustomFileSystemModel::~CustomFileSystemModel()
+{
+    delete m_IconProvider;
 }
 
 QByteArray CustomFileSystemModel::readExtendedAttribute(const QModelIndex& index, const QString& attributeName) const
@@ -185,9 +194,9 @@ Qt::ItemFlags CustomFileSystemModel::flags(const QModelIndex &index) const
     Qt::ItemFlags defaultFlags = QFileSystemModel::flags(index);
 
     if (index.isValid())
-        return Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled | defaultFlags;
+        return Qt::ItemIsEditable | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled | defaultFlags;
     else
-        return Qt::ItemIsDropEnabled | defaultFlags;
+        return Qt::ItemIsEditable |  Qt::ItemIsDropEnabled | defaultFlags;
 }
 
 // https://doc.qt.io/qt-5/model-view-programming.html#inserting-dropped-data-into-a-model
@@ -258,7 +267,7 @@ bool CustomFileSystemModel::createBrowserBookmarkFile(const QMimeData *data, QSt
 }
 
 void CustomFileSystemModel::setPositionForIndex(const QPoint& position, const QModelIndex& index) const {
-    qDebug() << "CustomFileSystemModel::setPositionForIndex";
+    // qDebug() << "CustomFileSystemModel::setPositionForIndex";
 
     QString itemPath = fileInfo(index).absoluteFilePath();
     // qDebug() << "Updating model with coordinates for " << itemPath << ": " << position;
@@ -321,10 +330,111 @@ QPoint& CustomFileSystemModel::getPositionForIndex(const QModelIndex& index) con
 
 QVariant CustomFileSystemModel::data(const QModelIndex& index, int role) const
 {
+
+    QString roleName = roleNames().value(role);
+    // qDebug() << "CustomFileSystemModel::data " << index << roleName;
+
+    if (!index.isValid()) {
+        return QVariant();
+    }
+
+    if (role == Qt::DisplayRole) {
+        if (index.column() == 0) {
+            // If it is an application, use its name
+            bool isApplication = data(index, IsApplicationRole).toBool();
+            if (isApplication) {
+                ApplicationBundle *ab = new ApplicationBundle(filePath(index));
+                QString name = ab->name();
+                delete ab;
+                return name;
+            } else {
+                // Otherwise, use the filename
+                return data(index, Qt::EditRole);
+            }
+
+        }
+    }
+
+    if (role == Qt::DecorationRole) {
+        // TODO: Icon generation can be slow; is there a way to use async/threaded/callbacks
+        // so that icons are generated in the background and are shown whenever they are ready?
+        if (index.column() == 0) {
+            QFileInfo fileInfo = this->fileInfo(index);
+            // If openWith, we use m_IconProvider->documentIcon
+            QString openWithString = data(index, OpenWithRole).toString();
+            if (openWithString != "") {
+                return m_IconProvider->documentIcon(fileInfo, openWithString);
+            } else {
+                return m_IconProvider->icon(fileInfo);
+            }
+        }
+    }
+
+    if (role == OpenWithRole) {
+
+        // Return the cached value if we have it
+        if (openWithAttributes.contains(index)) {
+            // qDebug() << "CustomFileSystemModel::data OpenWithRole (cached)" << filePath(index);
+            return openWithAttributes[index];
+        }
+
+        // If we don't have it cached, read the open-with extended attribute
+        QString attributeValue;
+        ExtendedAttributes ea(filePath(index));
+        attributeValue = QString(ea.read("open-with"));
+
+        // If it's empty, get it from the LaunchDB
+        if (attributeValue.isEmpty()) {
+            // Get it from the LaunchDB
+            LaunchDB *ldb = new LaunchDB();
+            attributeValue = QString(ldb->applicationForFile(filePath(index)));
+            delete ldb;
+        }
+        openWithAttributes[index] = attributeValue.toUtf8();
+        return attributeValue;
+    }
+
+    if (role == CanOpenRole) {
+        // Return the cached value if we have it
+        if (canOpenAttributes.contains(index)) {
+            // qDebug() << "CustomFileSystemModel::data CanOpenRole (cached)" << filePath(index);
+            return canOpenAttributes[index];
+        }
+
+        // If we don't have it cached, read the can-open extended attribute
+        QString attributeValue;
+        ExtendedAttributes ea(filePath(index));
+        attributeValue = QString(ea.read("can-open"));
+
+        canOpenAttributes[index] = attributeValue.toUtf8();
+        return attributeValue;
+    }
+
+    if (role == IsApplicationRole) {
+        if (isApplication.contains(index)) {
+            return isApplication[index];
+        }
+        ApplicationBundle *ab = new ApplicationBundle(filePath(index));
+        bool isApplicationBundle = ab->isValid();
+        delete ab;
+        isApplication[index] = isApplicationBundle;
+        return isApplicationBundle;
+    }
+
     if (role == Qt::ToolTipRole) {
-        qDebug() << "CustomFileSystemModel::data Qt::ToolTipRole" << filePath(index);
+        QString tooltipText = filePath(index);
+        if (data(index, OpenWithRole).toString() != "") {
+            tooltipText += "\nOpen with: " + openWithAttributes[index];
+        }
+
+        tooltipText += "\nIs application: " + data(index, IsApplicationRole).toString();
+
+        if (data(index, CanOpenRole).toString() != "") {
+            tooltipText += "\nCan open: " + data(index, CanOpenRole).toString();
+        }
+
         // Return the file path as the tooltip
-        return filePath(index);
+        return tooltipText;
     }
 
     return QFileSystemModel::data(index, role);

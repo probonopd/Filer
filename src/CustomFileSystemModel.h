@@ -24,22 +24,26 @@
  * SUCH DAMAGE.
  */
 
-#pragma once
+#ifndef CUSTOMFILESYSTEMMODEL_H
+#define CUSTOMFILESYSTEMMODEL_H
 
 #include <QFileSystemModel>
 #include <QByteArray>
 #include "LaunchDB.h"
-#include "CombinedIconCreator.h"
+#include "CustomFileIconProvider.h"
 
-static const int OpenWithRole = Qt::UserRole + 1;
-static const int CanOpenRole = Qt::UserRole + 2;
-static const int IsApplicationRole =  Qt::UserRole + 3;
+// NOTE: Qt::UserRole + 1 is already used by QFileSystemModel for the file path
+static const int OpenWithRole = Qt::UserRole + 10;
+static const int CanOpenRole = Qt::UserRole + 11;
+static const int IsApplicationRole =  Qt::UserRole + 12;
 
 class CustomFileSystemModel : public QFileSystemModel
 {
 Q_OBJECT
 public:
     explicit CustomFileSystemModel(QObject* parent = nullptr);
+
+    ~CustomFileSystemModel() override;
 
     QVariant data(const QModelIndex& index, int role = Qt::ToolTipRole) const override;
 
@@ -71,8 +75,14 @@ private:
     // Private member variable to store "open-with" attributes.
     mutable QMap<QModelIndex, QByteArray> openWithAttributes;
 
+    // Private member variable to store "open-with" attributes.
+    mutable QMap<QModelIndex, QByteArray> canOpenAttributes;
+
     // Private member variable to store icon coordinates.
     mutable QMap<QModelIndex, QPoint> iconCoordinates;
+
+    // Private member variable to store whether an item is an application.
+    mutable QMap<QModelIndex, bool> isApplication;
 
     LaunchDB ldb;
 
@@ -82,4 +92,13 @@ private:
     // Private helper method to make a filename safe for the filesystem, e.g., for saving bookmarks from a web browser
     QString makeFilenameSafe(const QString& input) const;
 
+    // The following class is defined in "CustomFileIconProvider.h"; why does the compiler not see it?
+    // This is because the compiler does not see the definition of the class CustomFileIconProvider
+    // in the header file CustomFileIconProvider.h for some reason. Why?
+    // It is defined in the same directory as this file, and the header file is included.
+    CustomFileIconProvider *m_IconProvider;
+    // FIXME:  Why are we getting error: unknown type name 'CustomFileIconProvider'; did you mean 'QFileIconProvider'?
+
 };
+
+#endif // CUSTOMFILESYSTEMMODEL_H
