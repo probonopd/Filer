@@ -31,7 +31,7 @@
 #include <QTextStream>
 #include <QDebug>
 
-#if defined(__unix__) || defined(__APPLE__)
+#if (defined(__unix__) || defined(__APPLE__)) && !defined(__linux__)
 #include <sys/types.h>
 #include <sys/extattr.h>
 #elif defined(__linux__)
@@ -51,7 +51,7 @@ bool ExtendedAttributes::write(const QString &attributeName, const QByteArray &a
         return false;
     }
 
-#if defined(__unix__) || defined(__APPLE__)
+#if (defined(__unix__) || defined(__APPLE__)) && !defined(__linux__)
 
     // NOTE: This is faster than using QProcess, but it means that we cannot
     // write extended attributes to files that we have no write access to
@@ -107,7 +107,7 @@ QByteArray ExtendedAttributes::read(const QString &attributeName) {
         return QByteArray();
     }
 
-#if defined(__unix__) || defined(__APPLE__)
+#if (defined(__unix__) || defined(__APPLE__)) && !defined(__linux__)
 
     // NOTE: This implementation is faster than using QProcess, but it means that we cannot get
     // extended attributes from files that we do not have read access to.
@@ -182,7 +182,7 @@ bool ExtendedAttributes::clear(const QString &attributeName) {
         return false;
     }
 
-#if defined(__unix__) || defined(__APPLE__)
+#if (defined(__unix__) || defined(__APPLE__)) && !defined(__linux__)
     // Delete the extended attribute from the file in the "user" namespace
     // qDebug() << "Deleting extended attribute" << attributeName << "from file" << m_file.fileName();
     QProcess extattr;
