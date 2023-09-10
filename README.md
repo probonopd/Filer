@@ -25,7 +25,7 @@ To try it out, run the latest [experimental helloSystem ISO](https://github.com/
 |Do not allow individual files of the same MIME type to be opened with different applications|Allows individual files of the same MIME type to be opened with different applications (using the `can-open` extended attribute)|DONE by `launch`|
 |Do not persist window location and size for each window|Persists window location and size for each window|DONE|
 |Do not persist the view type for each window|Persists the view type for each window|DONE|
-|Do not persist icon coordinates in windows|Persists icon coordinates in windows|TODO|
+|Do not persist icon coordinates in windows|Persists icon coordinates in windows|WIP using `coordinates` extended attribute|
 |Do not persist the size of each icon|Persists the size of each icon|For consideration|
 |Cannot use copy and pasted icons for documents and folders|Can use copy and pasted icons for documents and folders|DONE using `user-icon` extended attribute holding a base64 encoded PNG|
 |Open files with whatever application if there is more than one that can handle a file|Asks the user which application to use if there is more than one that can handle a file|DONE by `launch`|
