@@ -71,6 +71,8 @@ public:
 
     void persistItemPositions() const;
 
+    bool setData(const QModelIndex &idx, const QVariant &value, int role) override;
+
 private:
     // Private member variable to store "open-with" attributes.
     mutable QMap<QModelIndex, QByteArray> openWithAttributes;

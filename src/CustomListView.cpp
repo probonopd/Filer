@@ -39,6 +39,7 @@
 #include <QSettings>
 #include <QScrollBar>
 #include <QStandardPaths>
+#include <QShortcut>
 
 CustomListView::CustomListView(QWidget* parent) : QListView(parent) {
 

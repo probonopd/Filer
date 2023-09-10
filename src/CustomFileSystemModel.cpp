@@ -32,6 +32,12 @@
 #include <QUrl>
 #include <QMessageBox>
 #include "CustomFileIconProvider.h"
+#include <QRegExpValidator>
+#include "Mountpoints.h"
+#include <QApplication>
+#include <QProcess>
+#include <QTimer>
+#include <QDir>
 
 CustomFileSystemModel::CustomFileSystemModel(QObject* parent)
         : QFileSystemModel(parent)
@@ -39,7 +45,6 @@ CustomFileSystemModel::CustomFileSystemModel(QObject* parent)
     LaunchDB ldb;
 
     m_IconProvider = new CustomFileIconProvider();
-    // m_IconProvider->setModel(this);
 }
 
 CustomFileSystemModel::~CustomFileSystemModel()
@@ -436,4 +441,154 @@ QVariant CustomFileSystemModel::data(const QModelIndex& index, int role) const
     }
 
     return QFileSystemModel::data(index, role);
+}
+
+// Handle renaming by clicking on the name in the list view or tree view
+bool CustomFileSystemModel::setData(const QModelIndex &idx, const QVariant &value, int role) {
+    qDebug() << "CustomFileSystemModel::setData " << idx << value << role;
+
+    // Get the current name of the selected item
+    const QString currentName = fileName(idx);
+
+    // Prevent the user from using "/" anywhere in the new name
+    QRegExpValidator validator(QRegExp("[^/]*"));
+    bool ok;
+
+    // Check if the item to be renamed is a mountpoint
+
+    const QString currentPath = filePath(idx);
+    QString absoluteFilePath = QFileInfo(currentPath).absoluteFilePath();
+    // if absoluteFilePath is a symlink, resolve it
+    if (QFileInfo(absoluteFilePath).isSymLink()) {
+        absoluteFilePath = QFileInfo(absoluteFilePath).symLinkTarget();
+    }
+    qDebug() << "absoluteFilePath:" << absoluteFilePath;
+
+    if (Mountpoints::isMountpoint(absoluteFilePath)) {
+        // Get the filesystem type using QStorageInfo
+        const QString filesystemType = QStorageInfo(absoluteFilePath).fileSystemType();
+        qDebug() << "Filesystem type:" << filesystemType;
+        QStringList renameableFilesystems = { "ext2", "ext3", "ext4", "reiserfs", "reiser4", "ufs", "vfat", "exfat", "ntfs" };
+        // If the filesystem is not in the list of renameable filesystems, disable renaming
+        if (!renameableFilesystems.contains(filesystemType)) {
+            qDebug() << "Filesystem is not in the list of renameable filesystems";
+            return false;
+        }
+    }
+
+    // Get the new name of the selected item
+    const QString newName = value.toString();
+
+    if (newName.isEmpty() || newName == currentName) {
+        // The user canceled the dialog or didn't enter a new name
+        return false;
+    }
+
+    qDebug() << "newName:" << newName;
+    qDebug() << "currentName:" << currentName;
+
+    /*
+    // If there was an extension, compare the old and the new extension
+    // and if they are different, ask the user if they want to continue
+    if (currentName.lastIndexOf('.') != -1) {
+        if (currentName.right(currentName.length() - currentName.lastIndexOf('.') - 1) != newName.right(newName.length() - newName.lastIndexOf('.') - 1)) {
+            // The extensions are different
+            QMessageBox::StandardButton reply;
+            reply = QMessageBox::question(this, 0, tr("Do you really want to change the file extension?"), QMessageBox::Yes|QMessageBox::No);
+            if (reply == QMessageBox::No) {
+                return;
+            }
+        }
+    }
+     */
+
+    if (Mountpoints::isMountpoint(absoluteFilePath)) {
+
+        // TODO: Possibly move everything in this if statement to a separate class,
+        // similar to the FileOperationManager class
+
+        // The item to be renamed is a mountpoint, so we need to run:
+        // sudo -A -E renamedisk <old name> <new name>
+
+        /*
+        // Check if we are on FreeBSD and if we are not, show an error message
+        if (QSysInfo::kernelType() != "freebsd") {
+            QMessageBox::critical(0, "Filer", "The 'renamedisk' command has only been implemented for FreeBSD yet.");
+            return;
+        }
+        */
+
+        QStringList renamediskBinaryCandidates;
+
+        renamediskBinaryCandidates << qApp->applicationDirPath() + QString("/bin/renamedisk")
+                                   << qApp->applicationDirPath() + QString("/../../Resources/renamedisk")
+                                   << qApp->applicationDirPath() + QString("/../bin/renamedisk")
+                                   << qApp->applicationDirPath() + QString("/renamedisk/renamedisk");
+
+        QString foundBinary;
+
+        for (const QString &renamediskBinaryCandidate : renamediskBinaryCandidates) {
+            if (QFile::exists(renamediskBinaryCandidate) && QFileInfo(renamediskBinaryCandidate).isExecutable()) {
+                foundBinary = renamediskBinaryCandidate;
+                break;
+            }
+        }
+
+        if (foundBinary.isEmpty()) {
+            // Not found
+            QMessageBox::critical(0, "Filer", "The 'renamedisk' command is missing. It should have been shipped with this application.");
+            return false;
+        }
+
+        QString oldName = currentPath.split("/").last();
+        QProcess *p = new QProcess(this);
+        // TODO: Check if we need sudo at all for this kind of filesystem; e.g., if it's a FAT32 filesystem
+        // then we don't need sudo
+        p->setProgram("sudo");
+        p->setArguments({ "-A", "-E", foundBinary, absoluteFilePath, newName });
+        qDebug() << p->program() << "'" + p->arguments().join("' '") + "'";
+        p->start();
+        p->waitForFinished();
+        qDebug() << "renamedisk exit code:" << p->exitCode();
+        if (p->exitCode() != 0) {
+            QStringList errorLines = QString(p->readAllStandardError()).split("\n");
+            for (const QString &errorLine : errorLines) {
+                qCritical() << errorLine;
+            }
+            // QMessageBox::critical(this, tr("Error"), tr("Could not rename %1 to %2").arg(oldName).arg(newName));
+            return false;
+        } else {
+            qDebug() << "Renamed" << currentPath << "to" << newName;
+            return true;
+            // In 0 ms, touch the parent directory of the renamed mountpoint
+            // to make the view update itself
+            QTimer::singleShot(0, this, [=]() {
+                QFileInfo parentDir(currentPath);
+                QProcess::execute("touch", { parentDir.dir().absolutePath() });
+            });
+
+            // The view will automatically update itself; works
+        }
+        return false;
+    }
+
+    // Rename the selected item in the file system
+    const QString newPath = currentPath.left(currentPath.lastIndexOf("/") + 1) + newName;
+    if(!QFile::rename(currentPath, newPath)) {
+        // QMessageBox::critical(this, tr("Error"), tr("Could not rename %1 to %2").arg(currentPath).arg(newPath));
+        return false;
+    } else {
+        qDebug() << "Renamed" << currentPath << "to" << newPath;
+        // In 0 ms, touch the parent directory of the renamed file
+        // to make the view update itself
+        QTimer::singleShot(0, this, [=]() {
+            QFileInfo parentDir(currentPath);
+            QProcess::execute("touch", { parentDir.dir().absolutePath() });
+        });
+        // The view will automatically update itself; works
+        return true;
+    }
+
+
+    return false;
 }
