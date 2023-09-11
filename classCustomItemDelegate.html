@@ -114,6 +114,12 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr class="memitem:a0c1764db0b5af7e379146cef59c76a9b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCustomItemDelegate.html#a0c1764db0b5af7e379146cef59c76a9b">isAnimationRunning</a> () const</td></tr>
 <tr class="memdesc:a0c1764db0b5af7e379146cef59c76a9b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if an animation is currently running.  <a href="classCustomItemDelegate.html#a0c1764db0b5af7e379146cef59c76a9b">More...</a><br /></td></tr>
 <tr class="separator:a0c1764db0b5af7e379146cef59c76a9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6182bc23429e757521476ab6e3944428"><td class="memItemLeft" align="right" valign="top">QWidget *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCustomItemDelegate.html#a6182bc23429e757521476ab6e3944428">createEditor</a> (QWidget *parent, const QStyleOptionViewItem &amp;option, const QModelIndex &amp;index) const override</td></tr>
+<tr class="memdesc:a6182bc23429e757521476ab6e3944428"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates and returns a custom editor widget.  <a href="classCustomItemDelegate.html#a6182bc23429e757521476ab6e3944428">More...</a><br /></td></tr>
+<tr class="separator:a6182bc23429e757521476ab6e3944428"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac8d1041e82825200a3f6378236a04ad5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCustomItemDelegate.html#ac8d1041e82825200a3f6378236a04ad5">setModelData</a> (QWidget *editor, QAbstractItemModel *model, const QModelIndex &amp;index) const override</td></tr>
+<tr class="memdesc:ac8d1041e82825200a3f6378236a04ad5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the model data based on the edited data in the editor.  <a href="classCustomItemDelegate.html#ac8d1041e82825200a3f6378236a04ad5">More...</a><br /></td></tr>
+<tr class="separator:ac8d1041e82825200a3f6378236a04ad5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="signals"></a>
 Signals</h2></td></tr>
@@ -223,6 +229,59 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>editorEvent</b> (QEve
   </table>
   </dd>
 </dl>
+
+</div>
+</div>
+<a id="a6182bc23429e757521476ab6e3944428"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6182bc23429e757521476ab6e3944428">&#9670;&nbsp;</a></span>createEditor</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">QWidget * CustomItemDelegate::createEditor </td>
+          <td>(</td>
+          <td class="paramtype">QWidget *&#160;</td>
+          <td class="paramname"><em>parent</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const QStyleOptionViewItem &amp;&#160;</td>
+          <td class="paramname"><em>option</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const QModelIndex &amp;&#160;</td>
+          <td class="paramname"><em>index</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">slot</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Creates and returns a custom editor widget. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">parent</td><td>The parent widget of the editor. </td></tr>
+    <tr><td class="paramname">option</td><td>Style options for the item. </td></tr>
+    <tr><td class="paramname">index</td><td>Model index of the item being edited. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A pointer to the custom editor widget. </dd></dl>
 
 </div>
 </div>
@@ -345,6 +404,58 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>editorEvent</b> (QEve
     <tr><td class="paramname">painter</td><td>The QPainter object to paint with. </td></tr>
     <tr><td class="paramname">option</td><td>The style options for rendering. </td></tr>
     <tr><td class="paramname">index</td><td>The model index to be rendered. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ac8d1041e82825200a3f6378236a04ad5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac8d1041e82825200a3f6378236a04ad5">&#9670;&nbsp;</a></span>setModelData</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void CustomItemDelegate::setModelData </td>
+          <td>(</td>
+          <td class="paramtype">QWidget *&#160;</td>
+          <td class="paramname"><em>editor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">QAbstractItemModel *&#160;</td>
+          <td class="paramname"><em>model</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const QModelIndex &amp;&#160;</td>
+          <td class="paramname"><em>index</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">slot</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Sets the model data based on the edited data in the editor. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">editor</td><td>The editor widget. </td></tr>
+    <tr><td class="paramname">model</td><td>The model that holds the item data. </td></tr>
+    <tr><td class="paramname">index</td><td>Model index of the item being edited. </td></tr>
   </table>
   </dd>
 </dl>
