@@ -1936,10 +1936,9 @@ void FileManagerMainWindow::alignIcons() {
         qDebug() << "alignIcons(): Source index:" << sourceIndex;
         // Remove from map of coordinates
         m_fileSystemModel->removeCustomCoordinates(sourceIndex);
-        refresh();
-
     }
 
+    refresh();
     // Probably we need some more methods in the model to do this properly;
     // e.g., remove from the map of coordinates, so that the coordinates are not written
     // again...

@@ -292,7 +292,6 @@ void CustomFileSystemModel::persistItemPositions() const {
     // Iterate over all iconCoordinates and write them to extended attributes
     for (QModelIndex index : iconCoordinates.keys()) {
             QString itemPath = fileInfo(index).absoluteFilePath();
-            qDebug() << "Writing coordinates for " << itemPath << ": " << iconCoordinates[index];
             // Write extended attribute
             ExtendedAttributes *ea = new ExtendedAttributes(itemPath);
             QString coordinates = QString::number(iconCoordinates[index].x()) + "," + QString::number(iconCoordinates[index].y());
@@ -447,6 +446,34 @@ QVariant CustomFileSystemModel::data(const QModelIndex& index, int role) const
 bool CustomFileSystemModel::setData(const QModelIndex &idx, const QVariant &value, int role) {
     qDebug() << "CustomFileSystemModel::setData " << idx << value << role;
 
+    // Check permissions; if not user writable, we need to use sudo
+    QFileInfo fileInfo = this->fileInfo(idx);
+    if (!fileInfo.isWritable()) {
+        qDebug() << "File is not writable; using sudo";
+        QProcess *process = new QProcess();
+        QStringList args;
+        // Destination path is the same as the source path, but with the new filename
+        QString destinationPath = filePath(idx);
+        QString parentDirectory = QFileInfo(destinationPath).absolutePath();
+        QString newName = value.toString();
+        destinationPath = parentDirectory + "/" + newName;
+        args << "-A" << "-E" << "mv" << filePath(idx) << destinationPath;
+        qDebug() << "sudo" << args;
+        process->start("sudo", args);
+        process->waitForFinished();
+        qDebug() << "process->exitCode():" << process->exitCode();
+        qDebug() << "process->exitStatus():" << process->exitStatus();
+        if (process->exitCode() == 0) {
+            return true;
+        } else {
+            QString errorMessage = tr("Could not rename");
+            QMessageBox::critical(0, 0, errorMessage);
+            return false;
+        }
+    } else {
+        qDebug() << "File is writable; using QFileSystemModel::setData";
+    }
+
     // Get the current name of the selected item
     const QString currentName = fileName(idx);
 
@@ -588,21 +615,27 @@ bool CustomFileSystemModel::setData(const QModelIndex &idx, const QVariant &valu
         // The view will automatically update itself; works
         return true;
     }
-
-
     return false;
 }
 
 void CustomFileSystemModel::removeCustomCoordinates(const QModelIndex& index) const {
-    qDebug() << "Removing index" << index << "from icon coordinates map";
-    // Remove the index from the icon coordinates map
-    if (iconCoordinates.contains(index)) {
-        iconCoordinates.remove(index);
 
-        // Clear the extended attributes of the index
-        QString filePath = index.data(QFileSystemModel::FilePathRole).toString();
-        ExtendedAttributes *ea = new ExtendedAttributes(filePath);
-        ea->clear("coordinates");
-        delete ea;
+    QString pathToBeRemovedFromIconCoordinatesMap = index.data(QFileSystemModel::FilePathRole).toString();
+
+    // Apparently the same file can be in the iconCoordinates map with different indexes,
+    // so we need to remove them based on their path; when doing so, we print the path that is being removed
+    for (auto it = iconCoordinates.begin(); it != iconCoordinates.end(); ) {
+        // Get the path for the current item using QFileSystemModel::FilePathRole
+        // and compare it to the path of the item that is being removed
+        QString path = it.key().data(QFileSystemModel::FilePathRole).toString();
+        if (path == pathToBeRemovedFromIconCoordinatesMap) {
+            // qDebug() << "Removing" << pathToBeRemovedFromIconCoordinatesMap << "from iconCoordinates map";
+            it = iconCoordinates.erase(it);
+            ExtendedAttributes *ea = new ExtendedAttributes(path);
+            ea->clear("coordinates");
+            delete ea;
+        } else {
+            ++it;
+        }
     }
 }

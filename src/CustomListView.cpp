@@ -43,7 +43,10 @@
 
 CustomListView::CustomListView(QWidget* parent) : QListView(parent) {
 
-    // FIXME: How to fill the background before we block updates?
+    // Before blocking updates, paint the desktop picture; does this work?
+    if (should_paint_desktop_picture) {
+        paintDesktopPicture();
+    }
 
     // Block updating the view until all items have been moved to their custom positions in CustomListView::layoutItems()
     this->viewport()->setUpdatesEnabled(false);
@@ -95,13 +98,8 @@ void CustomListView::requestDesktopPictureToBePainted(bool request) {
     should_paint_desktop_picture = request;
 }
 
-void CustomListView::paintEvent(QPaintEvent* event)
+void CustomListView::paintDesktopPicture()
 {
-
-    if(!should_paint_desktop_picture) {
-        QListView::paintEvent(event);
-        return;
-    }
 
     QPainter painter(viewport());
 
@@ -139,6 +137,18 @@ void CustomListView::paintEvent(QPaintEvent* event)
 
     // Restore the painter state
     painter.restore();
+
+}
+
+void CustomListView::paintEvent(QPaintEvent* event)
+{
+
+    if(!should_paint_desktop_picture) {
+        QListView::paintEvent(event);
+        return;
+    }
+
+    paintDesktopPicture();
 
     // Call super class paintEvent to draw the items
     QListView::paintEvent(event);
@@ -205,7 +215,7 @@ void CustomListView::layoutItems() {
         QModelIndex sourceIndex = model->mapToSource(index);
         // qDebug() << "CustomListView::layoutItems() index" << index;
         // Print the name of the item
-        QString path = model->data(index, Qt::DisplayRole).toString();
+        // QString path = model->data(index, Qt::DisplayRole).toString();
         // qDebug() << "CustomListView::layoutItems() path" << path;
 
         // If needed, we could use getItemDelegateForIndex
@@ -227,6 +237,7 @@ void CustomListView::layoutItems() {
             max_y = qMax(max_y, y);
             // TODO: If we are rendering the desktop and the item is outside the window, move it inside
             setPositionForIndex(QPoint(x, y), index); // Actually move it
+            // Update iconCoordinates[index] which will get persisted to disk when the window closes
             sourceModel->setPositionForIndex(QPoint(x, y), sourceIndex);
         } else {
             // Randomize within the whole window
@@ -301,8 +312,8 @@ void CustomListView::specialDropEvent(QDropEvent *event) {
             qDebug() << "CustomListView::specialDropEvent() index" << index;
 
             // Print the name of the item
-            QString path = model->data(index, Qt::DisplayRole).toString();
-            qDebug() << "CustomListView::specialDropEvent() path" << path;
+            // QString path = model->data(index, Qt::DisplayRole).toString();
+            // qDebug() << "CustomListView::specialDropEvent() path" << path;
 
             // Map the index to the source model
             QAbstractProxyModel* proxyModel = qobject_cast<QAbstractProxyModel*>(model);
@@ -312,13 +323,16 @@ void CustomListView::specialDropEvent(QDropEvent *event) {
             qDebug() << "CustomListView::specialDropEvent() sourceIndex" << sourceIndex;
 
             // Map the position to global coordinates
-            QPoint globalPos = this->mapToGlobal(this->visualRect(index).center());
+            // NOTE: The coordinates for items in a QListView or similar views are specified using a QRect.
+            // A QRect is a rectangle defined by its top-left corner (x, y) and its width and height.
+            QPoint globalPos = this->mapToGlobal(this->visualRect(index).topLeft());
 
             // Convert global coordinates to local coordinates
             QPoint position = this->mapFromGlobal(globalPos);
 
             qDebug() << "CustomListView::specialDropEvent() position" << position;
             sourceModel->setPositionForIndex(position, sourceIndex);
+            qDebug() << "CustomListView::specialDropEvent() sourceModel->setPositionForIndex(sourceIndex)";
 
         }
 }

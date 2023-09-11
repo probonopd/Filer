@@ -158,7 +158,8 @@ int main(int argc, char *argv[])
         using namespace std::chrono;
         using namespace std::chrono_literals;
 
-        QDeadlineTimer deadline(7s);
+        // 7s was not enough for small machines; https://github.com/helloSystem/Menu/issues/161
+        QDeadlineTimer deadline(30s);
 
         while(true) {
             QDBusInterface* menuIface = new QDBusInterface(

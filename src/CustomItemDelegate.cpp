@@ -44,6 +44,7 @@
 #include "InfoDialog.h"
 #include "AppGlobals.h"
 #include "DBusInterface.h"
+#include <QApplication>
 
 // Constructor that takes a QObject pointer and a QFileSystemModel pointer as arguments
 CustomItemDelegate::CustomItemDelegate(QObject* parent, QAbstractProxyModel* fileSystemModel)
@@ -484,4 +485,44 @@ void CustomItemDelegate::setSelectionModel(QItemSelectionModel* selectionModel)
 bool CustomItemDelegate::isAnimationRunning() const
 {
     return animationTimeline->state() == QTimeLine::Running;
+}
+
+// When the user clicks on an item to rename it, this is what the delegate will show
+QWidget* CustomItemDelegate::createEditor(QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index) const {
+
+    QLineEdit* editor = new QLineEdit(parent);
+
+    // Is the parent is a CustomListView, align the text centered
+    if (CustomListView* listView = qobject_cast<CustomListView*>(parent->parentWidget()))
+    {
+        editor->setAlignment(Qt::AlignCenter);
+    }
+
+    // 1px border in the highlight color
+    QPalette palette = QApplication::palette();
+    QBrush brush = palette.highlight();
+    QColor color = brush.color();
+    editor->setStyleSheet(QString("QLineEdit { border: 1px solid %1; padding: 1px; }").arg(color.name()));
+
+    // Prevent null bytes, slashes, and backslashes from being entered
+    QRegExp notAllowed("^[^\\0/\\\\]*$");
+
+    // TODO: Be more strict for filesystem labels
+    // QRegExp notAllowed("(?!.*[^a-zA-Z0-9_\\-\\s\\u00C0-\\u00FF]).*");
+
+    QValidator* validator = new QRegExpValidator(notAllowed, editor);
+    editor->setValidator(validator);
+
+    return editor;
+}
+
+// When the user has entered a new name for the item, this will be called
+void CustomItemDelegate::setModelData(QWidget* editor, QAbstractItemModel* model, const QModelIndex& index) const {
+    QLineEdit* lineEdit = qobject_cast<QLineEdit*>(editor);
+    if (lineEdit) {
+        qDebug() << "CustomItemDelegate::setModelData:" << lineEdit->text();
+        // TODO: For mountpoints and links to mountpoints, may need to set filesystem label here
+        // instead of running the following?
+        model->setData(index, lineEdit->text(), Qt::EditRole);
+    }
 }

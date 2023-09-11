@@ -89,6 +89,7 @@ signals:
     void startDragSignal(Qt::DropActions supportedActions);
 
 private:
+    void paintDesktopPicture();
     bool should_paint_desktop_picture = false;
     QTimer* m_layoutTimer;
     // QAbstractProxyModel* m_proxyModel;

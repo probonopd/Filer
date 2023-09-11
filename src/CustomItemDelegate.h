@@ -44,6 +44,7 @@
 #include <QStandardItemModel>
 #include "CustomFileIconProvider.h"
 #include <QAbstractProxyModel>
+#include <QLineEdit>
 
 /// Add a custom role to store the delegate position
 enum CustomItemDelegateRole {
@@ -142,6 +143,26 @@ public slots:
      * @return True if an animation is running, otherwise false.
      */
     bool isAnimationRunning() const;
+
+    // The following are used to implement a custom editor for the delegate
+    // (when the user clicks on an item to rename it)
+
+    /**
+     * @brief Creates and returns a custom editor widget.
+     * @param parent The parent widget of the editor.
+     * @param option Style options for the item.
+     * @param index Model index of the item being edited.
+     * @return A pointer to the custom editor widget.
+     */
+    QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index) const override;
+
+    /**
+     * @brief Sets the model data based on the edited data in the editor.
+     * @param editor The editor widget.
+     * @param model The model that holds the item data.
+     * @param index Model index of the item being edited.
+     */
+    void setModelData(QWidget* editor, QAbstractItemModel* model, const QModelIndex& index) const override;
 
 signals:
     /**
