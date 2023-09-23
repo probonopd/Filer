@@ -103,7 +103,7 @@ ApplicationBundle::ApplicationBundle(const QString& path)
 
     // Check if the path is a desktop file
     // TODO: Use MIME type instead of file extension; measure performance impact
-    if (fileInfo.fileName().tolower().endsWith(".desktop")) {
+    if (fileInfo.fileName().toLower().endsWith(".desktop")) {
         m_type = Type::DesktopFile;
         // qDebug() << path << "is a desktop file";
         m_name = fileInfo.completeBaseName();
