@@ -174,13 +174,12 @@ FileManagerMainWindow::FileManagerMainWindow(QWidget *parent, const QString &ini
     }
 
     // On FreeBSD, set padding for the desktop to leave room for the global menu bar
-    // FIXME: Why is this needed on FreeBSD but not on Linux?
+    // QUESTION: Why is this needed on FreeBSD but not on Linux?
+    // ANSWER: Seems like this is also needed on Lubunutu 22.04 when using KWin.app
     // (Tested with Lubunutu 22.04 and the KDE Plasma theme)
-    if (QSysInfo::kernelType() == "freebsd") {
-        if (! qgetenv("UBUNTU_MENUPROXY").isEmpty() && m_isFirstInstance) {
-            // Make room for the desktop with padding
-            setContentsMargins(0, 22, 0, 0);
-        }
+    if (! qgetenv("UBUNTU_MENUPROXY").isEmpty() && m_isFirstInstance) {
+        // Make room for the desktop with padding
+       setContentsMargins(0, 22, 0, 0);
     }
 
     // Set margins translucent
