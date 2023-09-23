@@ -94,14 +94,16 @@ ApplicationBundle::ApplicationBundle(const QString& path)
     }
 
     // Check if the path is an AppImage
-    if (fileInfo.fileName().endsWith(".AppImage")) {
+    // TODO: Use MIME type instead of file extension; measure performance impact
+    if (fileInfo.fileName().toLower().endsWith(".appimage")) {
         m_type = Type::AppImage;
         m_name = fileInfo.completeBaseName();
         m_executable = fileInfo.fileName();
     }
 
     // Check if the path is a desktop file
-    if (fileInfo.fileName().endsWith(".desktop")) {
+    // TODO: Use MIME type instead of file extension; measure performance impact
+    if (fileInfo.fileName().tolower().endsWith(".desktop")) {
         m_type = Type::DesktopFile;
         // qDebug() << path << "is a desktop file";
         m_name = fileInfo.completeBaseName();
