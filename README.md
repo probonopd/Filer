@@ -1,6 +1,6 @@
 # Filer [![Build Status](https://api.cirrus-ci.com/probonopd/helloSystem/Filer.svg)](https://cirrus-ci.com/github/probonopd/Filer) [![Ubuntu Build Status](https://img.shields.io/github/actions/workflow/status/probonopd/Filer/ubuntu.yml?branch=main)](https://github.com/probonopd/Filer/actions/workflows/ubuntu.yml)
 
-A clean rewrite of the Filer for [helloSystem](https://hellosystem.github.io/) (but not limited to it), inspired by [John Siracusa's descriptions of "Spatial Orientation"](https://arstechnica.com/gadgets/2003/04/finder/).
+A clean rewrite of the Filer for [helloSystem](https://hellosystem.github.io/) (but not limited to it), inspired by [John Siracusa's descriptions of "Spatial Orientation"](https://arstechnica.com/gadgets/2003/04/finder/) and the Spatial Classic Finder ([Video](https://www.youtube.com/watch?v=MAOF83yCb6E)).
 
 To try it out, run the latest [experimental helloSystem ISO](https://github.com/helloSystem/ISO/releases/) build and press the "V" key for verbose boot (this will cause this new, work-in-progress Filer to be loaded).
 
